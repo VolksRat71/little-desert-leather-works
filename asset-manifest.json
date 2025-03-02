@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/little-desert-leather-works/static/css/main.427ca602.css",
+    "main.js": "/little-desert-leather-works/static/js/main.436d0fcd.js",
+    "static/js/453.bb79db73.chunk.js": "/little-desert-leather-works/static/js/453.bb79db73.chunk.js",
+    "index.html": "/little-desert-leather-works/index.html",
+    "main.427ca602.css.map": "/little-desert-leather-works/static/css/main.427ca602.css.map",
+    "main.436d0fcd.js.map": "/little-desert-leather-works/static/js/main.436d0fcd.js.map",
+    "453.bb79db73.chunk.js.map": "/little-desert-leather-works/static/js/453.bb79db73.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.427ca602.css",
+    "static/js/main.436d0fcd.js"
+  ]
+}
