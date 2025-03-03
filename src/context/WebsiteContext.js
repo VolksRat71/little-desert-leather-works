@@ -160,6 +160,46 @@ export const artisan = {
   skills: ["Hand-stitching", "Tooling & Carving", "Dyeing & Finishing", "Pattern Making", "Custom Design"]
 };
 
+// Create sample users data
+export const users = [
+  {
+    id: 1,
+    name: 'Admin User',
+    email: 'admin@example.com',
+    role: 'Admin',
+    lastLogin: '2023-03-15',
+    marketingPreferences: {
+      emailOffers: true,
+      textOffers: false,
+      orderUpdates: true
+    }
+  },
+  {
+    id: 2,
+    name: 'John Doe',
+    email: 'john@example.com',
+    role: 'User',
+    lastLogin: '2023-03-10',
+    marketingPreferences: {
+      emailOffers: true,
+      textOffers: true,
+      orderUpdates: true
+    }
+  },
+  {
+    id: 3,
+    name: 'Jane Smith',
+    email: 'jane@example.com',
+    role: 'User',
+    lastLogin: '2023-03-12',
+    marketingPreferences: {
+      emailOffers: false,
+      textOffers: false,
+      orderUpdates: true
+    }
+  }
+];
+
 // Create website context
 const WebsiteContext = createContext();
 
@@ -174,6 +214,8 @@ export const WebsiteProvider = ({ children }) => {
   const [websiteTestimonials, setWebsiteTestimonials] = useState(testimonials);
   const [websiteArtisan, setWebsiteArtisan] = useState(artisan);
   const [websiteColors, setWebsiteColors] = useState(colorPalette);
+  // Track temporary color changes for preview
+  const [temporaryColorPalette, setTemporaryColorPalette] = useState(null);
   const [orders, setOrders] = useState([]);
   const [contactInfo, setContactInfo] = useState({
     email: "contact@littledesertleatherworks.com",
@@ -186,6 +228,9 @@ export const WebsiteProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [showCartNotification, setShowCartNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
+
+  // Users state
+  const [websiteUsers, setWebsiteUsers] = useState(users);
 
   const location = useLocation();
   const navigateFunc = useNavigate();
@@ -282,7 +327,23 @@ export const WebsiteProvider = ({ children }) => {
   };
 
   const updateColorPalette = (updatedColors) => {
-    setWebsiteColors(prevColors => ({ ...prevColors, ...updatedColors }));
+    setWebsiteColors(updatedColors);
+    setTemporaryColorPalette(null); // Clear temporary colors after saving
+  };
+
+  // User management functions
+  const addUser = (newUser) => {
+    setWebsiteUsers([...websiteUsers, newUser]);
+  };
+
+  const updateUser = (userId, updatedUser) => {
+    setWebsiteUsers(websiteUsers.map(user =>
+      user.id === userId ? updatedUser : user
+    ));
+  };
+
+  const deleteUser = (userId) => {
+    setWebsiteUsers(websiteUsers.filter(user => user.id !== userId));
   };
 
   // Cart functions
@@ -345,9 +406,11 @@ export const WebsiteProvider = ({ children }) => {
         products: websiteProducts,
         testimonials: websiteTestimonials,
         artisan: websiteArtisan,
-        colorPalette: websiteColors,
+        colorPalette: temporaryColorPalette || websiteColors,
+        temporaryColorPalette,
         contactInfo,
         orders,
+        users: websiteUsers,
         // Admin functions
         updateProduct,
         addProduct,
@@ -358,6 +421,10 @@ export const WebsiteProvider = ({ children }) => {
         updateArtisanInfo,
         updateContactInfo,
         updateColorPalette,
+        setTemporaryColorPalette,
+        addUser,
+        updateUser,
+        deleteUser,
         // Cart functions
         cart,
         addToCart,
@@ -367,7 +434,9 @@ export const WebsiteProvider = ({ children }) => {
         getCartTotal,
         getCartItemCount,
         showCartNotification,
-        notificationMessage
+        setShowCartNotification,
+        notificationMessage,
+        setNotificationMessage
       }}
     >
       {children}

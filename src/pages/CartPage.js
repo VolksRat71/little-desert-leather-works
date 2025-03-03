@@ -20,7 +20,7 @@ const CartPage = () => {
   const formattedTotal = `$${getCartTotal()}`;
 
   return (
-    <div className="pb-16 px-4 animate-fadeIn">
+    <div className="pb-16 pt-16 px-4 animate-fadeIn">
       <div className="max-w-6xl mx-auto">
         <h1 className={`text-3xl font-bold mb-6 text-${colorPalette.text.primary}`}>Your Shopping Cart</h1>
 

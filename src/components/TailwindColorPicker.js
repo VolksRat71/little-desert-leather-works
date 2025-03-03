@@ -73,6 +73,12 @@ const TailwindColorPicker = ({ value, onChange, label }) => {
     setIsOpen(false);
   };
 
+  // Helper to safely render the color preview
+  const renderColorPreview = (colorValue) => {
+    const [family, shade] = colorValue.split('-');
+    return <div className={`w-6 h-6 rounded mr-2 bg-${family}-${shade}`} aria-hidden="true"></div>;
+  };
+
   return (
     <div className="relative mb-4">
       {label && <label className="block text-gray-700 mb-1">{label}</label>}
@@ -87,10 +93,7 @@ const TailwindColorPicker = ({ value, onChange, label }) => {
           onClick={() => setIsOpen(!isOpen)}
         >
           <div className="flex items-center">
-            <div
-              className={`w-6 h-6 rounded mr-2 bg-${selectedColor}`}
-              aria-hidden="true"
-            ></div>
+            {renderColorPreview(selectedColor)}
             <span>{selectedColor}</span>
           </div>
           <svg
@@ -139,7 +142,7 @@ const TailwindColorPicker = ({ value, onChange, label }) => {
                       }`}
                       onClick={() => handleColorSelect(selectedFamily, shade)}
                     >
-                      <div className={`w-full h-8 rounded bg-${colorClass} mb-1`}></div>
+                      <div className={`w-full h-8 rounded bg-${selectedFamily}-${shade} mb-1`}></div>
                       <span className="text-xs">{shade}</span>
                     </button>
                   );

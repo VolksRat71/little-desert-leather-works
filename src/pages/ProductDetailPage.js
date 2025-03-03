@@ -61,7 +61,7 @@ const ProductDetailPage = () => {
                 src={activeImage}
                 alt={product.name}
                 magnifierSize={180}
-                zoomLevel={3}
+                zoomLevel={6}
               />
             </div>
             <div className="flex space-x-2">
