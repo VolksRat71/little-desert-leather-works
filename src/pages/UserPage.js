@@ -35,7 +35,9 @@ const UserPage = () => {
   const profileImageRef = useRef(null);
 
   // Tab state
+  const [activeCategory, setActiveCategory] = useState('account');
   const [activeTab, setActiveTab] = useState('profile');
+  const [isTabTransitioning, setIsTabTransitioning] = useState(false);
 
   // Testimonial state
   const [isAddTestimonialOpen, setIsAddTestimonialOpen] = useState(false);
@@ -55,14 +57,54 @@ const UserPage = () => {
     }
   }, [users]);
 
-  // Tabs configuration
-  const tabs = [
-    { id: 'profile', label: 'Profile' },
-    { id: 'orders', label: 'Orders' },
-    { id: 'cart', label: 'Shopping Cart' },
-    { id: 'coupons', label: 'My Coupons' },
-    { id: 'testimonials', label: 'Testimonials' },
+  // Categories and tabs configuration
+  const categories = [
+    {
+      id: 'account',
+      label: 'Account',
+      tabs: [
+        { id: 'profile', label: 'Profile' },
+        { id: 'testimonials', label: 'Testimonials' },
+      ]
+    },
+    {
+      id: 'shopping',
+      label: 'Shopping',
+      tabs: [
+        { id: 'orders', label: 'Orders' },
+        { id: 'cart', label: 'Shopping Cart' },
+        { id: 'coupons', label: 'My Coupons' },
+      ]
+    }
   ];
+
+  // Find current category based on active tab
+  const getCurrentCategory = (tabId) => {
+    for (const category of categories) {
+      if (category.tabs.some(tab => tab.id === tabId)) {
+        return category.id;
+      }
+    }
+    return 'account'; // Default
+  };
+
+  // Handle tab changes with animation
+  const handleTabChange = (tabId) => {
+    if (tabId === activeTab) return;
+
+    const newCategory = getCurrentCategory(tabId);
+    setIsTabTransitioning(true);
+
+    // Wait for exit animation to complete
+    setTimeout(() => {
+      setActiveTab(tabId);
+      setActiveCategory(newCategory);
+      // Wait a bit then start the entrance animation
+      setTimeout(() => {
+        setIsTabTransitioning(false);
+      }, 50);
+    }, 200);
+  };
 
   // Sample orders for current user (would come from database in real app)
   const userOrders = orders?.length > 0
@@ -155,6 +197,9 @@ const UserPage = () => {
       date: new Date().toISOString().split('T')[0],
       isVisible: true
     });
+
+    // Switch to testimonials tab to see the new testimonial
+    handleTabChange('testimonials');
   };
 
   const handleMarketingPreferenceChange = (field, value) => {
@@ -186,7 +231,7 @@ const UserPage = () => {
   };
 
   return (
-    <div className="container mx-auto pb-16 pt-16 px-4 py-8 min-h-screen animate-fadeIn">
+    <div className="container mx-auto pb-16 pt-16 px-4 py-8 animate-fadeIn">
       <div className="mb-8">
         <h1 className={`text-3xl font-bold text-${colorPalette.text.primary}`}>
           My Account
@@ -196,252 +241,278 @@ const UserPage = () => {
         </p>
       </div>
 
-      {/* User Page Navigation */}
-      <div className="flex flex-wrap mb-6 border-b border-gray-200">
-        {tabs.map((tab) => (
+      {/* Category Navigation */}
+      <div className="flex flex-wrap mb-4">
+        {categories.map((category) => (
           <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 mr-2 transition-all duration-300 ease-in-out relative ${
-              activeTab === tab.id
-                ? `bg-${colorPalette.primary.base} text-white`
-                : `text-${colorPalette.text.secondary} hover:text-${colorPalette.primary.base}`
+            key={category.id}
+            onClick={() => {
+              if (category.id !== activeCategory) {
+                const firstTabInCategory = category.tabs[0].id;
+                handleTabChange(firstTabInCategory);
+              }
+            }}
+            className={`px-5 py-2 mr-2 mb-2 rounded-t-lg transition-all duration-300 ease-in-out ${
+              activeCategory === category.id
+                ? `bg-${colorPalette.primary.base} text-white font-medium`
+                : `bg-gray-100 text-${colorPalette.text.secondary} hover:bg-gray-200`
             }`}
           >
-            {tab.label}
-            {activeTab === tab.id && (
-              <span className="absolute bottom-0 left-0 w-full h-1 bg-white transform transition-transform duration-300 scale-x-100"></span>
-            )}
+            {category.label}
           </button>
         ))}
       </div>
 
+      {/* Tab Navigation for current category */}
+      <div className="flex flex-wrap mb-6 border-b border-gray-200">
+        {categories
+          .find(cat => cat.id === activeCategory)
+          .tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => handleTabChange(tab.id)}
+              className={`px-4 py-2 mr-2 transition-all duration-300 ease-in-out relative ${
+                activeTab === tab.id
+                  ? `text-${colorPalette.primary.base} font-medium`
+                  : `text-${colorPalette.text.secondary} hover:text-${colorPalette.primary.base}`
+              }`}
+            >
+              {tab.label}
+              {activeTab === tab.id && (
+                <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-${colorPalette.primary.base} transform transition-transform duration-300 scale-x-100`}></span>
+              )}
+            </button>
+          ))}
+      </div>
+
       {/* Content Section */}
       <div className="bg-white p-6 rounded-lg shadow-md">
-        {/* Profile Tab */}
-        {activeTab === 'profile' && (
-          <div className="animate-fadeIn">
-            <div className="flex flex-col md:flex-row">
-              <div className="md:w-1/3 mb-6 md:mb-0 md:pr-4 flex flex-col items-center">
-                <div className="w-48 h-48 rounded-full overflow-hidden mb-4 border-4 border-amber-100">
-                  <img
-                    src={currentUser.profileImage || 'https://placehold.co/200x200/amber700/ffffff?text=User'}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <button
-                  onClick={() => setIsEditProfileOpen(true)}
-                  className={`px-4 py-2 bg-${colorPalette.primary.base} text-white rounded hover:bg-${colorPalette.primary.hover} transition-colors`}
-                >
-                  Edit Profile
-                </button>
-              </div>
-
-              <div className="md:w-2/3">
-                <h2 className="text-xl font-semibold mb-4">{currentUser.name}</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-gray-600 mb-1">Email</p>
-                    <p className="font-medium">{currentUser.email}</p>
+        <div className={`transition-all duration-200 ease-in-out ${isTabTransitioning ? 'opacity-0 transform translate-y-4' : 'opacity-100 transform translate-y-0'}`}>
+          {/* Profile Tab */}
+          {activeTab === 'profile' && (
+            <div className="animate-fadeIn">
+              <div className="flex flex-col md:flex-row">
+                <div className="md:w-1/3 mb-6 md:mb-0 md:pr-4 flex flex-col items-center">
+                  <div className="w-48 h-48 rounded-full overflow-hidden mb-4 border-4 border-amber-100">
+                    <img
+                      src={currentUser.profileImage || 'https://placehold.co/200x200/amber700/ffffff?text=User'}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  <div>
-                    <p className="text-gray-600 mb-1">Phone</p>
-                    <p className="font-medium">{currentUser.phone || 'Not provided'}</p>
-                  </div>
-                  <div className="md:col-span-2">
-                    <p className="text-gray-600 mb-1">Address</p>
-                    <p className="font-medium">{currentUser.address || 'Not provided'}</p>
-                  </div>
-                </div>
-
-                <div className="mt-6">
-                  <h3 className="text-lg font-medium mb-2">Communication Preferences</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        id="emailOffers"
-                        checked={currentUser.marketingPreferences?.emailOffers}
-                        readOnly
-                        className="mr-2"
-                      />
-                      <label htmlFor="emailOffers">Email Offers</label>
-                    </div>
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        id="textOffers"
-                        checked={currentUser.marketingPreferences?.textOffers}
-                        readOnly
-                        className="mr-2"
-                      />
-                      <label htmlFor="textOffers">Text Offers</label>
-                    </div>
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        id="orderUpdates"
-                        checked={currentUser.marketingPreferences?.orderUpdates}
-                        readOnly
-                        className="mr-2"
-                      />
-                      <label htmlFor="orderUpdates">Order Updates</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Orders Tab */}
-        {activeTab === 'orders' && (
-          <div className="animate-fadeIn">
-            <h2 className="text-xl font-semibold mb-4">Order History</h2>
-            {userOrders.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border">
-                  <thead>
-                    <tr className="bg-gray-100">
-                      <th className="py-2 px-4 text-left border-b">Order ID</th>
-                      <th className="py-2 px-4 text-left border-b">Date</th>
-                      <th className="py-2 px-4 text-left border-b">Status</th>
-                      <th className="py-2 px-4 text-left border-b">Total</th>
-                      <th className="py-2 px-4 text-left border-b">Items</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {userOrders.map((order) => (
-                      <tr key={order.id} className="border-b hover:bg-gray-50">
-                        <td className="py-3 px-4">{order.id}</td>
-                        <td className="py-3 px-4">{order.date}</td>
-                        <td className="py-3 px-4">
-                          <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(order.status)}`}>
-                            {order.status}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">{order.total}</td>
-                        <td className="py-3 px-4">
-                          <div className="flex flex-col">
-                            {order.items.map((item, idx) => (
-                              <span key={idx} className="text-sm">
-                                {item.quantity}x {item.name}
-                              </span>
-                            ))}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                You haven't placed any orders yet.
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Cart Tab */}
-        {activeTab === 'cart' && (
-          <div className="animate-fadeIn">
-            <h2 className="text-xl font-semibold mb-4">My Shopping Cart</h2>
-            {cart && cart.length > 0 ? (
-              <div>
-                {cart.map((item) => (
-                  <div key={item.id} className="flex items-center py-4 border-b">
-                    <div className="w-16 h-16 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="ml-4 flex-grow">
-                      <h3 className="font-medium">{item.name}</h3>
-                      <p className="text-gray-600 text-sm">{item.price} x {item.quantity}</p>
-                    </div>
-                    <div className="font-bold">
-                      ${(parseFloat(item.price.replace('$', '')) * item.quantity).toFixed(2)}
-                    </div>
-                  </div>
-                ))}
-                <div className="mt-4 text-right">
-                  <p className="text-lg font-bold">
-                    Total: ${cart.reduce((total, item) => total + parseFloat(item.price.replace('$', '')) * item.quantity, 0).toFixed(2)}
-                  </p>
                   <button
-                    className={`mt-4 px-6 py-2 bg-${colorPalette.primary.base} text-white rounded hover:bg-${colorPalette.primary.hover} transition-colors`}
+                    onClick={() => setIsEditProfileOpen(true)}
+                    className={`px-4 py-2 bg-${colorPalette.primary.base} text-white rounded hover:bg-${colorPalette.primary.hover} transition-colors`}
                   >
-                    Proceed to Checkout
+                    Edit Profile
                   </button>
                 </div>
-              </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                Your cart is empty.
-              </div>
-            )}
-          </div>
-        )}
 
-        {/* Coupons Tab */}
-        {activeTab === 'coupons' && (
-          <div className="animate-fadeIn">
-            <h2 className="text-xl font-semibold mb-4">My Coupons</h2>
-            {userCoupons.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {userCoupons.map((coupon) => (
-                  <div key={coupon.id} className={`border border-${colorPalette.primary.lightest} bg-${colorPalette.primary.lightest} p-4 rounded-lg relative overflow-hidden`}>
-                    <div className="absolute top-0 right-0 w-16 h-16">
-                      <div className={`bg-${colorPalette.primary.base} text-white text-xs font-bold px-2 py-1 transform rotate-45 translate-x-2 translate-y-2 shadow`}>
-                        {coupon.discountValue}{coupon.discountType === 'percentage' ? '%' : '$'} OFF
-                      </div>
+                <div className="md:w-2/3">
+                  <h2 className="text-xl font-semibold mb-4">{currentUser.name}</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-gray-600 mb-1">Email</p>
+                      <p className="font-medium">{currentUser.email}</p>
                     </div>
-                    <h3 className="text-lg font-bold">{coupon.name}</h3>
-                    <p className="text-gray-700 mb-2">{coupon.description}</p>
-                    <div className="bg-white px-3 py-2 rounded border border-gray-200 inline-block font-mono font-medium">
-                      {coupon.promoCode}
+                    <div>
+                      <p className="text-gray-600 mb-1">Phone</p>
+                      <p className="font-medium">{currentUser.phone || 'Not provided'}</p>
                     </div>
-                    <div className="mt-2 text-sm text-gray-600">
-                      Valid until: {coupon.endDate}
+                    <div className="md:col-span-2">
+                      <p className="text-gray-600 mb-1">Address</p>
+                      <p className="font-medium">{currentUser.address || 'Not provided'}</p>
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                You don't have any active coupons.
-              </div>
-            )}
-          </div>
-        )}
 
-        {/* Testimonials Tab */}
-        {activeTab === 'testimonials' && (
-          <div className="animate-fadeIn">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">My Testimonials</h2>
-              <button
-                onClick={() => setIsAddTestimonialOpen(true)}
-                className={`px-4 py-2 bg-${colorPalette.primary.base} text-white rounded hover:bg-${colorPalette.primary.hover} transition-colors`}
-              >
-                Add Testimonial
-              </button>
+                  <div className="mt-6">
+                    <h3 className="text-lg font-medium mb-2">Communication Preferences</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id="emailOffers"
+                          checked={currentUser.marketingPreferences?.emailOffers}
+                          readOnly
+                          className="mr-2"
+                        />
+                        <label htmlFor="emailOffers">Email Offers</label>
+                      </div>
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id="textOffers"
+                          checked={currentUser.marketingPreferences?.textOffers}
+                          readOnly
+                          className="mr-2"
+                        />
+                        <label htmlFor="textOffers">Text Offers</label>
+                      </div>
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id="orderUpdates"
+                          checked={currentUser.marketingPreferences?.orderUpdates}
+                          readOnly
+                          className="mr-2"
+                        />
+                        <label htmlFor="orderUpdates">Order Updates</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg mb-6">
-              <h3 className="font-medium mb-2">Share Your Experience</h3>
-              <p className="text-gray-600">
-                Let us know what you think about our products and services. Your feedback helps us improve and inspires other customers.
-              </p>
+          )}
+
+          {/* Orders Tab */}
+          {activeTab === 'orders' && (
+            <div className="animate-fadeIn">
+              <h2 className="text-xl font-semibold mb-4">Order History</h2>
+              {userOrders.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full bg-white border">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="py-2 px-4 text-left border-b">Order ID</th>
+                        <th className="py-2 px-4 text-left border-b">Date</th>
+                        <th className="py-2 px-4 text-left border-b">Status</th>
+                        <th className="py-2 px-4 text-left border-b">Total</th>
+                        <th className="py-2 px-4 text-left border-b">Items</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {userOrders.map((order) => (
+                        <tr key={order.id} className="border-b hover:bg-gray-50">
+                          <td className="py-3 px-4">{order.id}</td>
+                          <td className="py-3 px-4">{order.date}</td>
+                          <td className="py-3 px-4">
+                            <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(order.status)}`}>
+                              {order.status}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">{order.total}</td>
+                          <td className="py-3 px-4">
+                            <div className="flex flex-col">
+                              {order.items.map((item, idx) => (
+                                <span key={idx} className="text-sm">
+                                  {item.quantity}x {item.name}
+                                </span>
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  You haven't placed any orders yet.
+                </div>
+              )}
             </div>
-            <div className="text-center py-8 text-gray-500">
-              You haven't submitted any testimonials yet.
+          )}
+
+          {/* Cart Tab */}
+          {activeTab === 'cart' && (
+            <div className="animate-fadeIn">
+              <h2 className="text-xl font-semibold mb-4">My Shopping Cart</h2>
+              {cart && cart.length > 0 ? (
+                <div>
+                  {cart.map((item) => (
+                    <div key={item.id} className="flex items-center py-4 border-b">
+                      <div className="w-16 h-16 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="ml-4 flex-grow">
+                        <h3 className="font-medium">{item.name}</h3>
+                        <p className="text-gray-600 text-sm">{item.price} x {item.quantity}</p>
+                      </div>
+                      <div className="font-bold">
+                        ${(parseFloat(item.price.replace('$', '')) * item.quantity).toFixed(2)}
+                      </div>
+                    </div>
+                  ))}
+                  <div className="mt-4 text-right">
+                    <p className="text-lg font-bold">
+                      Total: ${cart.reduce((total, item) => total + parseFloat(item.price.replace('$', '')) * item.quantity, 0).toFixed(2)}
+                    </p>
+                    <button
+                      className={`mt-4 px-6 py-2 bg-${colorPalette.primary.base} text-white rounded hover:bg-${colorPalette.primary.hover} transition-colors`}
+                    >
+                      Proceed to Checkout
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  Your cart is empty.
+                </div>
+              )}
             </div>
-          </div>
-        )}
+          )}
+
+          {/* Coupons Tab */}
+          {activeTab === 'coupons' && (
+            <div className="animate-fadeIn">
+              <h2 className="text-xl font-semibold mb-4">My Coupons</h2>
+              {userCoupons.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {userCoupons.map((coupon) => (
+                    <div key={coupon.id} className={`border border-${colorPalette.primary.lightest} bg-${colorPalette.primary.lightest} p-4 rounded-lg relative overflow-hidden`}>
+                      <div className="absolute top-0 right-0 w-16 h-16">
+                        <div className={`bg-${colorPalette.primary.base} text-white text-xs font-bold px-2 py-1 transform rotate-45 translate-x-2 translate-y-2 shadow`}>
+                          {coupon.discountValue}{coupon.discountType === 'percentage' ? '%' : '$'} OFF
+                        </div>
+                      </div>
+                      <h3 className="text-lg font-bold">{coupon.name}</h3>
+                      <p className="text-gray-700 mb-2">{coupon.description}</p>
+                      <div className="bg-white px-3 py-2 rounded border border-gray-200 inline-block font-mono font-medium">
+                        {coupon.promoCode}
+                      </div>
+                      <div className="mt-2 text-sm text-gray-600">
+                        Valid until: {coupon.endDate}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  You don't have any active coupons.
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Testimonials Tab */}
+          {activeTab === 'testimonials' && (
+            <div className="animate-fadeIn">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">My Testimonials</h2>
+                <button
+                  onClick={() => setIsAddTestimonialOpen(true)}
+                  className={`px-4 py-2 bg-${colorPalette.primary.base} text-white rounded hover:bg-${colorPalette.primary.hover} transition-colors`}
+                >
+                  Add Testimonial
+                </button>
+              </div>
+              <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                <h3 className="font-medium mb-2">Share Your Experience</h3>
+                <p className="text-gray-600">
+                  Let us know what you think about our products and services. Your feedback helps us improve and inspires other customers.
+                </p>
+              </div>
+              <div className="text-center py-8 text-gray-500">
+                You haven't submitted any testimonials yet.
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Edit Profile Modal */}

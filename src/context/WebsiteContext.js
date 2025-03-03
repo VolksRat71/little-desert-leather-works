@@ -331,14 +331,16 @@ export const WebsiteProvider = ({ children }) => {
     // Trigger page transition animation
     setPageTransition(true);
 
-    // Change route after animation starts
+    // Wait for the fade-out animation to complete before changing route
     setTimeout(() => {
+      // Change route after fade-out is complete
       navigateFunc(path);
-      // End transition
+
+      // Allow time for new content to render before fading back in
       setTimeout(() => {
         setPageTransition(false);
-      }, 300);
-    }, 300);
+      }, 150); // Reduced from 300ms to 150ms for quicker fade-in
+    }, 300); // Reduced from 500ms to 300ms for quicker page change
 
     // Close mobile menu if open
     if (isMenuOpen) {

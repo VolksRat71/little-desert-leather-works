@@ -39,7 +39,7 @@ const HomePage = () => {
               className={`inline-block px-6 py-3 bg-${colorPalette.primary.base} text-white font-medium rounded-md hover:bg-${colorPalette.primary.dark} transition-colors duration-300`}
               onClick={(e) => {
                 e.preventDefault();
-                navigate('/');
+                navigate('/products');
               }}
             >
               View All Products

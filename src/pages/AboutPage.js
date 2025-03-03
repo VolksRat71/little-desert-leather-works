@@ -19,9 +19,9 @@ const AboutPage = () => {
   return (
     <div className="pt-24 pb-16 px-4">
       <div className="max-w-6xl mx-auto">
-        <div className={`bg-desert-rust text-${colorPalette.text.light} px-6 py-12 rounded-t shadow`}>
+        <div className={`bg-desert-black text-${colorPalette.text.light} px-6 py-12 rounded-t shadow`}>
           <h1 className="text-4xl font-bold mb-2 text-center">
-            <span className="desert-road-font text-shadow" style={centeredDesertFontStyle}>About Our Artisan</span>
+            <span className="desert-road-font text-shadow" style={centeredDesertFontStyle}>About Your Artisan</span>
           </h1>
           <p className="text-xl text-center">Meet the hands behind our leather goods</p>
         </div>

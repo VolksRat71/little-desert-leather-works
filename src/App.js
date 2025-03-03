@@ -95,11 +95,11 @@ const AppContent = () => {
   const location = useLocation();
 
   return (
-    <div className={`font-serif bg-${colorPalette.primary.background} text-${colorPalette.text.primary} min-h-screen`}>
+    <div className={`font-serif bg-${colorPalette.primary.background} text-${colorPalette.text.primary} min-h-screen flex flex-col`}>
       <style>{globalStyles}</style>
       <Navbar />
       <CartNotification />
-      <div className={`pt-16 transition-opacity duration-500 ${pageTransition ? 'opacity-0' : 'opacity-100'}`}>
+      <div className={`pt-16 transition-opacity duration-300 ${pageTransition ? 'opacity-0' : 'opacity-100'} flex-grow`}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/products" element={<ProductsPage />} />
