@@ -17,9 +17,10 @@ import UserPage from './pages/UserPage';
 // Import the logo images
 import logoImage from './assets/images/logo.png';
 import logoWithTextImage from './assets/images/logo-with-text.png';
+import logoWithTextLightImage from './assets/images/logo-with-text-light.png';
 
 // Logo component that can be reused across the app
-export const Logo = ({ size = 'md', textOnly = false, withText = false, className = '' }) => {
+export const Logo = ({ size = 'md', textOnly = false, withText = false, className = '', light = false }) => {
   // Size classes for the image
   const sizeClasses = {
     xs: 'h-6',
@@ -52,7 +53,7 @@ export const Logo = ({ size = 'md', textOnly = false, withText = false, classNam
   if (withText) {
     return (
       <img
-        src={logoWithTextImage}
+        src={light ? logoWithTextLightImage : logoWithTextImage}
         alt="Little Desert Leather Works"
         className={`logo-responsive logo-${size} ${className}`}
       />

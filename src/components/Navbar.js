@@ -48,7 +48,7 @@ const Navbar = () => {
             <div onClick={() => navigate('/')} className="cursor-pointer">
               {/* Use logo with text on smaller screens, and regular logo on larger screens */}
               <div className="block lg:hidden">
-                <Logo size="sm" withText={true} className={`hover:text-${colorPalette.primary.lightest} transition-colors duration-300 text-shadow`} />
+                <Logo size="sm" withText={true} light={true} className={`hover:text-${colorPalette.primary.lightest} transition-colors duration-300 text-shadow`} />
               </div>
               <div className="hidden lg:block">
                 <Logo size="md" className={`hover:text-${colorPalette.primary.lightest} transition-colors duration-300 text-shadow`} />
