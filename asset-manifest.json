@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/little-desert-leather-works/static/css/main.1de18711.css",
-    "main.js": "/little-desert-leather-works/static/js/main.85e9498d.js",
+    "main.css": "/little-desert-leather-works/static/css/main.d9e8b5fb.css",
+    "main.js": "/little-desert-leather-works/static/js/main.8ed33387.js",
     "static/js/453.bb79db73.chunk.js": "/little-desert-leather-works/static/js/453.bb79db73.chunk.js",
     "index.html": "/little-desert-leather-works/index.html",
-    "main.1de18711.css.map": "/little-desert-leather-works/static/css/main.1de18711.css.map",
-    "main.85e9498d.js.map": "/little-desert-leather-works/static/js/main.85e9498d.js.map",
+    "main.d9e8b5fb.css.map": "/little-desert-leather-works/static/css/main.d9e8b5fb.css.map",
+    "main.8ed33387.js.map": "/little-desert-leather-works/static/js/main.8ed33387.js.map",
     "453.bb79db73.chunk.js.map": "/little-desert-leather-works/static/js/453.bb79db73.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.1de18711.css",
-    "static/js/main.85e9498d.js"
+    "static/css/main.d9e8b5fb.css",
+    "static/js/main.8ed33387.js"
   ]
 }
