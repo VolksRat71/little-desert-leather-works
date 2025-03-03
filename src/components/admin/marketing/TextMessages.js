@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useWebsite } from '../../../context/WebsiteContext';
 import Modal from '../../Modal';
+import EllipsisMenu from '../../../components/EllipsisMenu';
 
 const TextMessages = () => {
   const { users, colorPalette } = useWebsite();
@@ -224,24 +225,26 @@ const TextMessages = () => {
                 </td>
                 <td className="py-3 px-4">{template.lastSent}</td>
                 <td className="py-3 px-4">
-                  <button
-                    onClick={() => handleSendClick(template)}
-                    className={`text-${colorPalette.primary.base} hover:text-${colorPalette.primary.dark} transition-colors duration-150 mr-2`}
-                  >
-                    Send
-                  </button>
-                  <button
-                    onClick={() => handleEditClick(template)}
-                    className="text-blue-600 hover:text-blue-800 transition-colors duration-150 mr-2"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteClick(template)}
-                    className="text-red-600 hover:text-red-800 transition-colors duration-150"
-                  >
-                    Delete
-                  </button>
+                  <EllipsisMenu
+                    position="left"
+                    actions={[
+                      {
+                        label: 'Send',
+                        onClick: () => handleSendClick(template),
+                        className: `text-${colorPalette.primary.base} hover:text-${colorPalette.primary.dark}`
+                      },
+                      {
+                        label: 'Edit',
+                        onClick: () => handleEditClick(template),
+                        className: 'text-blue-600 hover:text-blue-800'
+                      },
+                      {
+                        label: 'Delete',
+                        onClick: () => handleDeleteClick(template),
+                        className: 'text-red-600 hover:text-red-800'
+                      }
+                    ]}
+                  />
                 </td>
               </tr>
             ))}

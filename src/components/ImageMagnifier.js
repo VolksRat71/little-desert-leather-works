@@ -38,7 +38,7 @@ const ImageMagnifier = ({ src, alt, width = '100%', height = 'auto', magnifierSi
 
   // Handle touch events for mobile devices
   const handleTouchStart = (e) => {
-    e.preventDefault(); // Prevent default touch behavior
+    // Don't prevent default here to allow normal touch interactions
     setShowMagnifier(true);
     handleTouchMove(e);
   };
@@ -64,22 +64,13 @@ const ImageMagnifier = ({ src, alt, width = '100%', height = 'auto', magnifierSi
   const getMagnifierPosition = () => {
     if (!imgRef.current) return { left: 0, top: 0 };
 
-    const imgRect = imgRef.current.getBoundingClientRect();
-
-    // On touch devices, position the magnifier above the touch point
+    // On touch devices, always position the magnifier above the touch point
     if (isTouchDevice) {
-      // Calculate position above the finger
+      // Center horizontally on touch point without constraints
       const left = mousePosition.x - magnifierSize / 2;
-      // Position above the finger with 20px gap
-      const top = mousePosition.y - magnifierSize - 20;
 
-      // If the magnifier would go above the image, position it below the finger instead
-      if (top < 0) {
-        return {
-          left,
-          top: mousePosition.y + 20 // 20px below the touch point
-        };
-      }
+      // Always position above the finger with 50px gap without vertical constraints
+      const top = mousePosition.y - magnifierSize - 50;
 
       return { left, top };
     } else {
@@ -108,7 +99,7 @@ const ImageMagnifier = ({ src, alt, width = '100%', height = 'auto', magnifierSi
 
   return (
     <div
-      className="relative cursor-crosshair overflow-visible"
+      className="relative overflow-visible"
       style={{ width, height }}
     >
       <img
@@ -127,7 +118,7 @@ const ImageMagnifier = ({ src, alt, width = '100%', height = 'auto', magnifierSi
 
       {showMagnifier && (
         <div
-          className="absolute border border-gray-300 rounded-full shadow-lg pointer-events-none z-10 overflow-hidden"
+          className="absolute border border-gray-300 rounded-full shadow-lg pointer-events-none z-50 overflow-hidden"
           style={{
             width: `${magnifierSize}px`,
             height: `${magnifierSize}px`,
