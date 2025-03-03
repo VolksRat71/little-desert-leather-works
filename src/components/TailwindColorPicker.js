@@ -24,6 +24,8 @@ const tailwindColors = {
   fuchsia: ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900'],
   pink: ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900'],
   rose: ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  // Add our custom desert color palette
+  desert: ['tan', 'orange', 'terracotta', 'rust', 'olive', 'green', 'black'],
 };
 
 const TailwindColorPicker = ({ value, onChange, label }) => {
@@ -77,6 +79,11 @@ const TailwindColorPicker = ({ value, onChange, label }) => {
   const renderColorPreview = (colorValue) => {
     const [family, shade] = colorValue.split('-');
     return <div className={`w-6 h-6 rounded mr-2 bg-${family}-${shade}`} aria-hidden="true"></div>;
+  };
+
+  // Helper to get display name for shades (handling both numeric and named shades)
+  const getShadeLabel = (shade) => {
+    return shade;
   };
 
   return (
@@ -143,7 +150,7 @@ const TailwindColorPicker = ({ value, onChange, label }) => {
                       onClick={() => handleColorSelect(selectedFamily, shade)}
                     >
                       <div className={`w-full h-8 rounded bg-${selectedFamily}-${shade} mb-1`}></div>
-                      <span className="text-xs">{shade}</span>
+                      <span className="text-xs capitalize">{getShadeLabel(shade)}</span>
                     </button>
                   );
                 })}

@@ -4,35 +4,37 @@ import { useNavigate, useLocation } from 'react-router-dom';
 // Color palette as JSON for easy customization
 export const colorPalette = {
   primary: {
-    base: "amber-700",
-    light: "amber-600",
-    dark: "amber-800",
-    hover: "amber-800",
-    lightest: "amber-100",
-    background: "amber-50"
+    base: "desert-orange",      // Bright terracotta/orange from the logo
+    light: "desert-terracotta", // Lighter terracotta shade
+    dark: "desert-rust",        // Darker terracotta/rust color
+    hover: "desert-rust",       // Hover state
+    lightest: "desert-tan",     // Tan background from the logo
+    background: "stone-50"      // White background for better contrast
   },
   secondary: {
-    base: "stone-800",
-    light: "stone-700",
-    dark: "stone-900",
-    background: "stone-100",
-    lightest: "stone-50"
+    base: "desert-olive",       // Olive green from the logo
+    light: "desert-green",      // Lighter olive green
+    dark: "desert-black",       // Very dark color for emphasis
+    background: "stone-50",     // White background for better contrast
+    lightest: "stone-50"        // Lightest cream color
   },
   text: {
-    primary: "stone-800",
-    secondary: "stone-600",
-    light: "amber-50",
-    accent: "amber-700",
-    medium: "stone-700",
-    dark: "stone-900",
-    lightest: "stone-50"
+    primary: "desert-black",    // Black text for primary (dark for contrast)
+    secondary: "desert-rust",   // Rust brown for secondary text
+    light: "stone-50",          // White text for dark backgrounds (better contrast)
+    accent: "desert-rust",      // Darker terracotta for accent text (better contrast)
+    medium: "desert-black",     // Black for medium text (better contrast)
+    dark: "desert-black",       // Black for strong emphasis
+    lightest: "stone-50"        // White text color
   },
   ui: {
-    border: "stone-300",
-    shadow: "stone-200",
-    background: "white",
-    darkBackground: "stone-800",
-    lightBackground: "stone-50"
+    border: "desert-terracotta", // Terracotta border
+    shadow: "desert-rust",     // Rust shadow color
+    background: "stone-50",    // White background for better contrast
+    darkBackground: "desert-black", // Black background for better contrast
+    lightBackground: "stone-50", // White background for better contrast
+    accent: "desert-orange",   // Bright orange accent
+    earthGreen: "desert-olive" // Olive green accent
   }
 };
 
@@ -57,7 +59,8 @@ export const products = [
       "Dimensions: 4.5\" x 3.5\"",
       "Available in Whiskey, Dark Brown, and Natural"
     ],
-    careInstructions: "Condition with leather balm every 3-6 months. Avoid excessive moisture."
+    careInstructions: "Condition with leather balm every 3-6 months. Avoid excessive moisture.",
+    isVisible: true
   },
   {
     id: 2,
@@ -78,7 +81,8 @@ export const products = [
       "Width options: 1.25\" or 1.5\"",
       "Custom sizing available"
     ],
-    careInstructions: "Clean with damp cloth and mild soap. Condition every 6 months."
+    careInstructions: "Clean with damp cloth and mild soap. Condition every 6 months.",
+    isVisible: true
   },
   {
     id: 3,
@@ -100,7 +104,8 @@ export const products = [
       "Fits 15\" laptop",
       "Dimensions: 15\" x 11\" x 4\""
     ],
-    careInstructions: "Wipe with damp cloth. Apply leather conditioner yearly or as needed."
+    careInstructions: "Wipe with damp cloth. Apply leather conditioner yearly or as needed.",
+    isVisible: true
   },
   {
     id: 4,
@@ -121,7 +126,8 @@ export const products = [
       "Bookmark ribbon",
       "Optional personalization available"
     ],
-    careInstructions: "Keep dry. Apply leather conditioner when leather feels dry."
+    careInstructions: "Keep dry. Apply leather conditioner when leather feels dry.",
+    isVisible: true
   }
 ];
 
@@ -132,21 +138,24 @@ export const testimonials = [
     name: "Michael R.",
     location: "Dallas, TX",
     testimonial: "The craftsmanship on my wallet is incredible. After two years of daily use, it's developing a beautiful patina and holding up perfectly. It's rare to find goods made with this level of care these days.",
-    image: "https://placehold.co/64x64/8b5a2b/ffffff?text=MR"
+    image: "https://placehold.co/64x64/8b5a2b/ffffff?text=MR",
+    isVisible: true
   },
   {
     id: 2,
     name: "Sarah J.",
     location: "Austin, TX",
     testimonial: "I commissioned a custom bag as a gift for my husband. The attention to detail and the personal touches make it truly one of a kind. The entire experience working with Little Desert Leather Works was exceptional.",
-    image: "https://placehold.co/64x64/704820/ffffff?text=SJ"
+    image: "https://placehold.co/64x64/704820/ffffff?text=SJ",
+    isVisible: true
   },
   {
     id: 3,
     name: "David M.",
     location: "Houston, TX",
     testimonial: "The belt I purchased has become my everyday favorite. The quality of the leather is unmatched by anything I've found elsewhere. I've already ordered two more in different colors.",
-    image: "https://placehold.co/64x64/5c4c35/ffffff?text=DM"
+    image: "https://placehold.co/64x64/5c4c35/ffffff?text=DM",
+    isVisible: true
   }
 ];
 
@@ -157,17 +166,21 @@ export const artisan = {
   image: "https://placehold.co/600x800/8b5a2b/ffffff?text=Morgan+Ludemann",
   bio: "With over 15 years of experience working with leather, I bring traditional techniques and modern design to every piece I create. My journey began in my grandfather's workshop, where I learned that quality craftsmanship requires patience, precision, and passion. Today, I handcraft each item in my Austin studio, selecting only the finest full-grain leathers.\n\nI was drawn to leatherworking after a trip through the American Southwest, where I was captivated by the rugged beauty of the desert and the generations of artisans who worked with natural materials. The textures, colors, and resilience of the desert landscape continue to inspire my work.\n\nEvery stitch, every cut, and every burnished edge represents my commitment to creating heirloom-quality goods that will age beautifully and tell a story with time. I believe in creating pieces that become more beautiful with age and use – developing a rich patina that reflects their journey with you.",
   philosophy: "I believe in slow craft – taking the time needed to do things right. No shortcuts, no mass production. Just honest materials, traditional techniques, and meticulous attention to detail.",
-  skills: ["Hand-stitching", "Tooling & Carving", "Dyeing & Finishing", "Pattern Making", "Custom Design"]
+  skills: ["Hand-stitching", "Tooling & Carving", "Dyeing & Finishing", "Pattern Making", "Custom Design"],
+  isVisible: true
 };
 
 // Create sample users data
 export const users = [
   {
     id: 1,
-    name: 'Admin User',
-    email: 'admin@example.com',
+    name: 'Morgan Ludemann',
+    email: 'morgan@littledesertleatherworks.com',
     role: 'Admin',
     lastLogin: '2023-03-15',
+    phone: '(555) 123-4567',
+    address: '123 Admin St, Austin, TX 78701',
+    profileImage: 'https://placehold.co/200x200/amber700/ffffff?text=Admin',
     marketingPreferences: {
       emailOffers: true,
       textOffers: false,
@@ -180,6 +193,9 @@ export const users = [
     email: 'john@example.com',
     role: 'User',
     lastLogin: '2023-03-10',
+    phone: '(555) 987-6543',
+    address: '456 Customer Ave, Austin, TX 78704',
+    profileImage: 'https://placehold.co/200x200/amber700/ffffff?text=JD',
     marketingPreferences: {
       emailOffers: true,
       textOffers: true,
@@ -192,11 +208,58 @@ export const users = [
     email: 'jane@example.com',
     role: 'User',
     lastLogin: '2023-03-12',
+    phone: '(555) 456-7890',
+    address: '789 Customer Blvd, Austin, TX 78745',
+    profileImage: 'https://placehold.co/200x200/amber700/ffffff?text=JS',
     marketingPreferences: {
       emailOffers: false,
       textOffers: false,
       orderUpdates: true
     }
+  }
+];
+
+// Sample marketing campaigns
+export const marketingCampaigns = [
+  {
+    id: 1,
+    name: "Summer Sale 2023",
+    type: "site-wide",
+    discountType: "percentage",
+    discountValue: 20,
+    startDate: "2023-06-01",
+    endDate: "2023-06-30",
+    isActive: true,
+    heroImage: "https://placehold.co/1200x400/8b5a2b/ffffff?text=Summer+Sale+20%+Off",
+    description: "Summer sale with 20% off all products",
+    promoCode: "SUMMER20"
+  },
+  {
+    id: 2,
+    name: "New Customer Discount",
+    type: "individual",
+    discountType: "percentage",
+    discountValue: 15,
+    startDate: "2023-01-01",
+    endDate: "2023-12-31",
+    isActive: true,
+    targetUserIds: [2, 3],  // IDs of targeted users
+    description: "15% off for new customers",
+    promoCode: "WELCOME15"
+  },
+  {
+    id: 3,
+    name: "Black Friday",
+    type: "site-wide",
+    discountType: "fixed",
+    discountValue: 50,
+    startDate: "2023-11-24",
+    endDate: "2023-11-27",
+    isActive: false,
+    heroImage: "https://placehold.co/1200x400/000000/ffffff?text=Black+Friday+$50+Off",
+    description: "$50 off on purchases over $200",
+    promoCode: "BLACKFRIDAY50",
+    minimumPurchase: 200
   }
 ];
 
@@ -210,10 +273,10 @@ export const WebsiteProvider = ({ children }) => {
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
 
   // Admin-related state
-  const [websiteProducts, setWebsiteProducts] = useState(products);
-  const [websiteTestimonials, setWebsiteTestimonials] = useState(testimonials);
-  const [websiteArtisan, setWebsiteArtisan] = useState(artisan);
-  const [websiteColors, setWebsiteColors] = useState(colorPalette);
+  const [productsData, setProductsData] = useState(products);
+  const [testimonialsData, setTestimonialsData] = useState(testimonials);
+  const [artisanInfo, setArtisanInfo] = useState(artisan);
+  const [colors, setColors] = useState(colorPalette);
   // Track temporary color changes for preview
   const [temporaryColorPalette, setTemporaryColorPalette] = useState(null);
   const [orders, setOrders] = useState([]);
@@ -221,7 +284,10 @@ export const WebsiteProvider = ({ children }) => {
     email: "contact@littledesertleatherworks.com",
     phone: "(512) 555-1234",
     address: "123 Craftsman Way, Austin, TX 78701",
-    hours: "Monday-Friday: 9am-5pm\nSaturday: 10am-4pm\nSunday: Closed"
+    hours: "Monday-Friday: 9am-5pm\nSaturday: 10am-4pm\nSunday: Closed",
+    showMap: true,
+    showAddress: true,
+    showPhone: true
   });
 
   // Cart state
@@ -230,10 +296,30 @@ export const WebsiteProvider = ({ children }) => {
   const [notificationMessage, setNotificationMessage] = useState('');
 
   // Users state
-  const [websiteUsers, setWebsiteUsers] = useState(users);
+  const [usersData, setUsersData] = useState(users);
+
+  // Marketing campaigns state
+  const [campaignsData, setCampaignsData] = useState(marketingCampaigns);
+  const [activePromoCode, setActivePromoCode] = useState('');
+  const [appliedDiscount, setAppliedDiscount] = useState(null);
 
   const location = useLocation();
   const navigateFunc = useNavigate();
+
+  // Section visibility settings
+  const [sectionsVisibility, setSectionsVisibility] = useState({
+    testimonials: true,
+    about: true,
+    products: true,
+    contact: true
+  });
+
+  const updateSectionVisibility = (section, isVisible) => {
+    setSectionsVisibility({
+      ...sectionsVisibility,
+      [section]: isVisible
+    });
+  };
 
   // Custom navigate function that includes transition effects
   const navigate = (path) => {
@@ -280,70 +366,104 @@ export const WebsiteProvider = ({ children }) => {
   }, [previousScrollPosition]);
 
   // Admin functions
-  const updateProduct = (productId, updatedProduct) => {
-    setWebsiteProducts(prevProducts =>
-      prevProducts.map(product =>
-        product.id === productId ? { ...product, ...updatedProduct } : product
-      )
-    );
+  const updateProduct = (updatedProduct) => {
+    // Make sure isVisible is set
+    if (updatedProduct.isVisible === undefined) {
+      updatedProduct.isVisible = true;
+    }
+
+    setProductsData(productsData.map(product =>
+      product.id === updatedProduct.id ? updatedProduct : product
+    ));
   };
 
   const addProduct = (newProduct) => {
-    const newId = Math.max(...websiteProducts.map(p => p.id)) + 1;
-    setWebsiteProducts(prevProducts => [...prevProducts, { ...newProduct, id: newId }]);
+    // Add a new ID (max ID + 1)
+    const nextId = Math.max(...productsData.map(p => p.id)) + 1;
+    const productWithId = {
+      ...newProduct,
+      id: nextId,
+      isVisible: newProduct.isVisible === undefined ? true : newProduct.isVisible // Ensure isVisible is set
+    };
+    setProductsData([...productsData, productWithId]);
   };
 
   const deleteProduct = (productId) => {
-    setWebsiteProducts(prevProducts =>
+    setProductsData(prevProducts =>
       prevProducts.filter(product => product.id !== productId)
     );
   };
 
-  const updateTestimonial = (testimonialId, updatedTestimonial) => {
-    setWebsiteTestimonials(prevTestimonials =>
-      prevTestimonials.map(testimonial =>
-        testimonial.id === testimonialId ? { ...testimonial, ...updatedTestimonial } : testimonial
-      )
-    );
+  const updateTestimonial = (updatedTestimonial) => {
+    // Make sure isVisible is set
+    if (updatedTestimonial.isVisible === undefined) {
+      updatedTestimonial.isVisible = true;
+    }
+
+    setTestimonialsData(testimonialsData.map(testimonial =>
+      testimonial.id === updatedTestimonial.id ? updatedTestimonial : testimonial
+    ));
   };
 
   const addTestimonial = (newTestimonial) => {
-    const newId = Math.max(...websiteTestimonials.map(t => t.id)) + 1;
-    setWebsiteTestimonials(prevTestimonials => [...prevTestimonials, { ...newTestimonial, id: newId }]);
+    // Add a new ID (max ID + 1)
+    const nextId = Math.max(...testimonialsData.map(t => t.id)) + 1;
+    const testimonialWithId = {
+      ...newTestimonial,
+      id: nextId,
+      isVisible: newTestimonial.isVisible === undefined ? true : newTestimonial.isVisible // Ensure isVisible is set
+    };
+    setTestimonialsData([...testimonialsData, testimonialWithId]);
   };
 
   const deleteTestimonial = (testimonialId) => {
-    setWebsiteTestimonials(prevTestimonials =>
+    setTestimonialsData(prevTestimonials =>
       prevTestimonials.filter(testimonial => testimonial.id !== testimonialId)
     );
   };
 
   const updateArtisanInfo = (updatedInfo) => {
-    setWebsiteArtisan(prevInfo => ({ ...prevInfo, ...updatedInfo }));
+    // Make sure isVisible is set
+    if (updatedInfo.isVisible === undefined) {
+      updatedInfo.isVisible = true;
+    }
+
+    setArtisanInfo(updatedInfo);
   };
 
   const updateContactInfo = (updatedInfo) => {
+    // Make sure visibility settings are preserved
+    if (updatedInfo.showMap === undefined) {
+      updatedInfo.showMap = contactInfo.showMap;
+    }
+    if (updatedInfo.showAddress === undefined) {
+      updatedInfo.showAddress = contactInfo.showAddress;
+    }
+    if (updatedInfo.showPhone === undefined) {
+      updatedInfo.showPhone = contactInfo.showPhone;
+    }
+
     setContactInfo(prevInfo => ({ ...prevInfo, ...updatedInfo }));
   };
 
   const updateColorPalette = (updatedColors) => {
-    setWebsiteColors(updatedColors);
+    setColors(updatedColors);
     setTemporaryColorPalette(null); // Clear temporary colors after saving
   };
 
   // User management functions
   const addUser = (newUser) => {
-    setWebsiteUsers([...websiteUsers, newUser]);
+    setUsersData([...usersData, newUser]);
   };
 
   const updateUser = (userId, updatedUser) => {
-    setWebsiteUsers(websiteUsers.map(user =>
+    setUsersData(usersData.map(user =>
       user.id === userId ? updatedUser : user
     ));
   };
 
   const deleteUser = (userId) => {
-    setWebsiteUsers(websiteUsers.filter(user => user.id !== userId));
+    setUsersData(usersData.filter(user => user.id !== userId));
   };
 
   // Cart functions
@@ -394,6 +514,108 @@ export const WebsiteProvider = ({ children }) => {
     return cart.reduce((count, item) => count + item.quantity, 0);
   };
 
+  // Marketing campaign functions
+  const addCampaign = (newCampaign) => {
+    const nextId = Math.max(...campaignsData.map(c => c.id)) + 1;
+    const campaignWithId = {
+      ...newCampaign,
+      id: nextId
+    };
+    setCampaignsData([...campaignsData, campaignWithId]);
+  };
+
+  const updateCampaign = (updatedCampaign) => {
+    setCampaignsData(campaignsData.map(campaign =>
+      campaign.id === updatedCampaign.id ? updatedCampaign : campaign
+    ));
+  };
+
+  const deleteCampaign = (campaignId) => {
+    setCampaignsData(campaignsData.filter(campaign => campaign.id !== campaignId));
+  };
+
+  const activateCampaign = (campaignId) => {
+    setCampaignsData(campaignsData.map(campaign =>
+      campaign.id === campaignId
+        ? { ...campaign, isActive: true }
+        : campaign
+    ));
+  };
+
+  const deactivateCampaign = (campaignId) => {
+    setCampaignsData(campaignsData.map(campaign =>
+      campaign.id === campaignId
+        ? { ...campaign, isActive: false }
+        : campaign
+    ));
+  };
+
+  const applyPromoCode = (code) => {
+    const campaign = campaignsData.find(c =>
+      c.promoCode === code &&
+      c.isActive &&
+      new Date(c.startDate) <= new Date() &&
+      new Date(c.endDate) >= new Date()
+    );
+
+    if (campaign) {
+      setActivePromoCode(code);
+      setAppliedDiscount({
+        type: campaign.discountType,
+        value: campaign.discountValue,
+        minimumPurchase: campaign.minimumPurchase || 0
+      });
+      return true;
+    }
+
+    return false;
+  };
+
+  const clearPromoCode = () => {
+    setActivePromoCode('');
+    setAppliedDiscount(null);
+  };
+
+  const getActiveHeroImage = () => {
+    const now = new Date();
+
+    // Find active site-wide campaigns
+    const activeSiteWideCampaigns = campaignsData.filter(c =>
+      c.type === 'site-wide' &&
+      c.isActive &&
+      c.heroImage &&
+      new Date(c.startDate) <= now &&
+      new Date(c.endDate) >= now
+    );
+
+    // Return the hero image of the first active campaign, or null if none found
+    return activeSiteWideCampaigns.length > 0 ? activeSiteWideCampaigns[0].heroImage : null;
+  };
+
+  const getApplicableCampaignsForUser = (userId) => {
+    const now = new Date();
+
+    // Get all active campaigns
+    return campaignsData.filter(campaign => {
+      // Must be active and within date range
+      if (!campaign.isActive || new Date(campaign.startDate) > now || new Date(campaign.endDate) < now) {
+        return false;
+      }
+
+      // Site-wide campaigns apply to everyone
+      if (campaign.type === 'site-wide') {
+        return true;
+      }
+
+      // Individual campaigns must include the user
+      if (campaign.type === 'individual') {
+        return campaign.targetUserIds?.includes(userId);
+      }
+
+      return false;
+    });
+  };
+
   return (
     <WebsiteContext.Provider
       value={{
@@ -403,14 +625,14 @@ export const WebsiteProvider = ({ children }) => {
         setIsMenuOpen,
         pageTransition,
         isNavbarVisible,
-        products: websiteProducts,
-        testimonials: websiteTestimonials,
-        artisan: websiteArtisan,
-        colorPalette: temporaryColorPalette || websiteColors,
+        products: productsData,
+        testimonials: testimonialsData,
+        artisan: artisanInfo,
+        colorPalette: temporaryColorPalette || colors,
         temporaryColorPalette,
         contactInfo,
         orders,
-        users: websiteUsers,
+        users: usersData,
         // Admin functions
         updateProduct,
         addProduct,
@@ -436,7 +658,22 @@ export const WebsiteProvider = ({ children }) => {
         showCartNotification,
         setShowCartNotification,
         notificationMessage,
-        setNotificationMessage
+        setNotificationMessage,
+        sectionsVisibility,
+        updateSectionVisibility,
+        // Marketing campaigns
+        campaigns: campaignsData,
+        addCampaign,
+        updateCampaign,
+        deleteCampaign,
+        activateCampaign,
+        deactivateCampaign,
+        applyPromoCode,
+        clearPromoCode,
+        activePromoCode,
+        appliedDiscount,
+        getActiveHeroImage,
+        getApplicableCampaignsForUser
       }}
     >
       {children}

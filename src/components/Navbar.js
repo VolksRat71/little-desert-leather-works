@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useWebsite, colorPalette } from '../context/WebsiteContext';
+import { Logo } from '../App';
 
 // NavLink component with transition effects
 const CustomNavLink = ({ to, children, mobile }) => {
@@ -31,20 +32,22 @@ const CustomNavLink = ({ to, children, mobile }) => {
 };
 
 const Navbar = () => {
-  const { isMenuOpen, setIsMenuOpen, isNavbarVisible, navigate, getCartItemCount } = useWebsite();
+  const { isMenuOpen, setIsMenuOpen, isNavbarVisible, navigate, getCartItemCount, users } = useWebsite();
   const cartItemCount = getCartItemCount();
+
+  // For demo purposes, assuming the first user is currently logged in
+  const currentUser = users && users.length > 0 ? users[0] : null;
+  const isLoggedIn = !!currentUser;
+  const isAdmin = currentUser?.role === 'Admin';
 
   return (
     <nav className={`fixed w-full bg-${colorPalette.ui.darkBackground} text-${colorPalette.text.light} z-50 transition-transform duration-300 ${isNavbarVisible ? 'transform-none' : '-translate-y-full'}`}>
       <div className="max-w-6xl mx-auto px-4">
-        <div className="flex justify-between items-center py-4">
+        <div className="flex justify-between items-center py-5">
           <div className="flex items-center">
-            <span
-              className={`text-2xl font-bold cursor-pointer hover:text-${colorPalette.primary.lightest} transition-colors duration-300`}
-              onClick={() => navigate('/')}
-            >
-              Little Desert Leather Works
-            </span>
+            <div onClick={() => navigate('/')} className="cursor-pointer">
+              <Logo size="md" className={`hover:text-${colorPalette.primary.lightest} transition-colors duration-300 text-shadow`} />
+            </div>
           </div>
 
           {/* Mobile menu button */}
@@ -63,6 +66,18 @@ const Navbar = () => {
                 </span>
               )}
             </button>
+
+            {/* User Icon for Mobile */}
+            {isLoggedIn && (
+              <button
+                onClick={() => navigate('/account')}
+                className={`mr-4 relative text-${colorPalette.text.light} hover:text-${colorPalette.primary.lightest} transition-colors duration-300`}
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </button>
+            )}
 
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -84,7 +99,22 @@ const Navbar = () => {
             <CustomNavLink to="/products">Products</CustomNavLink>
             <CustomNavLink to="/about">About</CustomNavLink>
             <CustomNavLink to="/contact">Contact</CustomNavLink>
-            <CustomNavLink to="/admin">Admin</CustomNavLink>
+            {isAdmin && <CustomNavLink to="/admin">Admin</CustomNavLink>}
+
+            {/* User Account */}
+            {isLoggedIn && (
+              <div className="relative group">
+                <button
+                  onClick={() => navigate('/account')}
+                  className={`flex items-center text-${colorPalette.text.light} hover:text-${colorPalette.primary.lightest} transition-colors duration-300`}
+                >
+                  <svg className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  <span>{currentUser?.name?.split(' ')[0] || 'Account'}</span>
+                </button>
+              </div>
+            )}
 
             {/* Cart Icon */}
             <button
@@ -102,14 +132,17 @@ const Navbar = () => {
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Mobile Menu */}
-        <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isMenuOpen ? 'max-h-60 py-4' : 'max-h-0'}`}>
+      {/* Mobile menu panel */}
+      <div className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'}`}>
+        <div className={`bg-${colorPalette.ui.darkBackground} py-2 px-4 space-y-2 transition-all duration-300`}>
           <CustomNavLink to="/" mobile>Home</CustomNavLink>
           <CustomNavLink to="/products" mobile>Products</CustomNavLink>
           <CustomNavLink to="/about" mobile>About</CustomNavLink>
           <CustomNavLink to="/contact" mobile>Contact</CustomNavLink>
-          <CustomNavLink to="/admin" mobile>Admin</CustomNavLink>
+          {isAdmin && <CustomNavLink to="/admin" mobile>Admin</CustomNavLink>}
+          {isLoggedIn && <CustomNavLink to="/account" mobile>My Account</CustomNavLink>}
         </div>
       </div>
     </nav>

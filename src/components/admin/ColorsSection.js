@@ -76,7 +76,7 @@ const ColorsSection = () => {
 
   // Helper function to render a color preview div
   const renderColorPreview = (colorValue) => {
-    // Split the color value (e.g., "amber-600")
+    // Split the color value (e.g., "amber-600" or "desert-tan")
     const [family, shade] = colorValue.split('-');
     return (
       <div className={`mt-2 h-8 w-full rounded bg-${family}-${shade}`}></div>

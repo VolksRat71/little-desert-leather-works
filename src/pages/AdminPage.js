@@ -46,47 +46,49 @@ const AdminPage = () => {
   };
 
   return (
-    <div className="container mx-auto pb-16 pt-16 px-4 py-8 min-h-screen animate-fadeIn">
-      <div className="mb-8">
-        <h1 className={`text-3xl font-bold text-${colorPalette.text.primary}`}>
-          Website Administration
-        </h1>
-        <p className={`text-${colorPalette.text.secondary} mt-2`}>
-          Manage your website content, products, and settings
-        </p>
-      </div>
+    <div className="pt-24 pb-16 px-4">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8">
+          <h1 className={`text-3xl font-bold text-${colorPalette.text.primary}`}>
+            Website Administration
+          </h1>
+          <p className={`text-${colorPalette.text.secondary} mt-2`}>
+            Manage your website content, products, and settings
+          </p>
+        </div>
 
-      {/* Admin Navigation */}
-      <div className="flex flex-wrap mb-6 border-b border-gray-200">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => handleTabChange(tab.id)}
-            className={`px-4 py-2 mr-2 transition-all duration-300 ease-in-out relative ${
-              activeTab === tab.id
-                ? `bg-${colorPalette.primary.base} text-white`
-                : `text-${colorPalette.text.secondary} hover:text-${colorPalette.primary.base}`
-            }`}
-          >
-            {tab.label}
-            {activeTab === tab.id && (
-              <span className="absolute bottom-0 left-0 w-full h-1 bg-white transform transition-transform duration-300 scale-x-100"></span>
-            )}
-          </button>
-        ))}
-      </div>
+        {/* Admin Navigation */}
+        <div className="flex flex-wrap mb-6 border-b border-gray-200">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => handleTabChange(tab.id)}
+              className={`px-4 py-2 mr-2 transition-all duration-300 ease-in-out relative ${
+                activeTab === tab.id
+                  ? `bg-${colorPalette.primary.base} text-white`
+                  : `text-${colorPalette.text.secondary} hover:text-${colorPalette.primary.base}`
+              }`}
+            >
+              {tab.label}
+              {activeTab === tab.id && (
+                <span className="absolute bottom-0 left-0 w-full h-1 bg-white transform transition-transform duration-300 scale-x-100"></span>
+              )}
+            </button>
+          ))}
+        </div>
 
-      {/* Content Sections with Animation */}
-      <div className="bg-white p-6 rounded-lg shadow-md overflow-hidden">
-        <div className={`transition-all duration-200 ease-in-out ${isTabTransitioning ? 'opacity-0 transform translate-y-4' : 'opacity-100 transform translate-y-0'}`}>
-          {activeTab === 'products' && <ProductsSection />}
-          {activeTab === 'about' && <AboutSection />}
-          {activeTab === 'contact' && <ContactSection />}
-          {activeTab === 'testimonials' && <TestimonialsSection />}
-          {activeTab === 'colors' && <ColorsSection />}
-          {activeTab === 'orders' && <OrdersSection />}
-          {activeTab === 'users' && <UsersSection />}
-          {activeTab === 'marketing' && <MarketingSection />}
+        {/* Content Sections with Animation */}
+        <div className="bg-white p-6 rounded-lg shadow-md overflow-hidden">
+          <div className={`transition-all duration-200 ease-in-out ${isTabTransitioning ? 'opacity-0 transform translate-y-4' : 'opacity-100 transform translate-y-0'}`}>
+            {activeTab === 'products' && <ProductsSection />}
+            {activeTab === 'about' && <AboutSection />}
+            {activeTab === 'contact' && <ContactSection />}
+            {activeTab === 'testimonials' && <TestimonialsSection />}
+            {activeTab === 'colors' && <ColorsSection />}
+            {activeTab === 'orders' && <OrdersSection />}
+            {activeTab === 'users' && <UsersSection />}
+            {activeTab === 'marketing' && <MarketingSection />}
+          </div>
         </div>
       </div>
     </div>

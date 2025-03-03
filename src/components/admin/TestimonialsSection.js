@@ -1,9 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useWebsite } from '../../context/WebsiteContext';
 import Modal from '../Modal';
 
 const TestimonialsSection = () => {
-  const { testimonials, updateTestimonial, addTestimonial, deleteTestimonial } = useWebsite();
+  const {
+    testimonials,
+    updateTestimonial,
+    addTestimonial,
+    deleteTestimonial,
+    sectionsVisibility,
+    updateSectionVisibility
+  } = useWebsite();
 
   const [testimonialsList, setTestimonialsList] = useState(testimonials);
   const [editingTestimonial, setEditingTestimonial] = useState(null);
@@ -15,8 +22,11 @@ const TestimonialsSection = () => {
     name: '',
     location: '',
     testimonial: '',
-    image: ''
+    image: '',
+    isVisible: true
   });
+  const fileInputRef = useRef(null);
+  const newFileInputRef = useRef(null);
 
   // Update local testimonials when context testimonials change
   useEffect(() => {
@@ -38,13 +48,14 @@ const TestimonialsSection = () => {
       name: '',
       location: '',
       testimonial: '',
-      image: ''
+      image: '',
+      isVisible: true
     });
     setIsAddModalOpen(true);
   };
 
   const handleSaveEdit = () => {
-    updateTestimonial(editingTestimonial.id, editingTestimonial);
+    updateTestimonial(editingTestimonial);
     setIsEditModalOpen(false);
   };
 
@@ -58,9 +69,48 @@ const TestimonialsSection = () => {
     setIsAddModalOpen(false);
   };
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setEditingTestimonial({ ...editingTestimonial, image: event.target.result });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleNewImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setNewTestimonial({ ...newTestimonial, image: event.target.result });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSectionVisibilityChange = (e) => {
+    updateSectionVisibility('testimonials', e.target.checked);
+  };
+
   return (
     <div className="animate-fadeIn">
-      <h2 className="text-xl font-semibold mb-4">Customer Testimonials</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Customer Testimonials</h2>
+        <div className="flex items-center">
+          <label className="flex items-center text-gray-700 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={sectionsVisibility.testimonials}
+              onChange={handleSectionVisibilityChange}
+              className="mr-2 h-5 w-5 text-blue-600"
+            />
+            <span>Section Visible on Website</span>
+          </label>
+        </div>
+      </div>
 
       <div className="mb-4">
         <button
@@ -73,7 +123,10 @@ const TestimonialsSection = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {testimonialsList.map((testimonial) => (
-          <div key={testimonial.id} className="bg-white p-4 rounded shadow-sm border">
+          <div
+            key={testimonial.id}
+            className={`bg-white p-4 rounded shadow-sm border ${!testimonial.isVisible ? 'opacity-60 border-dashed' : ''}`}
+          >
             <div className="flex items-center mb-3">
               {testimonial.image && (
                 <img
@@ -83,7 +136,14 @@ const TestimonialsSection = () => {
                 />
               )}
               <div>
-                <h3 className="font-medium">{testimonial.name}</h3>
+                <div className="flex items-center">
+                  <h3 className="font-medium">{testimonial.name}</h3>
+                  {!testimonial.isVisible && (
+                    <span className="ml-2 px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded">
+                      Hidden
+                    </span>
+                  )}
+                </div>
                 <p className="text-sm text-gray-600">{testimonial.location}</p>
               </div>
             </div>
@@ -111,6 +171,18 @@ const TestimonialsSection = () => {
       {/* Edit Testimonial Modal */}
       <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} title="Edit Testimonial">
         <div className="space-y-4">
+          <div className="flex items-start mb-2">
+            <label className="flex items-center text-gray-700 font-medium cursor-pointer">
+              <input
+                type="checkbox"
+                checked={editingTestimonial?.isVisible === undefined ? true : editingTestimonial?.isVisible}
+                onChange={(e) => setEditingTestimonial({ ...editingTestimonial, isVisible: e.target.checked })}
+                className="mr-2 h-5 w-5 text-blue-600"
+              />
+              <span>Visible on Website</span>
+            </label>
+          </div>
+
           <div>
             <label className="block mb-1 font-medium">Name</label>
             <input
@@ -141,13 +213,46 @@ const TestimonialsSection = () => {
           </div>
 
           <div>
-            <label className="block mb-1 font-medium">Image URL</label>
-            <input
-              type="text"
-              value={editingTestimonial?.image || ''}
-              onChange={(e) => setEditingTestimonial({ ...editingTestimonial, image: e.target.value })}
-              className="w-full p-2 border rounded"
-            />
+            <label className="block mb-1 font-medium">Image</label>
+            {editingTestimonial?.image && (
+              <div className="mb-2">
+                <img
+                  src={editingTestimonial.image}
+                  alt={editingTestimonial.name}
+                  className="w-16 h-16 rounded-full object-cover"
+                />
+              </div>
+            )}
+
+            <div className="flex flex-col space-y-2">
+              <input
+                type="text"
+                value={editingTestimonial?.image || ''}
+                onChange={(e) => setEditingTestimonial({ ...editingTestimonial, image: e.target.value })}
+                className="w-full p-2 border rounded"
+                placeholder="Enter image URL or upload below"
+              />
+
+              <div>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current.click()}
+                  className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded flex items-center justify-center"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Upload Image
+                </button>
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-end space-x-2 pt-4">
@@ -191,6 +296,18 @@ const TestimonialsSection = () => {
       {/* Add Testimonial Modal */}
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Add New Testimonial">
         <div className="space-y-4">
+          <div className="flex items-start mb-2">
+            <label className="flex items-center text-gray-700 font-medium cursor-pointer">
+              <input
+                type="checkbox"
+                checked={newTestimonial.isVisible}
+                onChange={(e) => setNewTestimonial({ ...newTestimonial, isVisible: e.target.checked })}
+                className="mr-2 h-5 w-5 text-blue-600"
+              />
+              <span>Visible on Website</span>
+            </label>
+          </div>
+
           <div>
             <label className="block mb-1 font-medium">Name</label>
             <input
@@ -221,13 +338,46 @@ const TestimonialsSection = () => {
           </div>
 
           <div>
-            <label className="block mb-1 font-medium">Image URL</label>
-            <input
-              type="text"
-              value={newTestimonial.image}
-              onChange={(e) => setNewTestimonial({ ...newTestimonial, image: e.target.value })}
-              className="w-full p-2 border rounded"
-            />
+            <label className="block mb-1 font-medium">Image</label>
+            {newTestimonial.image && (
+              <div className="mb-2">
+                <img
+                  src={newTestimonial.image}
+                  alt="Customer"
+                  className="w-16 h-16 rounded-full object-cover"
+                />
+              </div>
+            )}
+
+            <div className="flex flex-col space-y-2">
+              <input
+                type="text"
+                value={newTestimonial.image}
+                onChange={(e) => setNewTestimonial({ ...newTestimonial, image: e.target.value })}
+                className="w-full p-2 border rounded"
+                placeholder="Enter image URL or upload below"
+              />
+
+              <div>
+                <input
+                  type="file"
+                  ref={newFileInputRef}
+                  onChange={handleNewImageUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => newFileInputRef.current.click()}
+                  className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded flex items-center justify-center"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Upload Image
+                </button>
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-end space-x-2 pt-4">

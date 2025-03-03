@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useWebsite, colorPalette } from '../context/WebsiteContext';
 import { FaInstagram, FaTwitter, FaFacebook } from 'react-icons/fa';
+import { Logo } from '../App';
 
 const Footer = () => {
   const { navigate } = useWebsite();
@@ -13,7 +14,9 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand and description */}
           <div>
-            <h3 className={`font-bold text-xl mb-4 text-${colorPalette.primary.base}`}>Little Desert Leather Works</h3>
+            <div className="mb-4">
+              <Logo size="lg" className={`text-${colorPalette.primary.base}`} />
+            </div>
             <p className="mb-4">
               Handcrafted leather goods made with care and attention to detail. Every piece tells a story of craftsmanship and dedication.
             </p>

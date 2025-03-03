@@ -12,6 +12,62 @@ import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import CartPage from './pages/CartPage';
 import AdminPage from './pages/AdminPage';
+import UserPage from './pages/UserPage';
+
+// Import the logo images
+import logoImage from './assets/images/logo.png';
+import logoWithTextImage from './assets/images/logo-with-text.png';
+
+// Logo component that can be reused across the app
+export const Logo = ({ size = 'md', textOnly = false, withText = false, className = '' }) => {
+  // Size classes for the image
+  const sizeClasses = {
+    xs: 'h-6',
+    sm: 'h-8',
+    md: 'h-12',
+    lg: 'h-20',
+    xl: 'h-32',
+    '2xl': 'h-40'
+  };
+
+  // Text size classes - much larger than before
+  const textSizeClasses = {
+    xs: 'text-lg',
+    sm: 'text-xl',
+    md: 'text-2xl',
+    lg: 'text-3xl',
+    xl: 'text-4xl',
+    '2xl': 'text-5xl'
+  };
+
+  if (textOnly) {
+    return (
+      <span className={`desert-road-font ${textSizeClasses[size] || 'text-2xl'} font-bold ${className}`}>
+        Little Desert Leather Works
+      </span>
+    );
+  }
+
+  // If withText is true, use the logo with text image
+  if (withText) {
+    return (
+      <img
+        src={logoWithTextImage}
+        alt="Little Desert Leather Works"
+        className={`logo-responsive logo-${size} ${className}`}
+      />
+    );
+  }
+
+  return (
+    <div className={`flex items-center ${className}`}>
+      <img src={logoImage} alt="Logo" className={`${sizeClasses[size]} mr-3`} />
+      <span className={`desert-road-font ${textSizeClasses[size] || 'text-2xl'} font-bold ${className.includes('text-shadow') ? 'text-shadow' : ''}`}>
+        Little Desert Leather Works
+      </span>
+    </div>
+  );
+};
 
 // CSS for animations
 const globalStyles = `
@@ -52,6 +108,7 @@ const AppContent = () => {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/account" element={<UserPage />} />
           <Route path="*" element={<HomePage />} />
         </Routes>
       </div>

@@ -86,13 +86,17 @@ const Modal = ({ isOpen, onClose, title, children }) => {
   // The rest of your existing effects (scrollbar, body class, etc)
   useEffect(() => {
     if (isOpen) {
-      // Calculate scrollbar width and set CSS variable
+      // First, apply the class to prevent layout shift
       const scrollbarWidth = getScrollbarWidth();
       document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
 
-      setIsVisible(true);
-      // Add class to body to prevent scrolling
+      // Apply classes immediately to prevent flicker
       document.body.classList.add('modal-open');
+      document.documentElement.classList.add('modal-open');
+
+      // Then make the modal visible
+      setIsVisible(true);
+
       // Small delay to ensure the animation triggers after the component is rendered
       setTimeout(() => setIsAnimating(true), 10);
 
@@ -107,12 +111,17 @@ const Modal = ({ isOpen, onClose, title, children }) => {
       };
     } else {
       setIsAnimating(false);
+
       // Wait for animation to finish before removing from DOM
       const timer = setTimeout(() => {
         setIsVisible(false);
-        // Remove class from body when modal is closed
+
+        // Remove class from body and html when modal is closed
         document.body.classList.remove('modal-open');
+        document.documentElement.classList.remove('modal-open');
+        document.documentElement.style.removeProperty('--scrollbar-width');
       }, 300);
+
       return () => clearTimeout(timer);
     }
   }, [isOpen, onClose]);
@@ -121,6 +130,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
   useEffect(() => {
     return () => {
       document.body.classList.remove('modal-open');
+      document.documentElement.classList.remove('modal-open');
       document.documentElement.style.removeProperty('--scrollbar-width');
     };
   }, []);

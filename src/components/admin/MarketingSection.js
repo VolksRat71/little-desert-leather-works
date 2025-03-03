@@ -3,18 +3,39 @@ import { useWebsite } from '../../context/WebsiteContext';
 import EmailCampaigns from './marketing/EmailCampaigns';
 import TextMessages from './marketing/TextMessages';
 import OrderNotifications from './marketing/OrderNotifications';
+import SalesCampaigns from './marketing/SalesCampaigns';
 
 const MarketingSection = () => {
   const { colorPalette } = useWebsite();
-  const [activeTab, setActiveTab] = useState('email');
+  const [activeTab, setActiveTab] = useState('sales');
+  const [previousTab, setPreviousTab] = useState('');
+  const [isTabTransitioning, setIsTabTransitioning] = useState(false);
 
   // Marketing tabs
   const tabs = [
+    { id: 'sales', label: 'Sales Campaigns' },
     { id: 'email', label: 'Email Campaigns' },
     { id: 'text', label: 'Text Messages' },
     { id: 'notifications', label: 'Order Notifications' },
     { id: 'settings', label: 'Settings' },
   ];
+
+  // Handle tab changes with animation
+  const handleTabChange = (tabId) => {
+    if (tabId === activeTab) return;
+
+    setPreviousTab(activeTab);
+    setIsTabTransitioning(true);
+
+    // Wait for exit animation to complete
+    setTimeout(() => {
+      setActiveTab(tabId);
+      // Wait a bit then start the entrance animation
+      setTimeout(() => {
+        setIsTabTransitioning(false);
+      }, 50);
+    }, 200);
+  };
 
   return (
     <div className="animate-fadeIn">
@@ -28,7 +49,7 @@ const MarketingSection = () => {
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => handleTabChange(tab.id)}
             className={`px-4 py-2 mr-2 transition-all duration-300 ease-in-out relative ${
               activeTab === tab.id
                 ? `bg-${colorPalette.primary.base} text-white`
@@ -43,25 +64,25 @@ const MarketingSection = () => {
         ))}
       </div>
 
-      {/* Content based on active tab */}
+      {/* Content based on active tab with animation */}
       <div className="bg-white rounded-lg overflow-hidden">
-        {activeTab === 'email' && <EmailCampaigns />}
-
-        {activeTab === 'text' && <TextMessages />}
-
-        {activeTab === 'notifications' && <OrderNotifications />}
-
-        {activeTab === 'settings' && (
-          <div className="p-4">
-            <h3 className="text-lg font-medium mb-4">Marketing Settings</h3>
-            <p className="text-gray-600 mb-4">
-              Configure global settings for all marketing communications.
-            </p>
-            <div className="text-center py-8 text-gray-500">
-              Marketing settings will be implemented in the next update.
+        <div className={`transition-all duration-200 ease-in-out ${isTabTransitioning ? 'opacity-0 transform translate-y-4' : 'opacity-100 transform translate-y-0'}`}>
+          {activeTab === 'sales' && <SalesCampaigns />}
+          {activeTab === 'email' && <EmailCampaigns />}
+          {activeTab === 'text' && <TextMessages />}
+          {activeTab === 'notifications' && <OrderNotifications />}
+          {activeTab === 'settings' && (
+            <div className="p-4">
+              <h3 className="text-lg font-medium mb-4">Marketing Settings</h3>
+              <p className="text-gray-600 mb-4">
+                Configure global settings for all marketing communications.
+              </p>
+              <div className="text-center py-8 text-gray-500">
+                Marketing settings will be implemented in the next update.
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

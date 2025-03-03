@@ -1,4 +1,66 @@
 /* Simple CSS without Tailwind */
+@font-face {
+  font-family: 'DesertRoad';
+  src: url('./assets/fonts/desert_road/Desert Road.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.desert-road-font {
+  font-family: 'DesertRoad', sans-serif;
+  letter-spacing: 0.5px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Enhanced text shadow for better contrast when needed */
+.desert-road-font.text-shadow {
+  text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive logo sizing */
+.logo-responsive {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Adjust logo sizes for different screen sizes */
+@media (max-width: 768px) {
+  .logo-responsive.logo-lg {
+    max-width: 85%;
+    height: auto;
+  }
+
+  .logo-responsive.logo-xl {
+    max-width: 80%;
+    height: auto;
+  }
+
+  .logo-responsive.logo-2xl {
+    max-width: 75%;
+    height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-responsive.logo-lg {
+    max-width: 95%;
+    height: auto;
+  }
+
+  .logo-responsive.logo-xl {
+    max-width: 90%;
+    height: auto;
+  }
+
+  .logo-responsive.logo-2xl {
+    max-width: 85%;
+    height: auto;
+  }
+}
+
 .App {
   text-align: center;
 }
@@ -122,9 +184,44 @@
 }
 
 /* Modal specific styles */
-.modal-open {
-  overflow: hidden;
+body.modal-open {
+  overflow: hidden !important;
   padding-right: var(--scrollbar-width, 0px); /* Prevent layout shift when scrollbar disappears */
+  /* Hide the scrollbar completely */
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE and Edge */
+  /* Prevent any scrolling on touch devices */
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  /* Prevent scroll bounce on mobile */
+  overscroll-behavior: none;
+  touch-action: none; /* Disable all touch scrolling */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+body.modal-open::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important; /* Optional: make scrollbar transparent */
+}
+
+/* Apply to html element as well to ensure complete lock */
+html.modal-open {
+  overflow: hidden !important;
+  height: 100%;
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE and Edge */
+  overscroll-behavior: none;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera on html element too */
+html.modal-open::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
 }
 
 /* Ensure modals are above everything else */
@@ -147,6 +244,22 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch; /* Smoother scrolling on iOS */
+  /* Style the scrollbar in the modal content */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(0, 0, 0, 0.3) transparent; /* Firefox */
+}
+
+.modal-content-scrollable::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-content-scrollable::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-content-scrollable::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
 }
 
 /* Ensure modal doesn't exceed viewport height */
@@ -443,3 +556,103 @@
 .bg-rose-700 { background-color: #be123c; }
 .bg-rose-800 { background-color: #9f1239; }
 .bg-rose-900 { background-color: #881337; }
+
+/* Desert Theme Colors - Matched from Logo with enhanced contrast */
+.bg-desert-tan { background-color: #F2D5A9; }
+.bg-desert-orange { background-color: #E07A42; }
+.bg-desert-terracotta { background-color: #D36B33; }
+.bg-desert-rust { background-color: #A85326; }
+.bg-desert-olive { background-color: #7E7242; }
+.bg-desert-green { background-color: #515C3F; }
+.bg-desert-black { background-color: #1A1A1A; }
+
+.text-desert-tan { color: #F2D5A9; }
+.text-desert-orange { color: #D36B33; } /* Darkened for better contrast on light backgrounds */
+.text-desert-terracotta { color: #B85A2B; } /* Darkened for better contrast */
+.text-desert-rust { color: #8A4420; } /* Darkened for better contrast */
+.text-desert-olive { color: #64592F; } /* Darkened for better contrast */
+.text-desert-green { color: #404A32; } /* Darkened for better contrast */
+.text-desert-black { color: #1A1A1A; }
+
+.border-desert-tan { border-color: #F2D5A9; }
+.border-desert-orange { border-color: #E07A42; }
+.border-desert-terracotta { border-color: #D36B33; }
+.border-desert-rust { border-color: #A85326; }
+.border-desert-olive { border-color: #7E7242; }
+.border-desert-green { border-color: #515C3F; }
+.border-desert-black { border-color: #1A1A1A; }
+
+/* Hover variants */
+.hover\:bg-desert-tan:hover { background-color: #F2D5A9; }
+.hover\:bg-desert-orange:hover { background-color: #E07A42; }
+.hover\:bg-desert-terracotta:hover { background-color: #D36B33; }
+.hover\:bg-desert-rust:hover { background-color: #A85326; }
+.hover\:bg-desert-olive:hover { background-color: #7E7242; }
+.hover\:bg-desert-green:hover { background-color: #515C3F; }
+.hover\:bg-desert-black:hover { background-color: #1A1A1A; }
+
+.hover\:text-desert-tan:hover { color: #F2D5A9; }
+.hover\:text-desert-orange:hover { color: #D36B33; } /* Darkened for better contrast */
+.hover\:text-desert-terracotta:hover { color: #B85A2B; } /* Darkened for better contrast */
+.hover\:text-desert-rust:hover { color: #8A4420; } /* Darkened for better contrast */
+.hover\:text-desert-olive:hover { color: #64592F; } /* Darkened for better contrast */
+.hover\:text-desert-green:hover { color: #404A32; } /* Darkened for better contrast */
+.hover\:text-desert-black:hover { color: #1A1A1A; }
+
+.hover\:border-desert-tan:hover { border-color: #F2D5A9; }
+.hover\:border-desert-orange:hover { border-color: #E07A42; }
+.hover\:border-desert-terracotta:hover { border-color: #D36B33; }
+.hover\:border-desert-rust:hover { border-color: #A85326; }
+.hover\:border-desert-olive:hover { border-color: #7E7242; }
+.hover\:border-desert-green:hover { border-color: #515C3F; }
+.hover\:border-desert-black:hover { border-color: #1A1A1A; }
+
+/* Focus variants for accessibility */
+.focus\:bg-desert-tan:focus { background-color: #F2D5A9; }
+.focus\:bg-desert-orange:focus { background-color: #E07A42; }
+.focus\:bg-desert-terracotta:focus { background-color: #D36B33; }
+.focus\:bg-desert-rust:focus { background-color: #A85326; }
+.focus\:bg-desert-olive:focus { background-color: #7E7242; }
+.focus\:bg-desert-green:focus { background-color: #515C3F; }
+.focus\:bg-desert-black:focus { background-color: #1A1A1A; }
+
+.focus\:text-desert-tan:focus { color: #F2D5A9; }
+.focus\:text-desert-orange:focus { color: #D36B33; }
+.focus\:text-desert-terracotta:focus { color: #B85A2B; }
+.focus\:text-desert-rust:focus { color: #8A4420; }
+.focus\:text-desert-olive:focus { color: #64592F; }
+.focus\:text-desert-green:focus { color: #404A32; }
+.focus\:text-desert-black:focus { color: #1A1A1A; }
+
+/* High contrast button styles for accessibility */
+.desert-button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.desert-button-primary {
+  background-color: #D36B33; /* Terracotta */
+  color: white;
+  border: 2px solid #A85326; /* Darker border */
+}
+
+.desert-button-primary:hover,
+.desert-button-primary:focus {
+  background-color: #A85326; /* Darker on hover/focus */
+  box-shadow: 0 0 0 2px rgba(168, 83, 38, 0.5); /* Focus ring */
+}
+
+.desert-button-secondary {
+  background-color: white;
+  color: #A85326; /* Rust text */
+  border: 2px solid #D36B33; /* Terracotta border */
+}
+
+.desert-button-secondary:hover,
+.desert-button-secondary:focus {
+  background-color: #F2D5A9; /* Tan background on hover */
+  color: #8A4420; /* Darker text */
+  box-shadow: 0 0 0 2px rgba(168, 83, 38, 0.5); /* Focus ring */
+}
