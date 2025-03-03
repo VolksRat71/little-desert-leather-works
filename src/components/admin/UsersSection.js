@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useWebsite } from '../../context/WebsiteContext';
 import Modal from '../Modal';
+import EllipsisMenu from '../EllipsisMenu';
 
 const UsersSection = () => {
   const { users, addUser, updateUser, deleteUser } = useWebsite();
@@ -232,18 +233,21 @@ const UsersSection = () => {
                 </td>
                 <td className="py-3 px-4">{user.lastLogin}</td>
                 <td className="py-3 px-4">
-                  <button
-                    onClick={() => handleEditClick(user)}
-                    className="text-blue-600 hover:text-blue-800 transition-colors duration-150 mr-2"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteClick(user)}
-                    className="text-red-600 hover:text-red-800 transition-colors duration-150"
-                  >
-                    Delete
-                  </button>
+                  <EllipsisMenu
+                    position="left"
+                    actions={[
+                      {
+                        label: 'Edit',
+                        onClick: () => handleEditClick(user),
+                        className: 'text-blue-600 hover:text-blue-800'
+                      },
+                      {
+                        label: 'Delete',
+                        onClick: () => handleDeleteClick(user),
+                        className: 'text-red-600 hover:text-red-800'
+                      }
+                    ]}
+                  />
                 </td>
               </tr>
             ))}

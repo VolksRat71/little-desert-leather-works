@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useWebsite } from '../../context/WebsiteContext';
 import Modal from '../Modal';
+import EllipsisMenu from '../EllipsisMenu';
 
 const OrdersSection = () => {
   const { orders } = useWebsite();
@@ -108,18 +109,21 @@ const OrdersSection = () => {
                 </td>
                 <td className="py-2 px-4">{order.total}</td>
                 <td className="py-2 px-4">
-                  <button
-                    onClick={() => handleViewOrder(order)}
-                    className="text-blue-600 hover:text-blue-800 mr-2"
-                  >
-                    View
-                  </button>
-                  <button
-                    onClick={() => handleUpdateClick(order)}
-                    className="text-green-600 hover:text-green-800"
-                  >
-                    Update
-                  </button>
+                  <EllipsisMenu
+                    position="left"
+                    actions={[
+                      {
+                        label: 'View',
+                        onClick: () => handleViewOrder(order),
+                        className: 'text-blue-600 hover:text-blue-800'
+                      },
+                      {
+                        label: 'Update',
+                        onClick: () => handleUpdateClick(order),
+                        className: 'text-green-600 hover:text-green-800'
+                      }
+                    ]}
+                  />
                 </td>
               </tr>
             ))}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useWebsite } from '../../context/WebsiteContext';
 import Modal from '../Modal';
+import EllipsisMenu from '../EllipsisMenu';
 
 const ProductsSection = () => {
   const {
@@ -248,18 +249,21 @@ const ProductsSection = () => {
                   </span>
                 </td>
                 <td className="py-3 px-4">
-                  <button
-                    onClick={() => handleEditClick(product)}
-                    className="text-blue-600 hover:text-blue-800 mr-3"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteClick(product)}
-                    className="text-red-600 hover:text-red-800"
-                  >
-                    Delete
-                  </button>
+                  <EllipsisMenu
+                    position="left"
+                    actions={[
+                      {
+                        label: 'Edit',
+                        onClick: () => handleEditClick(product),
+                        className: 'text-blue-600 hover:text-blue-800'
+                      },
+                      {
+                        label: 'Delete',
+                        onClick: () => handleDeleteClick(product),
+                        className: 'text-red-600 hover:text-red-800'
+                      }
+                    ]}
+                  />
                 </td>
               </tr>
             ))}

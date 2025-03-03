@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useWebsite } from '../../../context/WebsiteContext';
 import Modal from '../../Modal';
+import EllipsisMenu from '../../../components/EllipsisMenu';
 
 const SalesCampaigns = () => {
   const { campaigns, addCampaign, updateCampaign, deleteCampaign, activateCampaign, deactivateCampaign, users, colorPalette } = useWebsite();
@@ -240,24 +241,26 @@ const SalesCampaigns = () => {
                   />
                 </td>
                 <td className="py-3 px-4">
-                  <button
-                    onClick={() => handleToggleActive(campaign)}
-                    className={`${campaign.isActive ? 'text-yellow-600 hover:text-yellow-800' : 'text-green-600 hover:text-green-800'} transition-colors duration-150 mr-2`}
-                  >
-                    {campaign.isActive ? 'Deactivate' : 'Activate'}
-                  </button>
-                  <button
-                    onClick={() => handleEditClick(campaign)}
-                    className="text-blue-600 hover:text-blue-800 transition-colors duration-150 mr-2"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteClick(campaign)}
-                    className="text-red-600 hover:text-red-800 transition-colors duration-150"
-                  >
-                    Delete
-                  </button>
+                  <EllipsisMenu
+                    position="left"
+                    actions={[
+                      {
+                        label: campaign.isActive ? 'Deactivate' : 'Activate',
+                        onClick: () => handleToggleActive(campaign),
+                        className: campaign.isActive ? 'text-yellow-600 hover:text-yellow-800' : 'text-green-600 hover:text-green-800'
+                      },
+                      {
+                        label: 'Edit',
+                        onClick: () => handleEditClick(campaign),
+                        className: 'text-blue-600 hover:text-blue-800'
+                      },
+                      {
+                        label: 'Delete',
+                        onClick: () => handleDeleteClick(campaign),
+                        className: 'text-red-600 hover:text-red-800'
+                      }
+                    ]}
+                  />
                 </td>
               </tr>
             ))}

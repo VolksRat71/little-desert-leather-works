@@ -3,36 +3,91 @@ import React, { useState, useRef, useEffect } from 'react';
 const ImageMagnifier = ({ src, alt, width = '100%', height = 'auto', magnifierSize = 150, zoomLevel = 2.5 }) => {
   const [showMagnifier, setShowMagnifier] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
   const imgRef = useRef(null);
 
+  // Detect touch device on component mount
+  useEffect(() => {
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  }, []);
+
   const handleMouseEnter = () => {
-    setShowMagnifier(true);
+    if (!isTouchDevice) {
+      setShowMagnifier(true);
+    }
   };
 
   const handleMouseLeave = () => {
-    setShowMagnifier(false);
+    if (!isTouchDevice) {
+      setShowMagnifier(false);
+    }
   };
 
   const handleMouseMove = (e) => {
-    // Get the position of the image element
-    const imgRect = imgRef.current.getBoundingClientRect();
+    if (!isTouchDevice) {
+      // Get the position of the image element
+      const imgRect = imgRef.current.getBoundingClientRect();
 
-    // Calculate the mouse position relative to the image
-    const x = e.clientX - imgRect.left;
-    const y = e.clientY - imgRect.top;
+      // Calculate the mouse position relative to the image
+      const x = e.clientX - imgRect.left;
+      const y = e.clientY - imgRect.top;
 
-    setMousePosition({ x, y });
+      setMousePosition({ x, y });
+    }
+  };
+
+  // Handle touch events for mobile devices
+  const handleTouchStart = (e) => {
+    e.preventDefault(); // Prevent default touch behavior
+    setShowMagnifier(true);
+    handleTouchMove(e);
+  };
+
+  const handleTouchMove = (e) => {
+    if (e.touches.length > 0) {
+      const touch = e.touches[0];
+      const imgRect = imgRef.current.getBoundingClientRect();
+
+      // Calculate touch position relative to the image
+      const x = touch.clientX - imgRect.left;
+      const y = touch.clientY - imgRect.top;
+
+      setMousePosition({ x, y });
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setShowMagnifier(false);
   };
 
   // Calculate magnifier position without constraining it to image boundaries
   const getMagnifierPosition = () => {
     if (!imgRef.current) return { left: 0, top: 0 };
 
-    // Simply position the magnifier centered on the mouse
-    const left = mousePosition.x - magnifierSize / 2;
-    const top = mousePosition.y - magnifierSize / 2;
+    const imgRect = imgRef.current.getBoundingClientRect();
 
-    return { left, top };
+    // On touch devices, position the magnifier above the touch point
+    if (isTouchDevice) {
+      // Calculate position above the finger
+      const left = mousePosition.x - magnifierSize / 2;
+      // Position above the finger with 20px gap
+      const top = mousePosition.y - magnifierSize - 20;
+
+      // If the magnifier would go above the image, position it below the finger instead
+      if (top < 0) {
+        return {
+          left,
+          top: mousePosition.y + 20 // 20px below the touch point
+        };
+      }
+
+      return { left, top };
+    } else {
+      // For desktop: center on mouse position
+      const left = mousePosition.x - magnifierSize / 2;
+      const top = mousePosition.y - magnifierSize / 2;
+      return { left, top };
+    }
   };
 
   // Calculate the background position for the zoomed image
@@ -64,6 +119,10 @@ const ImageMagnifier = ({ src, alt, width = '100%', height = 'auto', magnifierSi
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onMouseMove={handleMouseMove}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
       />
 
       {showMagnifier && (
