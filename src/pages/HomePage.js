@@ -3,10 +3,13 @@ import { Link } from 'react-router-dom';
 import Hero from '../components/Hero';
 import ProductCard from '../components/ProductCard';
 import TestimonialCard from '../components/TestimonialCard';
-import { useWebsite, colorPalette } from '../context/WebsiteContext';
+import { useWebsite, colorPalette, useDocumentTitle } from '../context/WebsiteContext';
 
 const HomePage = () => {
   const { products, testimonials, navigate, artisan } = useWebsite();
+
+  // Set document title for the home page
+  useDocumentTitle('Home');
 
   useEffect(() => {
     // Scroll to top when component mounts

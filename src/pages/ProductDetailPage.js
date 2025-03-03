@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useWebsite, colorPalette } from '../context/WebsiteContext';
+import { useWebsite, colorPalette, useDocumentTitle } from '../context/WebsiteContext';
 import ProductCard from '../components/ProductCard';
 import ImageMagnifier from '../components/ImageMagnifier';
 
@@ -22,6 +22,9 @@ const ProductDetailPage = () => {
       }
     }
   }, [productId, products]);
+
+  // Set document title when product is loaded
+  useDocumentTitle(product ? product.name : 'Product');
 
   const handleAddToCart = () => {
     addToCart(product, quantity);

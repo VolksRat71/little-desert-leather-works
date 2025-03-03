@@ -1,5 +1,5 @@
-import React from 'react';
-import { useWebsite, colorPalette } from '../context/WebsiteContext';
+import React, { useState } from 'react';
+import { useWebsite, colorPalette, useDocumentTitle } from '../context/WebsiteContext';
 
 const CartPage = () => {
   const {
@@ -10,6 +10,9 @@ const CartPage = () => {
     getCartTotal,
     navigate
   } = useWebsite();
+
+  // Set document title
+  useDocumentTitle('Shopping Cart');
 
   // Handle quantity change
   const handleQuantityChange = (productId, newQuantity) => {

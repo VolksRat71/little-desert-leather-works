@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useWebsite } from '../context/WebsiteContext';
+import { useWebsite, colorPalette, useDocumentTitle } from '../context/WebsiteContext';
 // Import all section components
 import ProductsSection from '../components/admin/ProductsSection';
 import AboutSection from '../components/admin/AboutSection';
@@ -79,6 +79,9 @@ const AdminPage = () => {
       }, 50);
     }, 200);
   };
+
+  // Set document title
+  useDocumentTitle('Admin Dashboard');
 
   return (
     <div className="pt-24 pb-16 px-4">

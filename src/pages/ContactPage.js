@@ -1,5 +1,5 @@
-import React from 'react';
-import { colorPalette } from '../context/WebsiteContext';
+import React, { useState } from 'react';
+import { colorPalette, useDocumentTitle } from '../context/WebsiteContext';
 
 const ContactPage = () => {
   // Custom style with larger font
@@ -15,6 +15,9 @@ const ContactPage = () => {
     transformOrigin: 'center center',
     display: 'inline-block'
   };
+
+  // Set document title
+  useDocumentTitle('Contact Us');
 
   return (
     <div className="pt-24 pb-16 px-4">

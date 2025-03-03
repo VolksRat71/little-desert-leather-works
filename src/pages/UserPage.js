@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useWebsite } from '../context/WebsiteContext';
+import { useWebsite, colorPalette, useDocumentTitle } from '../context/WebsiteContext';
 import Modal from '../components/Modal';
 
 const UserPage = () => {
@@ -56,6 +56,9 @@ const UserPage = () => {
       setEditedUser(users[0]);
     }
   }, [users]);
+
+  // Set document title
+  useDocumentTitle('My Account');
 
   // Categories and tabs configuration
   const categories = [

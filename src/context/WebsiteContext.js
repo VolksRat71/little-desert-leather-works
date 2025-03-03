@@ -266,6 +266,18 @@ export const marketingCampaigns = [
 // Create website context
 const WebsiteContext = createContext();
 
+// Hook for setting document title
+export const useDocumentTitle = (title) => {
+  useEffect(() => {
+    const prevTitle = document.title;
+    document.title = title ? `${title} | Little Desert Leather Works` : 'Little Desert Leather Works';
+
+    return () => {
+      document.title = prevTitle;
+    };
+  }, [title]);
+};
+
 export const WebsiteProvider = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [pageTransition, setPageTransition] = useState(false);

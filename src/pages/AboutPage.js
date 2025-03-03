@@ -1,7 +1,12 @@
 import React from 'react';
-import { useWebsite, colorPalette, artisan } from '../context/WebsiteContext';
+import { useWebsite, colorPalette, artisan, useDocumentTitle } from '../context/WebsiteContext';
 
 const AboutPage = () => {
+  const { artisan } = useWebsite();
+
+  // Set document title
+  useDocumentTitle('About Us');
+
   // Custom style with larger font
   const desertFontStyle = {
     transform: 'scale(1.5)',

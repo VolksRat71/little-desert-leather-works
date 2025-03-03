@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useWebsite, colorPalette } from '../context/WebsiteContext';
+import { useWebsite, colorPalette, useDocumentTitle } from '../context/WebsiteContext';
 import ProductCard from '../components/ProductCard';
 
 const ProductsPage = () => {
@@ -9,6 +9,9 @@ const ProductsPage = () => {
     searchTerm: '',
     sortBy: 'default',
   });
+
+  // Set document title
+  useDocumentTitle('Products');
 
   // Apply filters and sorting
   useEffect(() => {
