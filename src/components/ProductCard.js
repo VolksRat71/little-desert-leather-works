@@ -1,13 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { useWebsite, colorPalette } from '../context/WebsiteContext';
 
 const ProductCard = ({ product }) => {
   const { navigate } = useWebsite();
 
+  const handleCardClick = () => {
+    navigate(`/product/${product.id}`);
+  };
+
   return (
-    <Link
-      to={`/product/${product.id}`}
+    <div
+      onClick={handleCardClick}
       className={`bg-${colorPalette.ui.background} rounded shadow hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer h-full flex flex-col block`}
     >
       <div className="overflow-hidden rounded-t">
@@ -25,7 +28,7 @@ const ProductCard = ({ product }) => {
           <button
             className={`bg-${colorPalette.secondary.base} text-${colorPalette.text.light} px-4 py-2 rounded text-sm hover:bg-${colorPalette.secondary.light} transition-colors duration-300`}
             onClick={(e) => {
-              e.preventDefault();
+              e.stopPropagation(); // Prevent the card click event from firing
               navigate(`/product/${product.id}`);
             }}
           >
@@ -33,7 +36,7 @@ const ProductCard = ({ product }) => {
           </button>
         </div>
       </div>
-    </Link>
+    </div>
   );
 };
 

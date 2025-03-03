@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useWebsite, colorPalette } from '../context/WebsiteContext';
 
@@ -31,7 +31,8 @@ const CustomNavLink = ({ to, children, mobile }) => {
 };
 
 const Navbar = () => {
-  const { isMenuOpen, setIsMenuOpen, isNavbarVisible, navigate } = useWebsite();
+  const { isMenuOpen, setIsMenuOpen, isNavbarVisible, navigate, getCartItemCount } = useWebsite();
+  const cartItemCount = getCartItemCount();
 
   return (
     <nav className={`fixed w-full bg-${colorPalette.ui.darkBackground} text-${colorPalette.text.light} z-50 transition-transform duration-300 ${isNavbarVisible ? 'transform-none' : '-translate-y-full'}`}>
@@ -47,7 +48,22 @@ const Navbar = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center">
+            {/* Cart Icon for Mobile */}
+            <button
+              onClick={() => navigate('/cart')}
+              className={`mr-4 relative text-${colorPalette.text.light} hover:text-${colorPalette.primary.lightest} transition-colors duration-300`}
+            >
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              {cartItemCount > 0 && (
+                <span className={`absolute -top-2 -right-2 bg-${colorPalette.primary.base} text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center`}>
+                  {cartItemCount}
+                </span>
+              )}
+            </button>
+
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className={`text-${colorPalette.text.light} hover:text-${colorPalette.primary.lightest} transition-colors duration-300`}
@@ -65,16 +81,35 @@ const Navbar = () => {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
             <CustomNavLink to="/">Home</CustomNavLink>
+            <CustomNavLink to="/products">Products</CustomNavLink>
             <CustomNavLink to="/about">About</CustomNavLink>
             <CustomNavLink to="/contact">Contact</CustomNavLink>
+            <CustomNavLink to="/admin">Admin</CustomNavLink>
+
+            {/* Cart Icon */}
+            <button
+              onClick={() => navigate('/cart')}
+              className={`relative text-${colorPalette.text.light} hover:text-${colorPalette.primary.lightest} transition-colors duration-300`}
+            >
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              {cartItemCount > 0 && (
+                <span className={`absolute -top-2 -right-2 bg-${colorPalette.primary.base} text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center`}>
+                  {cartItemCount}
+                </span>
+              )}
+            </button>
           </div>
         </div>
 
         {/* Mobile Menu */}
         <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isMenuOpen ? 'max-h-60 py-4' : 'max-h-0'}`}>
           <CustomNavLink to="/" mobile>Home</CustomNavLink>
+          <CustomNavLink to="/products" mobile>Products</CustomNavLink>
           <CustomNavLink to="/about" mobile>About</CustomNavLink>
           <CustomNavLink to="/contact" mobile>Contact</CustomNavLink>
+          <CustomNavLink to="/admin" mobile>Admin</CustomNavLink>
         </div>
       </div>
     </nav>

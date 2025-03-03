@@ -154,7 +154,7 @@ export const testimonials = [
 export const artisan = {
   name: "Morgan E Ludemann",
   title: "Master Leather Craftsman",
-  image: "https://placehold.co/600x800/8b5a2b/ffffff?text=James+Harrison",
+  image: "https://placehold.co/600x800/8b5a2b/ffffff?text=Morgan+Ludemann",
   bio: "With over 15 years of experience working with leather, I bring traditional techniques and modern design to every piece I create. My journey began in my grandfather's workshop, where I learned that quality craftsmanship requires patience, precision, and passion. Today, I handcraft each item in my Austin studio, selecting only the finest full-grain leathers.\n\nI was drawn to leatherworking after a trip through the American Southwest, where I was captivated by the rugged beauty of the desert and the generations of artisans who worked with natural materials. The textures, colors, and resilience of the desert landscape continue to inspire my work.\n\nEvery stitch, every cut, and every burnished edge represents my commitment to creating heirloom-quality goods that will age beautifully and tell a story with time. I believe in creating pieces that become more beautiful with age and use – developing a rich patina that reflects their journey with you.",
   philosophy: "I believe in slow craft – taking the time needed to do things right. No shortcuts, no mass production. Just honest materials, traditional techniques, and meticulous attention to detail.",
   skills: ["Hand-stitching", "Tooling & Carving", "Dyeing & Finishing", "Pattern Making", "Custom Design"]
@@ -168,6 +168,24 @@ export const WebsiteProvider = ({ children }) => {
   const [pageTransition, setPageTransition] = useState(false);
   const [previousScrollPosition, setPreviousScrollPosition] = useState(0);
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+
+  // Admin-related state
+  const [websiteProducts, setWebsiteProducts] = useState(products);
+  const [websiteTestimonials, setWebsiteTestimonials] = useState(testimonials);
+  const [websiteArtisan, setWebsiteArtisan] = useState(artisan);
+  const [websiteColors, setWebsiteColors] = useState(colorPalette);
+  const [orders, setOrders] = useState([]);
+  const [contactInfo, setContactInfo] = useState({
+    email: "contact@littledesertleatherworks.com",
+    phone: "(512) 555-1234",
+    address: "123 Craftsman Way, Austin, TX 78701",
+    hours: "Monday-Friday: 9am-5pm\nSaturday: 10am-4pm\nSunday: Closed"
+  });
+
+  // Cart state
+  const [cart, setCart] = useState([]);
+  const [showCartNotification, setShowCartNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
 
   const location = useLocation();
   const navigateFunc = useNavigate();
@@ -216,6 +234,105 @@ export const WebsiteProvider = ({ children }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [previousScrollPosition]);
 
+  // Admin functions
+  const updateProduct = (productId, updatedProduct) => {
+    setWebsiteProducts(prevProducts =>
+      prevProducts.map(product =>
+        product.id === productId ? { ...product, ...updatedProduct } : product
+      )
+    );
+  };
+
+  const addProduct = (newProduct) => {
+    const newId = Math.max(...websiteProducts.map(p => p.id)) + 1;
+    setWebsiteProducts(prevProducts => [...prevProducts, { ...newProduct, id: newId }]);
+  };
+
+  const deleteProduct = (productId) => {
+    setWebsiteProducts(prevProducts =>
+      prevProducts.filter(product => product.id !== productId)
+    );
+  };
+
+  const updateTestimonial = (testimonialId, updatedTestimonial) => {
+    setWebsiteTestimonials(prevTestimonials =>
+      prevTestimonials.map(testimonial =>
+        testimonial.id === testimonialId ? { ...testimonial, ...updatedTestimonial } : testimonial
+      )
+    );
+  };
+
+  const addTestimonial = (newTestimonial) => {
+    const newId = Math.max(...websiteTestimonials.map(t => t.id)) + 1;
+    setWebsiteTestimonials(prevTestimonials => [...prevTestimonials, { ...newTestimonial, id: newId }]);
+  };
+
+  const deleteTestimonial = (testimonialId) => {
+    setWebsiteTestimonials(prevTestimonials =>
+      prevTestimonials.filter(testimonial => testimonial.id !== testimonialId)
+    );
+  };
+
+  const updateArtisanInfo = (updatedInfo) => {
+    setWebsiteArtisan(prevInfo => ({ ...prevInfo, ...updatedInfo }));
+  };
+
+  const updateContactInfo = (updatedInfo) => {
+    setContactInfo(prevInfo => ({ ...prevInfo, ...updatedInfo }));
+  };
+
+  const updateColorPalette = (updatedColors) => {
+    setWebsiteColors(prevColors => ({ ...prevColors, ...updatedColors }));
+  };
+
+  // Cart functions
+  const addToCart = (product, quantity = 1) => {
+    // Check if the product is already in the cart
+    const existingItemIndex = cart.findIndex(item => item.id === product.id);
+
+    if (existingItemIndex >= 0) {
+      // Update quantity if product already exists in cart
+      const updatedCart = [...cart];
+      updatedCart[existingItemIndex].quantity += quantity;
+      setCart(updatedCart);
+
+      setNotificationMessage(`Updated quantity for ${product.name}`);
+    } else {
+      // Add new product to cart
+      setCart([...cart, { ...product, quantity }]);
+
+      setNotificationMessage(`Added ${product.name} to your cart`);
+    }
+
+    // Show notification
+    setShowCartNotification(true);
+    setTimeout(() => setShowCartNotification(false), 3000);
+  };
+
+  const removeFromCart = (productId) => {
+    setCart(prevCart => prevCart.filter(item => item.id !== productId));
+  };
+
+  const updateCartQuantity = (productId, quantity) => {
+    setCart(prevCart =>
+      prevCart.map(item =>
+        item.id === productId ? { ...item, quantity } : item
+      )
+    );
+  };
+
+  const clearCart = () => {
+    setCart([]);
+  };
+
+  const getCartTotal = () => {
+    return cart.reduce((total, item) => total + item.quantity * item.price.replace('$', ''), 0);
+  };
+
+  const getCartItemCount = () => {
+    return cart.reduce((count, item) => count + item.quantity, 0);
+  };
+
   return (
     <WebsiteContext.Provider
       value={{
@@ -225,9 +342,32 @@ export const WebsiteProvider = ({ children }) => {
         setIsMenuOpen,
         pageTransition,
         isNavbarVisible,
-        products,
-        testimonials,
-        artisan
+        products: websiteProducts,
+        testimonials: websiteTestimonials,
+        artisan: websiteArtisan,
+        colorPalette: websiteColors,
+        contactInfo,
+        orders,
+        // Admin functions
+        updateProduct,
+        addProduct,
+        deleteProduct,
+        updateTestimonial,
+        addTestimonial,
+        deleteTestimonial,
+        updateArtisanInfo,
+        updateContactInfo,
+        updateColorPalette,
+        // Cart functions
+        cart,
+        addToCart,
+        removeFromCart,
+        updateCartQuantity,
+        clearCart,
+        getCartTotal,
+        getCartItemCount,
+        showCartNotification,
+        notificationMessage
       }}
     >
       {children}

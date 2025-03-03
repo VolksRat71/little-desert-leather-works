@@ -4,10 +4,14 @@ import { WebsiteProvider, useWebsite, colorPalette } from './context/WebsiteCont
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import CartNotification from './components/CartNotification';
 import HomePage from './pages/HomePage';
+import ProductsPage from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
+import CartPage from './pages/CartPage';
+import AdminPage from './pages/AdminPage';
 
 // CSS for animations
 const globalStyles = `
@@ -38,12 +42,16 @@ const AppContent = () => {
     <div className={`font-serif bg-${colorPalette.primary.background} text-${colorPalette.text.primary} min-h-screen`}>
       <style>{globalStyles}</style>
       <Navbar />
+      <CartNotification />
       <div className={`pt-16 transition-opacity duration-500 ${pageTransition ? 'opacity-0' : 'opacity-100'}`}>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/products" element={<ProductsPage />} />
           <Route path="/product/:productId" element={<ProductDetailPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/admin" element={<AdminPage />} />
           <Route path="*" element={<HomePage />} />
         </Routes>
       </div>

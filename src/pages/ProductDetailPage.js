@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useWebsite, colorPalette } from '../context/WebsiteContext';
 import ProductCard from '../components/ProductCard';
+import ImageMagnifier from '../components/ImageMagnifier';
 
 const ProductDetailPage = () => {
-  const { navigate, products } = useWebsite();
+  const { navigate, products, addToCart } = useWebsite();
   const [activeImage, setActiveImage] = useState('');
   const [product, setProduct] = useState(null);
+  const [quantity, setQuantity] = useState(1);
   const { productId } = useParams();
 
   // Find the product based on the URL parameter
@@ -21,12 +23,16 @@ const ProductDetailPage = () => {
     }
   }, [productId, products]);
 
+  const handleAddToCart = () => {
+    addToCart(product, quantity);
+  };
+
   if (!product) {
     return <div className="text-center">Product not found</div>;
   }
 
   return (
-    <div className="pb-16 px-4">
+    <div className="pb-16 pt-16 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Breadcrumb */}
         <div className="mb-6">
@@ -37,6 +43,12 @@ const ProductDetailPage = () => {
             >
               Home
             </span> &gt;
+            <span
+              className="cursor-pointer hover:underline ml-1"
+              onClick={() => navigate('/products')}
+            >
+              Products
+            </span> &gt;
             <span className="ml-1">{product.name}</span>
           </p>
         </div>
@@ -45,7 +57,12 @@ const ProductDetailPage = () => {
           {/* Product Images */}
           <div className="space-y-4">
             <div className={`bg-${colorPalette.ui.background} rounded shadow`}>
-              <img src={activeImage} alt={product.name} className="w-full h-auto rounded" />
+              <ImageMagnifier
+                src={activeImage}
+                alt={product.name}
+                magnifierSize={180}
+                zoomLevel={3}
+              />
             </div>
             <div className="flex space-x-2">
               {product.images.map((image, index) => (
@@ -80,8 +97,24 @@ const ProductDetailPage = () => {
               <p className={`text-${colorPalette.text.secondary}`}>{product.careInstructions}</p>
             </div>
 
+            {/* Quantity Selector */}
+            <div className="mb-6">
+              <label htmlFor="quantity" className={`block mb-2 text-${colorPalette.text.primary} font-semibold`}>Quantity</label>
+              <select
+                id="quantity"
+                value={quantity}
+                onChange={(e) => setQuantity(parseInt(e.target.value))}
+                className={`w-24 p-2 border border-${colorPalette.ui.border} rounded focus:ring-2 focus:ring-${colorPalette.primary.base} focus:outline-none`}
+              >
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
+                  <option key={num} value={num}>{num}</option>
+                ))}
+              </select>
+            </div>
+
             <div className="flex space-x-4">
               <button
+                onClick={handleAddToCart}
                 className={`flex-1 bg-${colorPalette.primary.base} text-${colorPalette.text.light} py-3 rounded hover:bg-${colorPalette.primary.dark} transition-all duration-300 transform hover:scale-105`}
               >
                 Add to Cart
