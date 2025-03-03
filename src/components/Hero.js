@@ -13,13 +13,13 @@ const Hero = () => {
   return (
     <div className={`bg-${colorPalette.primary.lightest} py-16 md:py-24 px-4`}>
       <div className="max-w-5xl mx-auto">
-        <div className="text-center">
+        <div className="text-center flex flex-col items-center justify-center">
           <div className={`flex justify-center mb-8 ${animationApplied ? 'animate-fadeIn' : ''}`}>
-            <div className="w-full max-w-xs md:max-w-sm">
-              <Logo withText size="lg" className="w-full" />
+            <div className="flex justify-center w-full max-w-2xl">
+              <Logo withText size="xl" className="mx-auto max-w-full" />
             </div>
           </div>
-          <p className={`text-xl md:text-2xl text-${colorPalette.text.secondary} mb-8 ${animationApplied ? 'animate-fadeIn animation-delay-300' : ''}`}>
+          <p className={`text-xl md:text-2xl text-${colorPalette.text.secondary} mb-8 max-w-2xl mx-auto ${animationApplied ? 'animate-fadeIn animation-delay-300' : ''}`}>
             Artisanal pieces made to last a lifetime, from our workshop to your hands
           </p>
           <button

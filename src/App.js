@@ -26,18 +26,18 @@ export const Logo = ({ size = 'md', textOnly = false, withText = false, classNam
     sm: 'h-8',
     md: 'h-12',
     lg: 'h-20',
-    xl: 'h-32',
-    '2xl': 'h-40'
+    xl: 'h-28',
+    '2xl': 'h-36'
   };
 
   // Text size classes - much larger than before
   const textSizeClasses = {
-    xs: 'text-lg',
-    sm: 'text-xl',
-    md: 'text-2xl',
-    lg: 'text-3xl',
-    xl: 'text-4xl',
-    '2xl': 'text-5xl'
+    xs: 'text-2xl',
+    sm: 'text-3xl',
+    md: 'text-4xl',
+    lg: 'text-5xl',
+    xl: 'text-6xl',
+    '2xl': 'text-7xl'
   };
 
   if (textOnly) {

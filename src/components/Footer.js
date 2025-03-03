@@ -9,13 +9,13 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className={`bg-${colorPalette.ui.darkBackground} text-${colorPalette.text.lightest} py-12`}>
+    <footer className={`bg-${colorPalette.ui.darkBackground} text-${colorPalette.text.lightest} py-12 text-sm`}>
       <div className="max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand and description */}
           <div>
             <div className="mb-4">
-              <Logo size="lg" className={`text-${colorPalette.primary.base}`} />
+              <Logo size="md" className={`text-${colorPalette.primary.base}`} />
             </div>
             <p className="mb-4">
               Handcrafted leather goods made with care and attention to detail. Every piece tells a story of craftsmanship and dedication.
@@ -50,7 +50,7 @@ const Footer = () => {
 
           {/* Quick links */}
           <div>
-            <h3 className={`font-bold text-xl mb-4 text-${colorPalette.primary.base}`}>Quick Links</h3>
+            <h3 className={`font-bold text-lg mb-4 text-${colorPalette.primary.base}`}>Quick Links</h3>
             <ul className="space-y-2">
               <li>
                 <Link
@@ -93,7 +93,7 @@ const Footer = () => {
 
           {/* Contact info */}
           <div>
-            <h3 className={`font-bold text-xl mb-4 text-${colorPalette.primary.base}`}>Contact Us</h3>
+            <h3 className={`font-bold text-lg mb-4 text-${colorPalette.primary.base}`}>Contact Us</h3>
             <address className="not-italic">
               <p className="mb-2">123 Desert Lane</p>
               <p className="mb-2">Sedona, AZ 12345</p>

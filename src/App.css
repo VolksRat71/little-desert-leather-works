@@ -26,6 +26,61 @@
   height: auto;
 }
 
+/* Mobile menu animation */
+.mobile-menu-open {
+  max-height: 300px;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-top-width: 1px;
+}
+
+.mobile-menu-closed {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-top-width: 0;
+  visibility: hidden;
+}
+
+.mobile-menu {
+  transition: max-height 0.3s ease,
+              padding 0.2s ease,
+              border-width 0.1s ease,
+              visibility 0.3s ease;
+  overflow: hidden;
+}
+
+/* Add specific sizes for the small logo with text */
+.logo-responsive.logo-xs {
+  max-height: 28px;
+  width: auto;
+}
+
+.logo-responsive.logo-sm {
+  max-height: 38px;
+  width: auto;
+}
+
+.logo-responsive.logo-md {
+  max-height: 48px;
+  width: auto;
+}
+
+.logo-responsive.logo-lg {
+  max-height: 120px;
+  width: auto;
+}
+
+.logo-responsive.logo-xl {
+  max-height: 180px;
+  width: auto;
+}
+
+.logo-responsive.logo-2xl {
+  max-height: 240px;
+  width: auto;
+}
+
 /* Adjust logo sizes for different screen sizes */
 @media (max-width: 768px) {
   .logo-responsive.logo-lg {

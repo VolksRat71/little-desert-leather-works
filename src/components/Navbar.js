@@ -11,10 +11,10 @@ const CustomNavLink = ({ to, children, mobile }) => {
     <NavLink
       to={to}
       className={({ isActive }) => `
-        ${mobile ? 'block py-2 ' : ''}
+        ${mobile ? 'block py-2 text-sm' : 'text-sm lg:text-base'}
         ${isActive ? `text-${colorPalette.primary.base}` : `text-${colorPalette.text.light}`}
         hover:text-${colorPalette.primary.lightest}
-        transition-colors duration-300 relative
+        transition-colors duration-300 relative whitespace-nowrap
         after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5
         after:bg-${colorPalette.primary.base} after:transform
         ${isActive ? 'after:scale-x-100' : 'after:scale-x-0'}
@@ -43,15 +43,21 @@ const Navbar = () => {
   return (
     <nav className={`fixed w-full bg-${colorPalette.ui.darkBackground} text-${colorPalette.text.light} z-50 transition-transform duration-300 ${isNavbarVisible ? 'transform-none' : '-translate-y-full'}`}>
       <div className="max-w-6xl mx-auto px-4">
-        <div className="flex justify-between items-center py-5">
+        <div className="flex justify-between items-center py-3">
           <div className="flex items-center">
             <div onClick={() => navigate('/')} className="cursor-pointer">
-              <Logo size="md" className={`hover:text-${colorPalette.primary.lightest} transition-colors duration-300 text-shadow`} />
+              {/* Use logo with text on smaller screens, and regular logo on larger screens */}
+              <div className="block lg:hidden">
+                <Logo size="sm" withText={true} className={`hover:text-${colorPalette.primary.lightest} transition-colors duration-300 text-shadow`} />
+              </div>
+              <div className="hidden lg:block">
+                <Logo size="md" className={`hover:text-${colorPalette.primary.lightest} transition-colors duration-300 text-shadow`} />
+              </div>
             </div>
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
+          <div className="lg:hidden flex items-center">
             {/* Cart Icon for Mobile */}
             <button
               onClick={() => navigate('/cart')}
@@ -94,7 +100,7 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden lg:flex items-center space-x-5 whitespace-nowrap">
             <CustomNavLink to="/">Home</CustomNavLink>
             <CustomNavLink to="/products">Products</CustomNavLink>
             <CustomNavLink to="/about">About</CustomNavLink>
@@ -135,8 +141,11 @@ const Navbar = () => {
       </div>
 
       {/* Mobile menu panel */}
-      <div className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'}`}>
-        <div className={`bg-${colorPalette.ui.darkBackground} py-2 px-4 space-y-2 transition-all duration-300`}>
+      <div className="lg:hidden">
+        <div
+          className={`mobile-menu bg-${colorPalette.ui.darkBackground} px-6 space-y-3 border-${colorPalette.ui.darkBorder}
+          ${isMenuOpen ? 'mobile-menu-open' : 'mobile-menu-closed'}`}
+        >
           <CustomNavLink to="/" mobile>Home</CustomNavLink>
           <CustomNavLink to="/products" mobile>Products</CustomNavLink>
           <CustomNavLink to="/about" mobile>About</CustomNavLink>
