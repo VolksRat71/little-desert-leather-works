@@ -69,6 +69,13 @@ const Navbar = () => {
   const styles = useCommonStyles();
 
   const cartItemCount = getCartItemCount();
+  const [animationKey, setAnimationKey] = useState(0);
+
+  // Track cart count changes for animation
+  useEffect(() => {
+    // Increment the key to force a re-render with fresh animation
+    setAnimationKey(prevKey => prevKey + 1);
+  }, [cartItemCount]);
 
   // Default classes if colorPalette isn't loaded yet
   const bgDarkClass = theme.bg('ui.darkBackground', 'gray-900');
@@ -148,7 +155,10 @@ const Navbar = () => {
 
               {/* Cart item count indicator */}
               {cartItemCount > 0 && (
-                <span className={`absolute top-0 right-0 ${theme.bg('primary.base', 'amber-600')} ${theme.text('text.light', 'white')} text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center`}>
+                <span
+                  key={animationKey}
+                  className={`absolute top-0 right-0 ${theme.bg('primary.base', 'amber-600')} ${theme.text('text.light', 'white')} text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center ${cartItemCount === 1 ? 'animate-expand-in' : 'animate-count-bounce'}`}
+                >
                   {cartItemCount}
                 </span>
               )}
@@ -178,7 +188,7 @@ const Navbar = () => {
 
                   {/* Profile dropdown */}
                   {isAccountMenuOpen && (
-                    <div className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 ${theme.bg('ui.background', 'white')} ring-1 ring-black ring-opacity-5 focus:outline-none z-50`}>
+                    <div className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 ${theme.bg('ui.background', 'white')} ring-1 ring-black ring-opacity-5 focus:outline-none z-50 animate-scaleIn origin-top-right`}>
                       <div
                         className={`block px-4 py-2 text-sm ${theme.text('text.primary', 'gray-900')} border-b ${theme.border('ui.border', 'gray-200')}`}
                       >
