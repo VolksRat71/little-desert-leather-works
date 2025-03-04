@@ -18,9 +18,9 @@ const Footer = () => {
   return (
     <footer className={`${bgDarkClass} ${textLightestClass} py-12 text-sm`}>
       <div className="max-w-6xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand and description */}
-          <div>
+          <div className="md:col-span-2">
             <div className="mb-4">
               <Logo size="md" className={primaryBaseClass} />
             </div>
@@ -56,7 +56,7 @@ const Footer = () => {
           </div>
 
           {/* Quick links */}
-          <div>
+          <div className="md:col-span-1">
             <h3 className={`font-bold text-lg mb-4 ${primaryBaseClass}`}>Quick Links</h3>
             <ul className="space-y-2">
               <li>
@@ -69,6 +69,18 @@ const Footer = () => {
                   }}
                 >
                   Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/products"
+                  className={`${textLightClass} ${primaryLightestHoverClass} transition-colors duration-300`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate('/products');
+                  }}
+                >
+                  Products
                 </Link>
               </li>
               <li>
@@ -99,7 +111,7 @@ const Footer = () => {
           </div>
 
           {/* Contact info */}
-          <div>
+          <div className="md:col-span-1">
             <h3 className={`font-bold text-lg mb-4 ${primaryBaseClass}`}>Contact Us</h3>
             <address className="not-italic">
               {contactInfo?.showAddress && contactInfo?.address?.split('\n').map((line, index) => (

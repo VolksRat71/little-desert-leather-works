@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useWebsite } from '../context/WebsiteContext';
 import { Logo } from '../App';
@@ -61,7 +61,6 @@ const Navbar = () => {
   const primaryLightestClass = colorPalette?.primary?.lightest ? `hover:text-${colorPalette.primary.lightest}` : 'hover:text-amber-200';
   const primaryBaseClass = colorPalette?.primary?.base ? `bg-${colorPalette.primary.base}` : 'bg-amber-600';
   const darkBorderClass = colorPalette?.ui?.darkBorder ? `border-${colorPalette.ui.darkBorder}` : 'border-gray-800';
-  const primaryBaseTextClass = colorPalette?.primary?.base ? `text-${colorPalette.primary.base}` : 'text-amber-600';
 
   return (
     <nav className={`fixed w-full ${bgDarkClass} ${textLightClass} z-50 transition-transform duration-300 ${isNavbarVisible ? 'transform-none' : '-translate-y-full'}`}>
