@@ -17,7 +17,7 @@ const Footer = () => {
           {/* Brand and description */}
           <div className="md:col-span-2">
             <div className="mb-4">
-              <Logo size="md" className={theme.text('primary.base', 'amber-600')} />
+              <Logo size="md" light />
             </div>
             <p className="mb-4">
               Handcrafted leather goods made with care and attention to detail. Every piece tells a story of craftsmanship and dedication.

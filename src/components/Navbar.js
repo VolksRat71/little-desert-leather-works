@@ -72,10 +72,6 @@ const Navbar = () => {
 
   // Default classes if colorPalette isn't loaded yet
   const bgDarkClass = theme.bg('ui.darkBackground', 'gray-900');
-  const textLightClass = theme.text('text.light', 'white');
-  const primaryLightestClass = theme.hoverText('primary.lightest', 'amber-200');
-  const primaryBaseClass = theme.bg('primary.base', 'amber-600');
-  const darkBorderClass = theme.border('ui.darkBorder', 'gray-800');
 
   // Close account menu when clicking outside
   useEffect(() => {
@@ -115,7 +111,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`${bgDarkClass} fixed top-0 left-0 right-0 z-40 transition-transform duration-300 ${
+      className={`${bgDarkClass} fixed top-0 left-0 right-0 z-50 shadow-md transition-transform duration-300 ${
         isNavbarVisible ? 'translate-y-0' : '-translate-y-full'
       }`}
     >
@@ -182,7 +178,7 @@ const Navbar = () => {
 
                   {/* Profile dropdown */}
                   {isAccountMenuOpen && (
-                    <div className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 ${theme.bg('ui.background', 'white')} ring-1 ring-black ring-opacity-5 focus:outline-none`}>
+                    <div className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 ${theme.bg('ui.background', 'white')} ring-1 ring-black ring-opacity-5 focus:outline-none z-50`}>
                       <div
                         className={`block px-4 py-2 text-sm ${theme.text('text.primary', 'gray-900')} border-b ${theme.border('ui.border', 'gray-200')}`}
                       >
@@ -255,7 +251,7 @@ const Navbar = () => {
 
       {/* Mobile menu */}
       <div
-        className={`${isMenuOpen ? 'block' : 'hidden'} md:hidden ${bgDarkClass} border-t ${theme.border('ui.darkBorder', 'gray-800')}`}
+        className={`${isMenuOpen ? 'block' : 'hidden'} md:hidden ${bgDarkClass} border-t ${theme.border('ui.darkBorder', 'gray-800')} z-50`}
       >
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
           <CustomNavLink to="/" mobile>Home</CustomNavLink>

@@ -7,11 +7,12 @@ This document outlines a plan for migrating the remaining components in the Litt
 - ✅ `Modal.js` - Updated to use the theme system with useTheme and useCommonStyles
 - ✅ `Button.js` - New component created using the theme system
 - ✅ `ProductCard.js` - Updated to use the theme system with Button component
-- ✅ `Navbar.js` - Updated to use the theme system
+- ✅ `Navbar.js` - Updated to use the theme system with proper z-index and Logo using high-contrast white color
 - ✅ `CartNotification.js` - Updated to use the theme system
 - ✅ `Hero.js` - Migrated to use the theme system with Button component
 - ✅ `TestimonialCard.js` - Migrated to use the theme system
 - ✅ `Footer.js` - Migrated to use the theme system with helper components
+- ✅ `App.js (Logo component)` - Updated the Logo component to properly support high-contrast white text when in light mode
 
 ## Components to Migrate
 
@@ -113,6 +114,13 @@ As you migrate components, update this document to mark components as completed:
    // After - Use Tailwind classes instead when possible
    className={theme.bg('primary.base', 'amber-600')}
    ```
+
+## Troubleshooting Common Issues
+
+1. **Z-index conflicts**: Ensure proper z-index values (usually 40-50 for navigation components, 30 for dropdowns)
+2. **Contrast issues**: For dark backgrounds, always use the text-white class or theme.text('text.light', 'white')
+3. **Position issues**: For fixed elements, verify they have the correct positioning classes and container structure
+4. **Animation conflicts**: Check for conflicting transition properties when using the theme system
 
 ## Timeline
 

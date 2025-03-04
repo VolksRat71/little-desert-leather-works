@@ -45,7 +45,7 @@ export const Logo = ({ size = 'md', textOnly = false, withText = false, classNam
 
   if (textOnly) {
     return (
-      <span className={`desert-road-font ${textSizeClasses[size] || 'text-2xl'} font-bold ${className}`}>
+      <span className={`desert-road-font ${textSizeClasses[size] || 'text-2xl'} font-bold ${light ? 'text-white' : ''} ${className}`}>
         Little Desert Leather Works
       </span>
     );
@@ -65,7 +65,7 @@ export const Logo = ({ size = 'md', textOnly = false, withText = false, classNam
   return (
     <div className={`flex items-center ${className}`}>
       <img src={logoImage} alt="Logo" className={`${sizeClasses[size]} mr-3`} />
-      <span className={`desert-road-font ${textSizeClasses[size] || 'text-2xl'} font-bold ${className.includes('text-shadow') ? 'text-shadow' : ''}`}>
+      <span className={`desert-road-font ${textSizeClasses[size] || 'text-2xl'} font-bold ${light ? 'text-white' : ''} ${className.includes('text-shadow') ? 'text-shadow' : ''}`}>
         Little Desert Leather Works
       </span>
     </div>

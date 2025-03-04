@@ -8,7 +8,7 @@ const ProductCard = ({ product }) => {
   const theme = useTheme();
 
   const handleClick = () => {
-    navigate(`/products/${product.id}`);
+    navigate(`/product/${product.id}`);
   };
 
   return (
@@ -33,7 +33,7 @@ const ProductCard = ({ product }) => {
             size="sm"
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/products/${product.id}`);
+              navigate(`/product/${product.id}`);
             }}
           >
             View Details
