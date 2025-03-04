@@ -45,11 +45,37 @@ const ColorsSection = () => {
   // Track custom themes
   const [customThemes, setCustomThemes] = useState([]);
 
+  // Track custom theme name and description
+  const [customThemeName, setCustomThemeName] = useState('');
+  const [customThemeDescription, setCustomThemeDescription] = useState('');
+  const [themeToCustomize, setThemeToCustomize] = useState(null);
+
   // Dropdown menu state
   const [openActionMenu, setOpenActionMenu] = useState(null);
 
   // Track unsaved changes
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  // Load custom themes from localStorage on component mount
+  useEffect(() => {
+    try {
+      const savedThemes = localStorage.getItem('customThemes');
+      if (savedThemes) {
+        setCustomThemes(JSON.parse(savedThemes));
+      }
+    } catch (error) {
+      console.error('Error loading custom themes from localStorage:', error);
+    }
+  }, []);
+
+  // Save custom themes to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem('customThemes', JSON.stringify(customThemes));
+    } catch (error) {
+      console.error('Error saving custom themes to localStorage:', error);
+    }
+  }, [customThemes]);
 
   // Update hasUnsavedChanges when editedColors or colors change
   useEffect(() => {
@@ -186,11 +212,24 @@ const ColorsSection = () => {
     setSaving(true);
     setSaveError(null);
     try {
-      // Apply the theme preset through the context
-      const updatedColors = await applyThemePreset(presetId);
+      // Check if it's a custom theme first
+      const customTheme = customThemes.find(theme => theme.id === presetId);
+
+      let updatedColors;
+
+      if (customTheme) {
+        // For custom themes, apply directly from local state
+        updatedColors = {...customTheme.palette};
+
+        // Update the site's colors in the API
+        await updateColorPalette(updatedColors);
+      } else {
+        // For standard presets, use the existing API function
+        updatedColors = await applyThemePreset(presetId);
+      }
 
       // After the preset is applied, manually update local state to match
-      // Set current preset first
+      // Set current preset
       setCurrentPreset(presetId);
 
       // Important: Update local state only AFTER the preset has been applied
@@ -210,11 +249,7 @@ const ColorsSection = () => {
 
   // Preview a theme preset - temporarily show it without applying to API
   const handlePreviewTheme = (presetId) => {
-    // Find the preset
-    const preset = themePresets.find(p => p.id === presetId);
-
-    if (!preset) return;
-
+    // Check if preview is being toggled off for current theme
     if (previewTheme === presetId) {
       // If already previewing this theme, cancel preview
       console.log('Canceling site-wide preview, restoring colors:', prePreviewColors);
@@ -230,6 +265,16 @@ const ColorsSection = () => {
       setPreviewTheme(null);
       setPrePreviewColors(null);
     } else {
+      // Find the preset - first check standard presets
+      let preset = themePresets.find(p => p.id === presetId);
+
+      // If not found in standard presets, check custom themes
+      if (!preset) {
+        preset = customThemes.find(theme => theme.id === presetId);
+      }
+
+      if (!preset) return;
+
       // Start previewing this theme
       console.log('Starting site-wide preview of theme:', preset.id);
 
@@ -247,22 +292,38 @@ const ColorsSection = () => {
     }
   };
 
-  // Create a copy of a theme for customization
+  // Create a copy of a theme for customization or edit an existing custom theme
   const handleCopyTheme = (presetId) => {
-    const preset = themePresets.find(p => p.id === presetId);
+    // First check if it's a custom theme (for editing)
+    const customTheme = customThemes.find(theme => theme.id === presetId);
 
-    if (preset) {
-      // Copy the preset colors to edited colors
-      setEditedColors({...preset.palette});
+    if (customTheme) {
+      // Editing an existing custom theme
+      setEditedColors({...customTheme.palette});
+      setCustomThemeName(customTheme.name);
+      setCustomThemeDescription(customTheme.description);
+      setThemeToCustomize(presetId); // Store the ID to update instead of create new
+    } else {
+      // Standard preset - create a copy
+      const preset = themePresets.find(p => p.id === presetId);
 
-      // Switch to custom tab and enable customizing mode
-      setActiveTab('custom');
-      setIsCustomizing(true);
-      setPreviewTheme(null);
+      if (preset) {
+        // Copy the preset colors to edited colors
+        setEditedColors({...preset.palette});
 
-      // Could also add to custom themes list if needed
-      // For now, just switch to customizing mode
+        // Set default name and description based on the original theme
+        setCustomThemeName(`${preset.name} (Custom)`);
+        setCustomThemeDescription(`My customized version of ${preset.name}`);
+
+        // Store which theme we're customizing
+        setThemeToCustomize(preset.id);
+      }
     }
+
+    // Switch to custom tab and enable customizing mode
+    setActiveTab('custom');
+    setIsCustomizing(true);
+    setPreviewTheme(null);
   };
 
   // Handle menu toggle
@@ -538,9 +599,109 @@ const ColorsSection = () => {
             {!isCustomizing ? (
               <div>
                 {customThemes.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {/* Render custom themes - similar to standard themes but with edit/delete options */}
-                    {/* This would show saved custom themes */}
+                  <div>
+                    <p className="text-gray-600 mb-4">
+                      These are your custom themes. You can preview, apply, or further customize them.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {customThemes.map(theme => (
+                        <div
+                          key={theme.id}
+                          className={`
+                            border rounded-lg p-4 transition-all relative
+                            ${currentPreset === theme.id ? 'border-blue-500 ring-2 ring-blue-300' : 'border-gray-200'}
+                            ${previewTheme === theme.id ? 'border-amber-500 ring-2 ring-amber-300 bg-amber-50' : ''}
+                          `}
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h4 className="font-medium text-gray-900">{theme.name}</h4>
+                              <p className="text-gray-500 text-sm mb-3">{theme.description}</p>
+                            </div>
+                            <div className="relative">
+                              <button
+                                onClick={() => toggleActionMenu(theme.id)}
+                                className="p-1 rounded-full hover:bg-gray-100"
+                                aria-label="Theme actions"
+                              >
+                                <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                  <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                </svg>
+                              </button>
+
+                              {/* Dropdown Menu */}
+                              {openActionMenu === theme.id && (
+                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 py-1 border border-gray-200">
+                                  <button
+                                    onClick={() => {
+                                      handleApplyPreset(theme.id);
+                                      setOpenActionMenu(null);
+                                    }}
+                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                  >
+                                    Apply Theme
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      handleCopyTheme(theme.id);
+                                      setOpenActionMenu(null);
+                                    }}
+                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                  >
+                                    Edit Theme
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      // Remove theme from customThemes
+                                      setCustomThemes(customThemes.filter(t => t.id !== theme.id));
+                                      setOpenActionMenu(null);
+                                    }}
+                                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                                  >
+                                    Delete Theme
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Color swatches preview */}
+                          <div className="flex space-x-2 mb-4">
+                            {theme.palette.primary && (
+                              <div
+                                className={`w-8 h-8 rounded-full bg-${theme.palette.primary.base} border border-gray-200`}
+                                title="Primary color"
+                              ></div>
+                            )}
+                            {theme.palette.secondary && (
+                              <div
+                                className={`w-8 h-8 rounded-full bg-${theme.palette.secondary.base} border border-gray-200`}
+                                title="Secondary color"
+                              ></div>
+                            )}
+                            {theme.palette.text && (
+                              <div
+                                className={`w-8 h-8 rounded-full bg-${theme.palette.text.primary} border border-gray-200`}
+                                title="Text color"
+                              ></div>
+                            )}
+                          </div>
+
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handlePreviewTheme(theme.id)}
+                              className={`w-full px-3 py-1.5 text-sm rounded transition-colors duration-200
+                                ${previewTheme === theme.id
+                                  ? 'bg-amber-500 text-white font-medium border border-amber-600'
+                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
+                                }`}
+                            >
+                              {previewTheme === theme.id ? 'Exit Preview' : 'Preview'}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-12">
@@ -718,6 +879,40 @@ const ColorsSection = () => {
                   </div>
 
                   {/* Save and Reset buttons for custom theme */}
+                  <div className="mt-8 mb-4">
+                    <div className="bg-white p-4 rounded shadow-sm">
+                      <h3 className="text-lg font-medium mb-4">Theme Details</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label htmlFor="themeName" className="block text-sm font-medium text-gray-700 mb-1">
+                            Theme Name
+                          </label>
+                          <input
+                            type="text"
+                            id="themeName"
+                            value={customThemeName}
+                            onChange={(e) => setCustomThemeName(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Enter a name for your custom theme"
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="themeDescription" className="block text-sm font-medium text-gray-700 mb-1">
+                            Theme Description
+                          </label>
+                          <textarea
+                            id="themeDescription"
+                            value={customThemeDescription}
+                            onChange={(e) => setCustomThemeDescription(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Enter a description for your custom theme"
+                            rows="3"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="flex justify-end space-x-4">
                     <button
                       onClick={handleResetAll}
@@ -728,9 +923,48 @@ const ColorsSection = () => {
                     </button>
                     <button
                       onClick={() => {
-                        // Save custom theme logic would go here
-                        handleSaveColors();
-                        setIsCustomizing(false);
+                        // Save custom theme with name and description
+                        if (customThemeName.trim()) {
+                          // Check if editing an existing custom theme
+                          const existingThemeIndex = customThemes.findIndex(t => t.id === themeToCustomize);
+
+                          if (existingThemeIndex >= 0) {
+                            // Update existing theme
+                            const updatedThemes = [...customThemes];
+                            updatedThemes[existingThemeIndex] = {
+                              ...updatedThemes[existingThemeIndex],
+                              name: customThemeName,
+                              description: customThemeDescription,
+                              palette: {...editedColors}
+                            };
+                            setCustomThemes(updatedThemes);
+                          } else {
+                            // Create a new custom theme
+                            const newCustomTheme = {
+                              id: `custom-${Date.now()}`,
+                              name: customThemeName,
+                              description: customThemeDescription,
+                              palette: {...editedColors},
+                              category: 'custom',
+                              baseTheme: themeToCustomize
+                            };
+
+                            // Add to custom themes
+                            setCustomThemes([...customThemes, newCustomTheme]);
+                          }
+
+                          // Save colors to apply to site
+                          handleSaveColors();
+
+                          // Reset fields and exit customizing mode
+                          setCustomThemeName('');
+                          setCustomThemeDescription('');
+                          setThemeToCustomize(null);
+                          setIsCustomizing(false);
+                        } else {
+                          // Name is required
+                          alert('Please enter a name for your custom theme');
+                        }
                       }}
                       className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors duration-200"
                       disabled={saving || isLoading.colorPalette}
