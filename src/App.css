@@ -994,3 +994,16 @@ html.modal-open {
 .placeholder-user-btn:hover {
   background-color: #f9fafb;
 }
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.animate-fadeOut {
+  animation: fadeOut 0.4s ease-out forwards;
+}

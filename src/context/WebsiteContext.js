@@ -846,12 +846,13 @@ export const WebsiteProvider = ({ children }) => {
         throw new Error(`Theme preset with ID ${presetId} not found`);
       }
 
-      // Apply the preset palette
+      // Apply the preset palette - make API call
       const result = await api.marketing.updateColorPalette(preset.palette);
 
-      // Update local state
-      setColors(result);
+      // Important: First clear the temporary palette, then update colors
+      // This ensures we don't have conflicting states
       setTemporaryColorPalette(null);
+      setColors(result);
 
       setErrorState('colorPalette', null);
       return result;
@@ -910,7 +911,9 @@ export const WebsiteProvider = ({ children }) => {
             overlay: "gray-800/75"
           }
         },
+        colors,
         temporaryColorPalette,
+        setTemporaryColorPalette,
         contactInfo,
         orders,
         users: usersData,
@@ -924,7 +927,6 @@ export const WebsiteProvider = ({ children }) => {
         updateArtisanInfo,
         updateContactInfo,
         updateColorPalette,
-        setTemporaryColorPalette,
         addUser,
         updateUser,
         deleteUser,

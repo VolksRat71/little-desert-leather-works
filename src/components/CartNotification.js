@@ -9,9 +9,9 @@ const CartNotification = () => {
 
   useEffect(() => {
     if (showCartNotification) {
-      setAnimation('animate-slide-in');
+      setAnimation('animate-slideInRight');
       const timer = setTimeout(() => {
-        setAnimation('animate-slide-out');
+        setAnimation('animate-slideInRight animate-fadeOut');
       }, 3000);
       return () => clearTimeout(timer);
     }
@@ -21,9 +21,9 @@ const CartNotification = () => {
 
   return (
     <div
-      className={`fixed z-50 top-2 right-2 md:top-${isNavbarVisible ? '16' : '2'} md:right-4 max-w-sm transition-all duration-300 transform ${animation}`}
+      className={`fixed z-50 ${isNavbarVisible ? 'top-20' : 'top-2'} right-2 md:right-4 max-w-sm transition-all duration-300 transform ${animation}`}
     >
-      <div className={`${theme.bg('primary.base', 'amber-600')} ${theme.text('text.light', 'white')} rounded-lg shadow-lg p-4 pr-9 flex items-center justify-between`}>
+      <div className={`${theme.bg('primary.base', 'amber-600')} ${theme.text('text.light', 'white')} rounded-lg shadow-lg p-4 flex items-center justify-between`}>
         <div className="flex items-center">
           <svg className="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -33,7 +33,7 @@ const CartNotification = () => {
 
         <button
           onClick={() => navigate('/cart')}
-          className={`ml-4 px-2 py-1 ${theme.bg('text.light', 'white')} ${theme.text('primary.base', 'amber-600')} rounded ${theme.hoverBg('primary.lightest', 'amber-100')} transition-colors duration-200`}
+          className={`ml-5 px-4 py-1.5 ${theme.bg('text.light', 'white')} ${theme.text('primary.base', 'amber-600')} rounded ${theme.hoverBg('primary.lightest', 'amber-100')} transition-colors duration-200`}
         >
           View Cart
         </button>

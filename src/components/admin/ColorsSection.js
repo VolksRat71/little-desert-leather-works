@@ -5,6 +5,7 @@ import TailwindColorPicker from '../TailwindColorPicker';
 const ColorsSection = () => {
   const {
     colorPalette,
+    colors,
     updateColorPalette,
     temporaryColorPalette,
     setTemporaryColorPalette,
@@ -31,24 +32,50 @@ const ColorsSection = () => {
 
   // When either colorPalette or temporaryColorPalette changes, update our state
   useEffect(() => {
+    // Skip unnecessary updates if we're currently saving or handling a preset
+    if (saving) return;
+
+    // We only want to update our local state from context when:
+    // 1. There's a temporary palette (editing in progress)
+    // 2. Or there's NO temporaryColorPalette and we need to sync with main colorPalette
     if (temporaryColorPalette) {
-      setEditedColors(temporaryColorPalette);
-    } else {
-      setEditedColors({ ...colorPalette });
-      setOriginalColors({ ...colorPalette });
+      // If we have a temporary palette, use it for state
+      setEditedColors({...temporaryColorPalette});
+    } else if (colorPalette &&
+               !currentPreset && // Don't update if we just set a preset
+               JSON.stringify(editedColors) !== JSON.stringify(colorPalette)) {
+      // Only update if colorPalette has actually changed from our current state
+      // Create a new reference to ensure React detects the change
+      const newColors = JSON.parse(JSON.stringify(colorPalette));
+      setEditedColors(newColors);
+      setOriginalColors(newColors);
     }
-  }, [colorPalette, temporaryColorPalette]);
+  }, [colorPalette, temporaryColorPalette, saving, editedColors, currentPreset]);
+
+  // Check if we have unsaved changes by comparing against the actual saved colors (colors)
+  // not the temporaryColorPalette or colorPalette which might include temporary changes
+  const hasUnsavedChanges = colors && JSON.stringify(editedColors) !== JSON.stringify(colors);
 
   // Apply color changes to context without clearing on unmount
   useEffect(() => {
-    // Only update if editedColors has actually changed from initial state
-    if (JSON.stringify(editedColors) !== JSON.stringify(temporaryColorPalette)) {
-      setTemporaryColorPalette(editedColors);
-    }
-  }, [editedColors, setTemporaryColorPalette, temporaryColorPalette]);
+    // Skip if we're currently saving to avoid loops
+    if (saving) return;
 
-  // Check if we have unsaved changes
-  const hasUnsavedChanges = JSON.stringify(temporaryColorPalette) !== JSON.stringify(colorPalette);
+    // Only update if editedColors has actually changed from temporary palette
+    if (JSON.stringify(editedColors) !== JSON.stringify(temporaryColorPalette)) {
+      // Debounce the state update to avoid rapid changes
+      const timer = setTimeout(() => {
+        // Only update temporary palette if we're actually editing
+        // This prevents overriding a theme preset that was just applied
+        if (!currentPreset ||
+            (colors && JSON.stringify(editedColors) !== JSON.stringify(colors))) {
+          setTemporaryColorPalette({...editedColors});
+        }
+      }, 100); // Slightly longer debounce to ensure stability
+
+      return () => clearTimeout(timer);
+    }
+  }, [editedColors, setTemporaryColorPalette, temporaryColorPalette, saving, currentPreset, colors]);
 
   // Save the edited colors to the persistent storage/context
   const handleSaveColors = async () => {
@@ -67,25 +94,41 @@ const ColorsSection = () => {
 
   // Reset all colors to their original values (before editing)
   const handleResetAll = () => {
-    setEditedColors({ ...originalColors });
+    // Update both states with the same reference to avoid double-render
+    const resetColors = {...originalColors};
+    setEditedColors(resetColors);
+
+    // Clear any set preset
+    setCurrentPreset(null);
+
+    // In reset case, we want to clear the temporary palette completely
+    // This ensures we're working with the main color palette
     setTemporaryColorPalette(null);
   };
 
   // Reset a specific color section (primary, secondary, text, ui)
   const handleResetSection = (section) => {
+    // Create one new object reference for the section
+    const resetSectionData = {...originalColors[section]};
+
+    // Update editedColors with the reset section
     setEditedColors({
       ...editedColors,
-      [section]: { ...originalColors[section] }
+      [section]: resetSectionData
     });
   };
 
   // Reset a specific color property
   const handleResetColor = (section, property) => {
+    // Get the original value
+    const originalValue = originalColors[section][property];
+
+    // Update just the single property
     setEditedColors({
       ...editedColors,
       [section]: {
         ...editedColors[section],
-        [property]: originalColors[section][property]
+        [property]: originalValue
       }
     });
   };
@@ -114,8 +157,20 @@ const ColorsSection = () => {
     setSaving(true);
     setSaveError(null);
     try {
-      await applyThemePreset(presetId);
+      // Apply the theme preset through the context
+      const updatedColors = await applyThemePreset(presetId);
+
+      // After the preset is applied, manually update local state to match
+      // Set current preset first
       setCurrentPreset(presetId);
+
+      // Important: Update local state only AFTER the preset has been applied
+      // Create new object references to ensure React detects the change
+      const colorsCopy = JSON.parse(JSON.stringify(updatedColors));
+
+      // Update both states in sequence
+      setOriginalColors(colorsCopy);
+      setEditedColors(colorsCopy);
     } catch (error) {
       console.error('Error applying theme preset:', error);
       setSaveError('Failed to apply theme preset. Please try again.');
