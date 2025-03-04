@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 
 // Tailwind color palette
 const tailwindColors = {
@@ -28,6 +28,19 @@ const tailwindColors = {
   desert: ['tan', 'orange', 'terracotta', 'rust', 'olive', 'green', 'black'],
 };
 
+// Helper to safely render the color preview
+const renderColorPreview = (colorValue) => {
+  if (!colorValue) return null;
+  const [family, shade] = colorValue.split('-');
+  if (!family || !shade) return null;
+  return <div className={`w-6 h-6 rounded mr-2 bg-${family}-${shade}`} aria-hidden="true"></div>;
+};
+
+// Helper to get display name for shades (handling both numeric and named shades)
+const getShadeLabel = (shade) => {
+  return shade;
+};
+
 const TailwindColorPicker = ({ value, onChange, label }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState(value || 'amber-600');
@@ -38,16 +51,20 @@ const TailwindColorPicker = ({ value, onChange, label }) => {
     value ? value.split('-')[1] : '600'
   );
   const dropdownRef = useRef(null);
+  const prevValueRef = useRef(value);
 
   useEffect(() => {
     // Update component if value is changed externally
-    if (value && value !== selectedColor) {
+    // Compare with the previous value instead of selectedColor to avoid circular dependency
+    if (value && value !== prevValueRef.current) {
       const [family, shade] = value.split('-');
       setSelectedColor(value);
       setSelectedFamily(family);
       setSelectedShade(shade);
+      // Update the ref to track the current value
+      prevValueRef.current = value;
     }
-  }, [value, selectedColor]);
+  }, [value]); // Remove selectedColor from dependency array
 
   useEffect(() => {
     // Close the dropdown when clicking outside
@@ -73,17 +90,6 @@ const TailwindColorPicker = ({ value, onChange, label }) => {
     setSelectedColor(newColor);
     onChange(newColor);
     setIsOpen(false);
-  };
-
-  // Helper to safely render the color preview
-  const renderColorPreview = (colorValue) => {
-    const [family, shade] = colorValue.split('-');
-    return <div className={`w-6 h-6 rounded mr-2 bg-${family}-${shade}`} aria-hidden="true"></div>;
-  };
-
-  // Helper to get display name for shades (handling both numeric and named shades)
-  const getShadeLabel = (shade) => {
-    return shade;
   };
 
   return (
@@ -163,4 +169,8 @@ const TailwindColorPicker = ({ value, onChange, label }) => {
   );
 };
 
-export default TailwindColorPicker;
+// Export the memoized component to prevent unnecessary re-renders
+export default memo(TailwindColorPicker, (prevProps, nextProps) => {
+  // Only re-render if these props change
+  return prevProps.value === nextProps.value && prevProps.label === nextProps.label;
+});
