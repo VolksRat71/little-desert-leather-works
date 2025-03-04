@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.css": "/little-desert-leather-works/static/css/main.10f03ba0.css",
-    "main.js": "/little-desert-leather-works/static/js/main.7e8bde3f.js",
+    "main.css": "/little-desert-leather-works/static/css/main.2b7f63d6.css",
+    "main.js": "/little-desert-leather-works/static/js/main.6fab9c75.js",
     "static/js/453.bb79db73.chunk.js": "/little-desert-leather-works/static/js/453.bb79db73.chunk.js",
     "static/media/logo-with-text.png": "/little-desert-leather-works/static/media/logo-with-text.92923a8b0e4c8e9bc91b.png",
     "static/media/logo-with-text-light.png": "/little-desert-leather-works/static/media/logo-with-text-light.834112cc4ff7b1261f23.png",
     "static/media/logo.png": "/little-desert-leather-works/static/media/logo.01ad02f382591954faf8.png",
     "static/media/Desert Road.otf": "/little-desert-leather-works/static/media/Desert Road.76298b67f4c8f8141f89.otf",
     "index.html": "/little-desert-leather-works/index.html",
-    "main.10f03ba0.css.map": "/little-desert-leather-works/static/css/main.10f03ba0.css.map",
-    "main.7e8bde3f.js.map": "/little-desert-leather-works/static/js/main.7e8bde3f.js.map",
+    "main.2b7f63d6.css.map": "/little-desert-leather-works/static/css/main.2b7f63d6.css.map",
+    "main.6fab9c75.js.map": "/little-desert-leather-works/static/js/main.6fab9c75.js.map",
     "453.bb79db73.chunk.js.map": "/little-desert-leather-works/static/js/453.bb79db73.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.10f03ba0.css",
-    "static/js/main.7e8bde3f.js"
+    "static/css/main.2b7f63d6.css",
+    "static/js/main.6fab9c75.js"
   ]
 }
