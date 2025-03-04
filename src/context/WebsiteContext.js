@@ -1,280 +1,18 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+// Import API functions
+import { api } from '../api';
 
-// Color palette as JSON for easy customization
-export const colorPalette = {
-  primary: {
-    base: "desert-orange",      // Bright terracotta/orange from the logo
-    light: "desert-terracotta", // Lighter terracotta shade
-    dark: "desert-rust",        // Darker terracotta/rust color
-    hover: "desert-rust",       // Hover state
-    lightest: "desert-tan",     // Tan background from the logo
-    background: "stone-50"      // White background for better contrast
-  },
-  secondary: {
-    base: "desert-olive",       // Olive green from the logo
-    light: "desert-green",      // Lighter olive green
-    dark: "desert-black",       // Very dark color for emphasis
-    background: "stone-50",     // White background for better contrast
-    lightest: "stone-50"        // Lightest cream color
-  },
-  text: {
-    primary: "desert-black",    // Black text for primary (dark for contrast)
-    secondary: "desert-rust",   // Rust brown for secondary text
-    light: "stone-50",          // White text for dark backgrounds (better contrast)
-    accent: "desert-rust",      // Darker terracotta for accent text (better contrast)
-    medium: "desert-black",     // Black for medium text (better contrast)
-    dark: "desert-black",       // Black for strong emphasis
-    lightest: "stone-50"        // White text color
-  },
-  ui: {
-    border: "desert-terracotta", // Terracotta border
-    shadow: "desert-rust",     // Rust shadow color
-    background: "stone-50",    // White background for better contrast
-    darkBackground: "desert-black", // Black background for better contrast
-    lightBackground: "stone-50", // White background for better contrast
-    accent: "desert-orange",   // Bright orange accent
-    earthGreen: "desert-olive" // Olive green accent
-  }
-};
-
-// Fake data for products
-export const products = [
-  {
-    id: 1,
-    name: "Signature Travel Duffle",
-    description: "Handcrafted full-grain leather duffle bag with reinforced stitching and spacious interior. Each bag is meticulously crafted for durability and style.",
-    shortDescription: "Handcrafted full-grain leather duffle bag with reinforced stitching and spacious interior.",
-    price: "$695",
-    image: "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/l/e/leather-duffle-bag-tumbled-chestnut-leather-3.5_1.jpg",
-    images: [
-      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/l/e/leather-duffle-bag-tumbled-chestnut-leather-3.5_1.jpg",
-      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/l/e/leather_duffle_bag_harness_chestnut_leather_6_1.jpg",
-      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/l/e/leather-duffle-bag-harness-cognac-leather-4.5_1.jpg"
-    ],
-    features: [
-      "Full-grain vegetable-tanned leather",
-      "Saddle-stitched with waxed thread",
-      "Width: 20”",
-      "Height: 12”",
-      "Depth: 10”",
-      "Weight: 4.25 Lbs.",
-    ],
-    careInstructions: "Condition with leather balm every 3-6 months. Avoid excessive moisture.",
-    isVisible: true
-  },
-  {
-    id: 2,
-    name: "The Classic Wallet",
-    description: "The Classic Wallet is a timeless design that features a single pocket and a leather strap for easy carrying. It's perfect for everyday use and makes a great gift.",
-    shortDescription: "The Classic Wallet is a timeless design that features a single pocket and a leather strap for easy carrying.",
-    price: "$95",
-    image: "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_bifold_wallet__frank_clegg_made_in-usa_2.jpg",
-    images: [
-      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_bifold_wallet__frank_clegg_made_in-usa_2.jpg",
-      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/color_ways_bifold_wallets__frank_clegg_made_in-usa_1_5.jpg",
-      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_bifold_wallet__frank_clegg_made_in-usa_1_1.jpg"
-    ],
-    features: [
-      "8-10oz full-grain leather",
-      "Saddle-stitched with waxed thread",
-      "Hand-beveled and burnished edges",
-      "Width options: 1.25\" or 1.5\"",
-      "Custom engraving available"
-    ],
-    careInstructions: "Condition with leather balm every 3-6 months. Avoid excessive moisture.",
-    isVisible: true
-  },
-  {
-    id: 3,
-    name: "Desert Messenger Bag",
-    description: "Rugged messenger bag with adjustable strap and antique hardware. Featuring a spacious main compartment and multiple organization pockets.",
-    shortDescription: "Rugged messenger bag with adjustable strap and antique hardware.",
-    price: "$375",
-    image: "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/h/chestnut_leather__bound_edge_messenger_bag_frank_clegg_made_in-usa_1_1.jpg",
-    images: [
-      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/h/chestnut_leather__bound_edge_messenger_bag_frank_clegg_made_in-usa_1_1.jpg",
-      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/h/chestnut_leather_bound_edge_messenger_bag_frank_clegg_made_in-usa_8.jpg",
-      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/h/chestnut_leather_bound_edge_messenger_bag_frank_clegg_made_in-usa_6.jpg"
-    ],
-    features: [
-      "5-6oz full-grain oil-tanned leather",
-      "Antique brass hardware",
-      "Adjustable shoulder strap",
-      "Cotton canvas lining",
-      "Fits 15\" laptop",
-      "Dimensions: 15\" x 11\" x 4\""
-    ],
-    careInstructions: "Wipe with damp cloth. Apply leather conditioner yearly or as needed.",
-    isVisible: true
-  },
-  {
-    id: 4,
-    name: "English Backpack",
-    description: "Handcrafted English-style backpack with a leather strap and brass hardware. Features a spacious main compartment and multiple pockets for organization.",
-    shortDescription: "Handcrafted English-style backpack with a leather strap and brass hardware.",
-    price: "$525",
-    image: "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_buckle_backpack_frank_clegg_made_in-usa_1.jpg",
-    images: [
-      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_buckle_backpack_frank_clegg_made_in-usa_1.jpg",
-      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_buckle_backpack_frank_clegg_made_in-usa_6.jpg",
-      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_buckle_backpack_frank_clegg_made_in-usa_5.jpg"
-    ],
-    features: [
-      "4-5oz full-grain leather",
-      "Fits standard 20\" laptop",
-      "Buckle closure",
-      "Sturdy leather straps",
-      "Optional personalization available"
-    ],
-    careInstructions: "Condition with leather balm every 3-6 months. Avoid excessive moisture.",
-    isVisible: true
-  }
-];
-
-// Fake testimonials
-export const testimonials = [
-  {
-    id: 1,
-    name: "Michael R.",
-    location: "Dallas, TX",
-    testimonial: "The craftsmanship on my wallet is incredible. After two years of daily use, it's developing a beautiful patina and holding up perfectly. It's rare to find goods made with this level of care these days.",
-    image: "https://placehold.co/64x64/8b5a2b/ffffff?text=MR",
-    isVisible: true
-  },
-  {
-    id: 2,
-    name: "Sarah J.",
-    location: "Austin, TX",
-    testimonial: "I commissioned a custom bag as a gift for my husband. The attention to detail and the personal touches make it truly one of a kind. The entire experience working with Little Desert Leather Works was exceptional.",
-    image: "https://placehold.co/64x64/704820/ffffff?text=SJ",
-    isVisible: true
-  },
-  {
-    id: 3,
-    name: "David M.",
-    location: "Houston, TX",
-    testimonial: "The belt I purchased has become my everyday favorite. The quality of the leather is unmatched by anything I've found elsewhere. I've already ordered two more in different colors.",
-    image: "https://placehold.co/64x64/5c4c35/ffffff?text=DM",
-    isVisible: true
-  }
-];
-
-// Artisan information
-export const artisan = {
-  name: "Morgan E Ludemann",
-  title: "Leather Craftsman",
-  image: "https://cdn-prod-ccv.adobe.com/UDwPnVGbImo/image/UDwPnVGbImo_poster.jpg?hdnts=st%3D1741101919%7Eexp%3D1741361119%7Eacl%3D%2Fshared_assets%2Fimage%2F*%21%2Fz%2FUDwPnVGbImo%2Frend%2F*%21%2Fi%2FUDwPnVGbImo%2Frend%2F*%21%2FUDwPnVGbImo%2Frend%2F*%21%2FUDwPnVGbImo%2Fimage%2F*%21%2FUDwPnVGbImo%2Fcaptions%2F*%7Ehmac%3Dfd9b885accf8efc187b87b5bab7d5d8a1276916fccf076bae09982b2fedfb9b1",
-  bio: "As a leather artisan, I am dedicated to merging contemporary aesthetics with traditional craftsmanship. My journey began in a vibrant my personal Austin workshop, where I immersed myself in the art of leather crafting. This experience ignited a passion for creating unique, high-quality pieces that reflect both innovation and heritage.\n\nDrawing inspiration from the dynamic energy of urban life and the rich history of leather artisans, I aim to craft items that are both functional and stylish. The diverse textures and colors of cityscapes inspire my designs, encouraging me to push boundaries and explore new creative avenues.\n\nEach piece I create is a reflection of my commitment to excellence and my belief in the beauty of well-crafted goods. I strive to produce items that not only serve a purpose but also tell a story, evolving with you over time and gaining character with every use.",
-  philosophy: "I am committed to the art of thoughtful craftsmanship, where creativity meets precision. By focusing on intentional design and meticulous attention to detail, I ensure that each piece is crafted with integrity and a modern touch.",
-  skills: ["Hand-stitching", "Tooling & Carving", "Dyeing & Finishing", "Pattern Making", "Custom Design"],
-  isVisible: true
-};
-
-// Create sample users data
-export const users = [
-  {
-    id: 1,
-    name: 'Morgan Ludemann',
-    email: 'morgan@littledesertleatherworks.com',
-    role: 'Admin',
-    lastLogin: '2023-03-15',
-    phone: '(555) 123-4567',
-    address: '123 Admin St, Austin, TX 78701',
-    profileImage: 'https://placehold.co/200x200/amber700/ffffff?text=Admin',
-    marketingPreferences: {
-      emailOffers: true,
-      textOffers: false,
-      orderUpdates: true
-    }
-  },
-  {
-    id: 2,
-    name: 'John Doe',
-    email: 'john@example.com',
-    role: 'User',
-    lastLogin: '2023-03-10',
-    phone: '(555) 987-6543',
-    address: '456 Customer Ave, Austin, TX 78704',
-    profileImage: 'https://placehold.co/200x200/amber700/ffffff?text=JD',
-    marketingPreferences: {
-      emailOffers: true,
-      textOffers: true,
-      orderUpdates: true
-    }
-  },
-  {
-    id: 3,
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    role: 'User',
-    lastLogin: '2023-03-12',
-    phone: '(555) 456-7890',
-    address: '789 Customer Blvd, Austin, TX 78745',
-    profileImage: 'https://placehold.co/200x200/amber700/ffffff?text=JS',
-    marketingPreferences: {
-      emailOffers: false,
-      textOffers: false,
-      orderUpdates: true
-    }
-  }
-];
-
-// Sample marketing campaigns
-export const marketingCampaigns = [
-  {
-    id: 1,
-    name: "Summer Sale 2023",
-    type: "site-wide",
-    discountType: "percentage",
-    discountValue: 20,
-    startDate: "2023-06-01",
-    endDate: "2023-06-30",
-    isActive: true,
-    heroImage: "https://placehold.co/1200x400/8b5a2b/ffffff?text=Summer+Sale+20%+Off",
-    description: "Summer sale with 20% off all products",
-    promoCode: "SUMMER20"
-  },
-  {
-    id: 2,
-    name: "New Customer Discount",
-    type: "individual",
-    discountType: "percentage",
-    discountValue: 15,
-    startDate: "2023-01-01",
-    endDate: "2023-12-31",
-    isActive: true,
-    targetUserIds: [2, 3],  // IDs of targeted users
-    description: "15% off for new customers",
-    promoCode: "WELCOME15"
-  },
-  {
-    id: 3,
-    name: "Black Friday",
-    type: "site-wide",
-    discountType: "fixed",
-    discountValue: 50,
-    startDate: "2023-11-24",
-    endDate: "2023-11-27",
-    isActive: false,
-    heroImage: "https://placehold.co/1200x400/000000/ffffff?text=Black+Friday+$50+Off",
-    description: "$50 off on purchases over $200",
-    promoCode: "BLACKFRIDAY50",
-    minimumPurchase: 200
-  }
-];
-
-// Create website context
+// Create the context
 const WebsiteContext = createContext();
 
-// Hook for setting document title
+// Document title hook
 export const useDocumentTitle = (title) => {
   useEffect(() => {
-    const prevTitle = document.title;
+    const originalTitle = document.title;
     document.title = title ? `${title} | Little Desert Leather Works` : 'Little Desert Leather Works';
-
     return () => {
-      document.title = prevTitle;
+      document.title = originalTitle;
     };
   }, [title]);
 };
@@ -286,22 +24,14 @@ export const WebsiteProvider = ({ children }) => {
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
 
   // Admin-related state
-  const [productsData, setProductsData] = useState(products);
-  const [testimonialsData, setTestimonialsData] = useState(testimonials);
-  const [artisanInfo, setArtisanInfo] = useState(artisan);
-  const [colors, setColors] = useState(colorPalette);
+  const [productsData, setProductsData] = useState([]);
+  const [testimonialsData, setTestimonialsData] = useState([]);
+  const [artisanInfo, setArtisanInfo] = useState(null);
+  const [colors, setColors] = useState(null);
   // Track temporary color changes for preview
   const [temporaryColorPalette, setTemporaryColorPalette] = useState(null);
   const [orders, setOrders] = useState([]);
-  const [contactInfo, setContactInfo] = useState({
-    email: "contact@littledesertleatherworks.com",
-    phone: "(512) 555-1234",
-    address: "123 Craftsman Way, Austin, TX 78701",
-    hours: "Monday-Friday: 9am-5pm\nSaturday: 10am-4pm\nSunday: Closed",
-    showMap: true,
-    showAddress: true,
-    showPhone: true
-  });
+  const [contactInfo, setContactInfo] = useState(null);
 
   // Cart state
   const [cart, setCart] = useState([]);
@@ -309,10 +39,10 @@ export const WebsiteProvider = ({ children }) => {
   const [notificationMessage, setNotificationMessage] = useState('');
 
   // Users state
-  const [usersData, setUsersData] = useState(users);
+  const [usersData, setUsersData] = useState([]);
 
   // Marketing campaigns state
-  const [campaignsData, setCampaignsData] = useState(marketingCampaigns);
+  const [campaignsData, setCampaignsData] = useState([]);
   const [activePromoCode, setActivePromoCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(null);
 
@@ -325,6 +55,27 @@ export const WebsiteProvider = ({ children }) => {
     about: true,
     products: true,
     contact: true
+  });
+
+  // Add loading and error states
+  const [isLoading, setIsLoading] = useState({
+    products: false,
+    testimonials: false,
+    artisan: false,
+    users: false,
+    campaigns: false,
+    contactInfo: false,
+    colorPalette: false
+  });
+
+  const [errors, setErrors] = useState({
+    products: null,
+    testimonials: null,
+    artisan: null,
+    users: null,
+    campaigns: null,
+    contactInfo: null,
+    colorPalette: null
   });
 
   const updateSectionVisibility = (section, isVisible) => {
@@ -380,85 +131,349 @@ export const WebsiteProvider = ({ children }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [previousScrollPosition]);
 
-  // Admin functions
-  const updateProduct = (updatedProduct) => {
-    // Make sure isVisible is set
-    if (updatedProduct.isVisible === undefined) {
-      updatedProduct.isVisible = true;
-    }
-
-    setProductsData(productsData.map(product =>
-      product.id === updatedProduct.id ? updatedProduct : product
-    ));
+  // Update state for specific data loading
+  const setLoadingState = (key, value) => {
+    setIsLoading(prev => ({ ...prev, [key]: value }));
   };
 
-  const addProduct = (newProduct) => {
-    // Add a new ID (max ID + 1)
-    const nextId = Math.max(...productsData.map(p => p.id)) + 1;
-    const productWithId = {
-      ...newProduct,
-      id: nextId,
-      isVisible: newProduct.isVisible === undefined ? true : newProduct.isVisible // Ensure isVisible is set
+  // Update state for specific data error
+  const setErrorState = (key, error) => {
+    setErrors(prev => ({ ...prev, [key]: error }));
+  };
+
+  // Fetch products data on initial load
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoadingState('products', true);
+      try {
+        const data = await api.products.getProducts();
+        setProductsData(data);
+        setErrorState('products', null);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setErrorState('products', 'Failed to load products data');
+      } finally {
+        setLoadingState('products', false);
+      }
     };
-    setProductsData([...productsData, productWithId]);
-  };
 
-  const deleteProduct = (productId) => {
-    setProductsData(prevProducts =>
-      prevProducts.filter(product => product.id !== productId)
-    );
-  };
+    fetchProducts();
+  }, []);
 
-  const updateTestimonial = (updatedTestimonial) => {
-    // Make sure isVisible is set
-    if (updatedTestimonial.isVisible === undefined) {
-      updatedTestimonial.isVisible = true;
-    }
-
-    setTestimonialsData(testimonialsData.map(testimonial =>
-      testimonial.id === updatedTestimonial.id ? updatedTestimonial : testimonial
-    ));
-  };
-
-  const addTestimonial = (newTestimonial) => {
-    // Add a new ID (max ID + 1)
-    const nextId = Math.max(...testimonialsData.map(t => t.id)) + 1;
-    const testimonialWithId = {
-      ...newTestimonial,
-      id: nextId,
-      isVisible: newTestimonial.isVisible === undefined ? true : newTestimonial.isVisible // Ensure isVisible is set
+  // Fetch testimonials data on initial load
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      setLoadingState('testimonials', true);
+      try {
+        const data = await api.marketing.getTestimonials();
+        setTestimonialsData(data);
+        setErrorState('testimonials', null);
+      } catch (error) {
+        console.error('Error fetching testimonials:', error);
+        setErrorState('testimonials', 'Failed to load testimonials data');
+      } finally {
+        setLoadingState('testimonials', false);
+      }
     };
-    setTestimonialsData([...testimonialsData, testimonialWithId]);
+
+    fetchTestimonials();
+  }, []);
+
+  // Fetch artisan data on initial load
+  useEffect(() => {
+    const fetchArtisanInfo = async () => {
+      setLoadingState('artisan', true);
+      try {
+        const data = await api.marketing.getArtisanInfo();
+        setArtisanInfo(data);
+        setErrorState('artisan', null);
+      } catch (error) {
+        console.error('Error fetching artisan info:', error);
+        setErrorState('artisan', 'Failed to load artisan information');
+      } finally {
+        setLoadingState('artisan', false);
+      }
+    };
+
+    fetchArtisanInfo();
+  }, []);
+
+  // Fetch contact info on initial load
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      setLoadingState('contactInfo', true);
+      try {
+        const data = await api.marketing.getContactInfo();
+        setContactInfo(data);
+        setErrorState('contactInfo', null);
+      } catch (error) {
+        console.error('Error fetching contact info:', error);
+        setErrorState('contactInfo', 'Failed to load contact information');
+      } finally {
+        setLoadingState('contactInfo', false);
+      }
+    };
+
+    fetchContactInfo();
+  }, []);
+
+  // Fetch color palette on initial load (this should come from an API eventually)
+  useEffect(() => {
+    const fetchColorPalette = async () => {
+      setLoadingState('colorPalette', true);
+      try {
+        // This would be an API call in the future
+        const defaultPalette = {
+          primary: {
+            base: "desert-orange",      // Bright terracotta/orange from the logo
+            light: "desert-terracotta", // Lighter terracotta shade
+            dark: "desert-rust",        // Darker terracotta/rust color
+            hover: "desert-rust",       // Hover state
+            lightest: "desert-tan",     // Tan background from the logo
+            background: "stone-50"      // White background for better contrast
+          },
+          secondary: {
+            base: "desert-olive",       // Olive green from the logo
+            light: "desert-green",      // Lighter olive green
+            dark: "desert-black",       // Very dark color for emphasis
+            background: "stone-50",     // White background for better contrast
+            lightest: "stone-50"        // Lightest cream color
+          },
+          text: {
+            primary: "desert-black",    // Black text for primary (dark for contrast)
+            secondary: "desert-rust",   // Rust brown for secondary text
+            light: "stone-50",          // White text for dark backgrounds (better contrast)
+            accent: "desert-rust",      // Darker terracotta for accent text (better contrast)
+            medium: "desert-black",     // Black for medium text (better contrast)
+            dark: "desert-black",       // Black for strong emphasis
+            lightest: "stone-50"        // White text color
+          },
+          ui: {
+            border: "desert-terracotta", // Terracotta border
+            shadow: "desert-rust",     // Rust shadow color
+            background: "stone-50",    // White background for better contrast
+            darkBackground: "desert-black", // Black background for better contrast
+            lightBackground: "stone-50", // White background for better contrast
+            accent: "desert-orange",   // Bright orange accent
+            earthGreen: "desert-olive" // Olive green accent
+          }
+        };
+        setColors(defaultPalette);
+        setErrorState('colorPalette', null);
+      } catch (error) {
+        console.error('Error fetching color palette:', error);
+        setErrorState('colorPalette', 'Failed to load color palette');
+      } finally {
+        setLoadingState('colorPalette', false);
+      }
+    };
+
+    fetchColorPalette();
+  }, []);
+
+  // Admin functions updated to use API
+  const updateProduct = async (updatedProduct) => {
+    setLoadingState('products', true);
+    try {
+      // Make sure isVisible is set
+      if (updatedProduct.isVisible === undefined) {
+        updatedProduct.isVisible = true;
+      }
+
+      // Call API to update product
+      const result = await api.products.updateProduct(updatedProduct.id, updatedProduct);
+
+      // Update local state with the result from API
+      setProductsData(productsData.map(product =>
+        product.id === result.id ? result : product
+      ));
+
+      setErrorState('products', null);
+      return result;
+    } catch (error) {
+      console.error('Error updating product:', error);
+      setErrorState('products', 'Failed to update product');
+      throw error;
+    } finally {
+      setLoadingState('products', false);
+    }
   };
 
-  const deleteTestimonial = (testimonialId) => {
-    setTestimonialsData(prevTestimonials =>
-      prevTestimonials.filter(testimonial => testimonial.id !== testimonialId)
-    );
+  const addProduct = async (newProduct) => {
+    setLoadingState('products', true);
+    try {
+      // Ensure isVisible is set
+      if (newProduct.isVisible === undefined) {
+        newProduct.isVisible = true;
+      }
+
+      // Call API to create product
+      const createdProduct = await api.products.createProduct(newProduct);
+
+      // Update local state with the new product
+      setProductsData(prev => [...prev, createdProduct]);
+
+      setErrorState('products', null);
+      return createdProduct;
+    } catch (error) {
+      console.error('Error adding product:', error);
+      setErrorState('products', 'Failed to add product');
+      throw error;
+    } finally {
+      setLoadingState('products', false);
+    }
   };
 
-  const updateArtisanInfo = (updatedInfo) => {
-    // Make sure isVisible is set
-    if (updatedInfo.isVisible === undefined) {
-      updatedInfo.isVisible = true;
-    }
+  const deleteProduct = async (productId) => {
+    setLoadingState('products', true);
+    try {
+      // Call API to delete product
+      await api.products.deleteProduct(productId);
 
-    setArtisanInfo(updatedInfo);
+      // Update local state
+      setProductsData(prevProducts =>
+        prevProducts.filter(product => product.id !== productId)
+      );
+
+      setErrorState('products', null);
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      setErrorState('products', 'Failed to delete product');
+      throw error;
+    } finally {
+      setLoadingState('products', false);
+    }
   };
 
-  const updateContactInfo = (updatedInfo) => {
-    // Make sure visibility settings are preserved
-    if (updatedInfo.showMap === undefined) {
-      updatedInfo.showMap = contactInfo.showMap;
-    }
-    if (updatedInfo.showAddress === undefined) {
-      updatedInfo.showAddress = contactInfo.showAddress;
-    }
-    if (updatedInfo.showPhone === undefined) {
-      updatedInfo.showPhone = contactInfo.showPhone;
-    }
+  const updateTestimonial = async (updatedTestimonial) => {
+    setLoadingState('testimonials', true);
+    try {
+      // Make sure isVisible is set
+      if (updatedTestimonial.isVisible === undefined) {
+        updatedTestimonial.isVisible = true;
+      }
 
-    setContactInfo(prevInfo => ({ ...prevInfo, ...updatedInfo }));
+      // Call API to update testimonial
+      const result = await api.marketing.updateTestimonial(updatedTestimonial.id, updatedTestimonial);
+
+      // Update local state with the result from API
+      setTestimonialsData(testimonialsData.map(testimonial =>
+        testimonial.id === result.id ? result : testimonial
+      ));
+
+      setErrorState('testimonials', null);
+      return result;
+    } catch (error) {
+      console.error('Error updating testimonial:', error);
+      setErrorState('testimonials', 'Failed to update testimonial');
+      throw error;
+    } finally {
+      setLoadingState('testimonials', false);
+    }
+  };
+
+  const addTestimonial = async (newTestimonial) => {
+    setLoadingState('testimonials', true);
+    try {
+      // Ensure isVisible is set
+      if (newTestimonial.isVisible === undefined) {
+        newTestimonial.isVisible = true;
+      }
+
+      // Call API to create testimonial
+      const createdTestimonial = await api.marketing.createTestimonial(newTestimonial);
+
+      // Update local state with the new testimonial
+      setTestimonialsData(prev => [...prev, createdTestimonial]);
+
+      setErrorState('testimonials', null);
+      return createdTestimonial;
+    } catch (error) {
+      console.error('Error adding testimonial:', error);
+      setErrorState('testimonials', 'Failed to add testimonial');
+      throw error;
+    } finally {
+      setLoadingState('testimonials', false);
+    }
+  };
+
+  const deleteTestimonial = async (testimonialId) => {
+    setLoadingState('testimonials', true);
+    try {
+      // Call API to delete testimonial
+      await api.marketing.deleteTestimonial(testimonialId);
+
+      // Update local state
+      setTestimonialsData(prevTestimonials =>
+        prevTestimonials.filter(testimonial => testimonial.id !== testimonialId)
+      );
+
+      setErrorState('testimonials', null);
+    } catch (error) {
+      console.error('Error deleting testimonial:', error);
+      setErrorState('testimonials', 'Failed to delete testimonial');
+      throw error;
+    } finally {
+      setLoadingState('testimonials', false);
+    }
+  };
+
+  const updateArtisanInfo = async (updatedInfo) => {
+    setLoadingState('artisan', true);
+    try {
+      // Make sure isVisible is set
+      if (updatedInfo.isVisible === undefined) {
+        updatedInfo.isVisible = true;
+      }
+
+      // Call API to update artisan info
+      const result = await api.marketing.updateArtisanInfo(updatedInfo);
+
+      // Update local state with the result from API
+      setArtisanInfo(result);
+
+      setErrorState('artisan', null);
+      return result;
+    } catch (error) {
+      console.error('Error updating artisan info:', error);
+      setErrorState('artisan', 'Failed to update artisan information');
+      throw error;
+    } finally {
+      setLoadingState('artisan', false);
+    }
+  };
+
+  const updateContactInfo = async (updatedInfo) => {
+    setLoadingState('contactInfo', true);
+    try {
+      // Make sure visibility settings are preserved
+      if (!contactInfo) return;
+
+      if (updatedInfo.showMap === undefined) {
+        updatedInfo.showMap = contactInfo.showMap;
+      }
+      if (updatedInfo.showAddress === undefined) {
+        updatedInfo.showAddress = contactInfo.showAddress;
+      }
+      if (updatedInfo.showPhone === undefined) {
+        updatedInfo.showPhone = contactInfo.showPhone;
+      }
+
+      // Call API to update contact info
+      const result = await api.marketing.updateContactInfo(updatedInfo);
+
+      // Update local state with the result from API
+      setContactInfo(result);
+
+      setErrorState('contactInfo', null);
+      return result;
+    } catch (error) {
+      console.error('Error updating contact info:', error);
+      setErrorState('contactInfo', 'Failed to update contact information');
+      throw error;
+    } finally {
+      setLoadingState('contactInfo', false);
+    }
   };
 
   const updateColorPalette = (updatedColors) => {
@@ -466,19 +481,85 @@ export const WebsiteProvider = ({ children }) => {
     setTemporaryColorPalette(null); // Clear temporary colors after saving
   };
 
+  // Fetch users data on initial load
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setLoadingState('users', true);
+      try {
+        const data = await api.users.getUsers();
+        setUsersData(data);
+        setErrorState('users', null);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        setErrorState('users', 'Failed to load users data');
+      } finally {
+        setLoadingState('users', false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
   // User management functions
-  const addUser = (newUser) => {
-    setUsersData([...usersData, newUser]);
+  const addUser = async (newUser) => {
+    setLoadingState('users', true);
+    try {
+      // Call API to create user
+      const createdUser = await api.users.createUser(newUser);
+
+      // Update local state with the new user
+      setUsersData(prev => [...prev, createdUser]);
+
+      setErrorState('users', null);
+      return createdUser;
+    } catch (error) {
+      console.error('Error adding user:', error);
+      setErrorState('users', 'Failed to add user');
+      throw error;
+    } finally {
+      setLoadingState('users', false);
+    }
   };
 
-  const updateUser = (userId, updatedUser) => {
-    setUsersData(usersData.map(user =>
-      user.id === userId ? updatedUser : user
-    ));
+  const updateUser = async (userId, updatedUser) => {
+    setLoadingState('users', true);
+    try {
+      // Call API to update user
+      const result = await api.users.updateUser(userId, updatedUser);
+
+      // Update local state with the result from API
+      setUsersData(usersData.map(user =>
+        user.id === result.id ? result : user
+      ));
+
+      setErrorState('users', null);
+      return result;
+    } catch (error) {
+      console.error('Error updating user:', error);
+      setErrorState('users', 'Failed to update user');
+      throw error;
+    } finally {
+      setLoadingState('users', false);
+    }
   };
 
-  const deleteUser = (userId) => {
-    setUsersData(usersData.filter(user => user.id !== userId));
+  const deleteUser = async (userId) => {
+    setLoadingState('users', true);
+    try {
+      // Call API to delete user
+      await api.users.deleteUser(userId);
+
+      // Update local state
+      setUsersData(usersData.filter(user => user.id !== userId));
+
+      setErrorState('users', null);
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      setErrorState('users', 'Failed to delete user');
+      throw error;
+    } finally {
+      setLoadingState('users', false);
+    }
   };
 
   // Cart functions
@@ -522,50 +603,144 @@ export const WebsiteProvider = ({ children }) => {
   };
 
   const getCartTotal = () => {
-    return cart.reduce((total, item) => total + item.quantity * item.price.replace('$', ''), 0);
+    return cart.reduce((total, item) => {
+      const price = parseFloat(item.price.replace(/[^0-9.]/g, ''));
+      return total + (item.quantity * price);
+    }, 0);
   };
 
   const getCartItemCount = () => {
     return cart.reduce((count, item) => count + item.quantity, 0);
   };
 
-  // Marketing campaign functions
-  const addCampaign = (newCampaign) => {
-    const nextId = Math.max(...campaignsData.map(c => c.id)) + 1;
-    const campaignWithId = {
-      ...newCampaign,
-      id: nextId
+  // Fetch campaigns data on initial load
+  useEffect(() => {
+    const fetchCampaigns = async () => {
+      setLoadingState('campaigns', true);
+      try {
+        const data = await api.marketing.getCampaigns();
+        setCampaignsData(data);
+        setErrorState('campaigns', null);
+      } catch (error) {
+        console.error('Error fetching campaigns:', error);
+        setErrorState('campaigns', 'Failed to load campaigns data');
+      } finally {
+        setLoadingState('campaigns', false);
+      }
     };
-    setCampaignsData([...campaignsData, campaignWithId]);
+
+    fetchCampaigns();
+  }, []);
+
+  // Marketing campaign functions
+  const addCampaign = async (newCampaign) => {
+    setLoadingState('campaigns', true);
+    try {
+      // Call API to create campaign
+      const createdCampaign = await api.marketing.createCampaign(newCampaign);
+
+      // Update local state with the new campaign
+      setCampaignsData(prev => [...prev, createdCampaign]);
+
+      setErrorState('campaigns', null);
+      return createdCampaign;
+    } catch (error) {
+      console.error('Error adding campaign:', error);
+      setErrorState('campaigns', 'Failed to add campaign');
+      throw error;
+    } finally {
+      setLoadingState('campaigns', false);
+    }
   };
 
-  const updateCampaign = (updatedCampaign) => {
-    setCampaignsData(campaignsData.map(campaign =>
-      campaign.id === updatedCampaign.id ? updatedCampaign : campaign
-    ));
+  const updateCampaign = async (updatedCampaign) => {
+    setLoadingState('campaigns', true);
+    try {
+      // Call API to update campaign
+      const result = await api.marketing.updateCampaign(updatedCampaign.id, updatedCampaign);
+
+      // Update local state with the result from API
+      setCampaignsData(campaignsData.map(campaign =>
+        campaign.id === result.id ? result : campaign
+      ));
+
+      setErrorState('campaigns', null);
+      return result;
+    } catch (error) {
+      console.error('Error updating campaign:', error);
+      setErrorState('campaigns', 'Failed to update campaign');
+      throw error;
+    } finally {
+      setLoadingState('campaigns', false);
+    }
   };
 
-  const deleteCampaign = (campaignId) => {
-    setCampaignsData(campaignsData.filter(campaign => campaign.id !== campaignId));
+  const deleteCampaign = async (campaignId) => {
+    setLoadingState('campaigns', true);
+    try {
+      // Call API to delete campaign
+      await api.marketing.deleteCampaign(campaignId);
+
+      // Update local state
+      setCampaignsData(campaignsData.filter(campaign => campaign.id !== campaignId));
+
+      setErrorState('campaigns', null);
+    } catch (error) {
+      console.error('Error deleting campaign:', error);
+      setErrorState('campaigns', 'Failed to delete campaign');
+      throw error;
+    } finally {
+      setLoadingState('campaigns', false);
+    }
   };
 
-  const activateCampaign = (campaignId) => {
-    setCampaignsData(campaignsData.map(campaign =>
-      campaign.id === campaignId
-        ? { ...campaign, isActive: true }
-        : campaign
-    ));
+  const activateCampaign = async (campaignId) => {
+    setLoadingState('campaigns', true);
+    try {
+      // Call API to activate campaign
+      const result = await api.marketing.activateCampaign(campaignId);
+
+      // Update local state
+      setCampaignsData(campaignsData.map(campaign =>
+        campaign.id === campaignId ? { ...campaign, isActive: true } : campaign
+      ));
+
+      setErrorState('campaigns', null);
+      return result;
+    } catch (error) {
+      console.error('Error activating campaign:', error);
+      setErrorState('campaigns', 'Failed to activate campaign');
+      throw error;
+    } finally {
+      setLoadingState('campaigns', false);
+    }
   };
 
-  const deactivateCampaign = (campaignId) => {
-    setCampaignsData(campaignsData.map(campaign =>
-      campaign.id === campaignId
-        ? { ...campaign, isActive: false }
-        : campaign
-    ));
+  const deactivateCampaign = async (campaignId) => {
+    setLoadingState('campaigns', true);
+    try {
+      // Call API to deactivate campaign
+      const result = await api.marketing.deactivateCampaign(campaignId);
+
+      // Update local state
+      setCampaignsData(campaignsData.map(campaign =>
+        campaign.id === campaignId ? { ...campaign, isActive: false } : campaign
+      ));
+
+      setErrorState('campaigns', null);
+      return result;
+    } catch (error) {
+      console.error('Error deactivating campaign:', error);
+      setErrorState('campaigns', 'Failed to deactivate campaign');
+      throw error;
+    } finally {
+      setLoadingState('campaigns', false);
+    }
   };
 
   const applyPromoCode = (code) => {
+    if (!code || !campaignsData.length) return false;
+
     const campaign = campaignsData.find(c =>
       c.promoCode === code &&
       c.isActive &&
@@ -592,42 +767,34 @@ export const WebsiteProvider = ({ children }) => {
   };
 
   const getActiveHeroImage = () => {
-    const now = new Date();
-
-    // Find active site-wide campaigns
-    const activeSiteWideCampaigns = campaignsData.filter(c =>
-      c.type === 'site-wide' &&
+    // Find active campaign with earliest end date
+    const activeCampaigns = campaignsData.filter(c =>
       c.isActive &&
-      c.heroImage &&
-      new Date(c.startDate) <= now &&
-      new Date(c.endDate) >= now
+      new Date(c.startDate) <= new Date() &&
+      new Date(c.endDate) >= new Date() &&
+      c.heroImage
     );
 
-    // Return the hero image of the first active campaign, or null if none found
-    return activeSiteWideCampaigns.length > 0 ? activeSiteWideCampaigns[0].heroImage : null;
+    if (activeCampaigns.length === 0) return null;
+
+    // Sort by end date (ascending) and return the first one
+    const sortedCampaigns = [...activeCampaigns].sort((a, b) =>
+      new Date(a.endDate) - new Date(b.endDate)
+    );
+
+    return sortedCampaigns[0].heroImage;
   };
 
   const getApplicableCampaignsForUser = (userId) => {
-    const now = new Date();
+    if (!campaignsData) return [];
 
-    // Get all active campaigns
     return campaignsData.filter(campaign => {
-      // Must be active and within date range
-      if (!campaign.isActive || new Date(campaign.startDate) > now || new Date(campaign.endDate) < now) {
-        return false;
-      }
+      const isActive = campaign.isActive;
+      const isDateValid = new Date(campaign.startDate) <= new Date() && new Date(campaign.endDate) >= new Date();
+      const isApplicableToUser = campaign.type === 'site-wide' ||
+        (campaign.type === 'individual' && campaign.targetUserIds?.includes(userId));
 
-      // Site-wide campaigns apply to everyone
-      if (campaign.type === 'site-wide') {
-        return true;
-      }
-
-      // Individual campaigns must include the user
-      if (campaign.type === 'individual') {
-        return campaign.targetUserIds?.includes(userId);
-      }
-
-      return false;
+      return isActive && isDateValid && isApplicableToUser;
     });
   };
 
@@ -643,7 +810,11 @@ export const WebsiteProvider = ({ children }) => {
         products: productsData,
         testimonials: testimonialsData,
         artisan: artisanInfo,
-        colorPalette: temporaryColorPalette || colors,
+        colorPalette: temporaryColorPalette || colors || {
+          primary: { background: "stone-50", base: "desert-orange" },
+          text: { primary: "desert-black", light: "stone-50" },
+          ui: { background: "stone-50" }
+        },
         temporaryColorPalette,
         contactInfo,
         orders,
@@ -688,7 +859,10 @@ export const WebsiteProvider = ({ children }) => {
         activePromoCode,
         appliedDiscount,
         getActiveHeroImage,
-        getApplicableCampaignsForUser
+        getApplicableCampaignsForUser,
+        // Add loading and error states to the context
+        isLoading,
+        errors
       }}
     >
       {children}

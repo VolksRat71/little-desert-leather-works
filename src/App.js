@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { WebsiteProvider, useWebsite, colorPalette } from './context/WebsiteContext';
+import { WebsiteProvider, useWebsite } from './context/WebsiteContext';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -92,11 +92,15 @@ const globalStyles = `
 
 // Main App Content with Routes
 const AppContent = () => {
-  const { pageTransition } = useWebsite();
+  const { pageTransition, colorPalette } = useWebsite();
   const location = useLocation();
 
+  // If the color palette hasn't loaded yet, use default classes
+  const bgClass = colorPalette ? `bg-${colorPalette.primary.background}` : 'bg-stone-50';
+  const textClass = colorPalette ? `text-${colorPalette.text.primary}` : 'text-slate-900';
+
   return (
-    <div className={`font-serif bg-${colorPalette.primary.background} text-${colorPalette.text.primary} min-h-screen flex flex-col`}>
+    <div className={`font-serif ${bgClass} ${textClass} min-h-screen flex flex-col`}>
       <style>{globalStyles}</style>
       <Navbar />
       <CartNotification />

@@ -15,48 +15,68 @@ export const products = [
     features: [
       "Full-grain vegetable-tanned leather",
       "Saddle-stitched with waxed thread",
-      "Width: 20\"",
-      "Height: 12\"",
-      "Depth: 10\"",
-      "Adjustable shoulder strap",
-      "Solid brass hardware"
+      "Width: 20”",
+      "Height: 12”",
+      "Depth: 10”",
+      "Weight: 4.25 Lbs.",
     ],
-    careInstructions: "Condition with leather balm every 3-6 months. Wipe clean with damp cloth and allow to air dry.",
+    careInstructions: "Condition with leather balm every 3-6 months. Avoid excessive moisture.",
     isVisible: true
   },
   {
     id: 2,
-    name: "Classic Messenger Bag",
-    description: "A timeless messenger bag crafted from premium full-grain leather. Designed for everyday use with thoughtful organization and comfortable carrying options.",
-    shortDescription: "Timeless full-grain leather messenger bag with premium hardware and versatile organization.",
-    price: "$450",
-    image: "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/m/a/mailbag_harness_belting_cognac_calf_1.jpg",
+    name: "The Classic Wallet",
+    description: "The Classic Wallet is a timeless design that features a single pocket and a leather strap for easy carrying. It's perfect for everyday use and makes a great gift.",
+    shortDescription: "The Classic Wallet is a timeless design that features a single pocket and a leather strap for easy carrying.",
+    price: "$95",
+    image: "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_bifold_wallet__frank_clegg_made_in-usa_2.jpg",
     images: [
-      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/m/a/mailbag_harness_belting_cognac_calf_1.jpg",
-      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/m/a/mailbag_harness_belting_cognac_calf_2.jpg",
-      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/m/a/mailbag_harness_belting_cognac_calf_3.jpg"
+      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_bifold_wallet__frank_clegg_made_in-usa_2.jpg",
+      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/color_ways_bifold_wallets__frank_clegg_made_in-usa_1_5.jpg",
+      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_bifold_wallet__frank_clegg_made_in-usa_1_1.jpg"
     ],
     features: [
-      "Full-grain vegetable-tanned leather",
-      "Hand-stitched details",
-      "Width: 15\"",
-      "Height: 11\"",
-      "Depth: 4\"",
-      "Adjustable shoulder strap",
-      "Multiple interior pockets",
-      "Laptop sleeve fits up to 15\""
+      "8-10oz full-grain leather",
+      "Saddle-stitched with waxed thread",
+      "Hand-beveled and burnished edges",
+      "Width options: 1.25\" or 1.5\"",
+      "Custom engraving available"
     ],
-    careInstructions: "Clean with a soft cloth. Condition with leather balm every few months. Store in dust bag when not in use.",
+    careInstructions: "Condition with leather balm every 3-6 months. Avoid excessive moisture.",
     isVisible: true
   },
   {
     id: 3,
-    name: "Leather Backpack",
-    description: "Modern yet timeless leather backpack, handcrafted for comfort and durability. Perfect for daily use with thoughtful organization and secure storage.",
-    shortDescription: "Handcrafted full-grain leather backpack with comfortable straps and ample storage.",
-    price: "$525",
-    image: "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_buckle_backpack_frank_clegg_made_in-usa_6.jpg",
+    name: "Desert Messenger Bag",
+    description: "Rugged messenger bag with adjustable strap and antique hardware. Featuring a spacious main compartment and multiple organization pockets.",
+    shortDescription: "Rugged messenger bag with adjustable strap and antique hardware.",
+    price: "$375",
+    image: "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/h/chestnut_leather__bound_edge_messenger_bag_frank_clegg_made_in-usa_1_1.jpg",
     images: [
+      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/h/chestnut_leather__bound_edge_messenger_bag_frank_clegg_made_in-usa_1_1.jpg",
+      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/h/chestnut_leather_bound_edge_messenger_bag_frank_clegg_made_in-usa_8.jpg",
+      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/h/chestnut_leather_bound_edge_messenger_bag_frank_clegg_made_in-usa_6.jpg"
+    ],
+    features: [
+      "5-6oz full-grain oil-tanned leather",
+      "Antique brass hardware",
+      "Adjustable shoulder strap",
+      "Cotton canvas lining",
+      "Fits 15\" laptop",
+      "Dimensions: 15\" x 11\" x 4\""
+    ],
+    careInstructions: "Wipe with damp cloth. Apply leather conditioner yearly or as needed.",
+    isVisible: true
+  },
+  {
+    id: 4,
+    name: "English Backpack",
+    description: "Handcrafted English-style backpack with a leather strap and brass hardware. Features a spacious main compartment and multiple pockets for organization.",
+    shortDescription: "Handcrafted English-style backpack with a leather strap and brass hardware.",
+    price: "$525",
+    image: "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_buckle_backpack_frank_clegg_made_in-usa_1.jpg",
+    images: [
+      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_buckle_backpack_frank_clegg_made_in-usa_1.jpg",
       "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_buckle_backpack_frank_clegg_made_in-usa_6.jpg",
       "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_buckle_backpack_frank_clegg_made_in-usa_5.jpg"
     ],

@@ -1,5 +1,6 @@
 import apiClient from '../client';
-import { users, validateCredentials, tokens } from './placeholder';
+import { validateCredentials, tokens } from './placeholder';
+import { users } from '../users/placeholder';
 
 // User login
 export const login = async (email, password) => {

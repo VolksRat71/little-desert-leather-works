@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useWebsite, colorPalette, useDocumentTitle } from '../context/WebsiteContext';
 import Modal from '../components/Modal';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { userSchema, testimonialSchema } from '../validators/schema';
 
 const UserPage = () => {
   const {
@@ -34,6 +37,12 @@ const UserPage = () => {
   const [editedUser, setEditedUser] = useState({...currentUser});
   const profileImageRef = useRef(null);
 
+  // Setup react-hook-form with yup resolver
+  const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm({
+    resolver: yupResolver(userSchema),
+    defaultValues: currentUser
+  });
+
   // Tab state
   const [activeCategory, setActiveCategory] = useState('account');
   const [activeTab, setActiveTab] = useState('profile');
@@ -41,12 +50,23 @@ const UserPage = () => {
 
   // Testimonial state
   const [isAddTestimonialOpen, setIsAddTestimonialOpen] = useState(false);
-  const [newTestimonial, setNewTestimonial] = useState({
-    author: currentUser?.name || '',
-    content: '',
-    rating: 5,
-    date: new Date().toISOString().split('T')[0],
-    isVisible: true
+
+  // Setup react-hook-form for testimonials
+  const {
+    register: registerTestimonial,
+    handleSubmit: handleTestimonialSubmit,
+    formState: { errors: testimonialErrors },
+    reset: resetTestimonialForm,
+    watch
+  } = useForm({
+    resolver: yupResolver(testimonialSchema),
+    defaultValues: {
+      author: currentUser?.name || '',
+      content: '',
+      rating: 5,
+      date: new Date().toISOString().split('T')[0],
+      isVisible: true
+    }
   });
 
   // Update user state when context changes
@@ -56,6 +76,23 @@ const UserPage = () => {
       setEditedUser(users[0]);
     }
   }, [users]);
+
+  // Update form values when user changes
+  useEffect(() => {
+    if (isEditProfileOpen) {
+      reset(currentUser);
+    }
+  }, [isEditProfileOpen, currentUser, reset]);
+
+  // Update testimonial form when user changes
+  useEffect(() => {
+    if (currentUser) {
+      resetTestimonialForm(form => ({
+        ...form,
+        author: currentUser.name
+      }));
+    }
+  }, [currentUser, resetTestimonialForm]);
 
   // Set document title
   useDocumentTitle('My Account');
@@ -168,9 +205,16 @@ const UserPage = () => {
         }
       ];
 
-  const handleProfileUpdate = () => {
-    updateUser(currentUser.id, editedUser);
-    setCurrentUser(editedUser);
+  const handleProfileUpdate = (formData) => {
+    // Keep the id and other fields not in the form
+    const updatedUser = {
+      ...currentUser,
+      ...formData,
+      profileImage: editedUser.profileImage // Use the profileImage from state
+    };
+
+    updateUser(currentUser.id, updatedUser);
+    setCurrentUser(updatedUser);
     setIsEditProfileOpen(false);
   };
 
@@ -185,21 +229,10 @@ const UserPage = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleAddTestimonial = () => {
-    const testimonialToAdd = {
-      ...newTestimonial,
-      author: currentUser.name,
-    };
-    addTestimonial(testimonialToAdd);
+  const handleAddTestimonial = (data) => {
+    addTestimonial(data);
     setIsAddTestimonialOpen(false);
-    // Reset form
-    setNewTestimonial({
-      author: currentUser.name,
-      content: '',
-      rating: 5,
-      date: new Date().toISOString().split('T')[0],
-      isVisible: true
-    });
+    resetTestimonialForm();
 
     // Switch to testimonials tab to see the new testimonial
     handleTabChange('testimonials');
@@ -520,157 +553,197 @@ const UserPage = () => {
         </div>
 
         {/* Edit Profile Modal */}
-        <Modal
-          isOpen={isEditProfileOpen}
-          onClose={() => setIsEditProfileOpen(false)}
-          title="Edit Profile"
-          primaryAction={{
-            text: 'Save Changes',
-            handler: handleProfileUpdate
-          }}
-          secondaryAction={{
-            text: 'Cancel',
-            handler: () => setIsEditProfileOpen(false)
-          }}
-        >
-          <div className="mb-6 flex flex-col items-center">
-            <div className="w-32 h-32 rounded-full overflow-hidden mb-4 border-4 border-amber-100">
-              <img
-                src={editedUser.profileImage || 'https://placehold.co/200x200/amber700/ffffff?text=User'}
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
+        <Modal isOpen={isEditProfileOpen} onClose={() => setIsEditProfileOpen(false)} title="Edit Profile">
+          <form onSubmit={handleSubmit(handleProfileUpdate)} className="space-y-4">
+            <div className="flex justify-center mb-6">
+              <div className="relative">
+                <img
+                  src={editedUser.profileImage || 'https://placehold.co/200x200/amber700/ffffff?text=User'}
+                  alt="Profile preview"
+                  className="w-24 h-24 rounded-full object-cover mx-auto"
+                />
+                <button
+                  type="button"
+                  onClick={() => profileImageRef.current?.click()}
+                  className={`absolute bottom-0 right-0 bg-${colorPalette.primary.base} text-white p-1 rounded-full hover:bg-${colorPalette.primary.dark}`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                </button>
+                <input
+                  type="file"
+                  ref={profileImageRef}
+                  onChange={handleProfileImageChange}
+                  className="hidden"
+                  accept="image/*"
+                />
+              </div>
             </div>
-            <input
-              type="file"
-              ref={profileImageRef}
-              className="hidden"
-              accept="image/*"
-              onChange={handleProfileImageChange}
-            />
-            <button
-              onClick={() => profileImageRef.current?.click()}
-              className={`px-3 py-1 bg-${colorPalette.secondary.base} text-white rounded text-sm`}
-            >
-              Change Photo
-            </button>
-          </div>
 
-          <div className="space-y-4">
             <div>
               <label className="block text-gray-700 mb-1">Name</label>
               <input
                 type="text"
-                value={editedUser.name || ''}
-                onChange={(e) => setEditedUser({...editedUser, name: e.target.value})}
-                className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
+                {...register('name')}
+                className={`w-full p-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded`}
               />
+              {errors.name && <p className="mt-1 text-red-500 text-sm">{errors.name.message}</p>}
             </div>
+
             <div>
               <label className="block text-gray-700 mb-1">Email</label>
               <input
                 type="email"
-                value={editedUser.email || ''}
-                onChange={(e) => setEditedUser({...editedUser, email: e.target.value})}
-                className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
+                {...register('email')}
+                className={`w-full p-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded`}
               />
+              {errors.email && <p className="mt-1 text-red-500 text-sm">{errors.email.message}</p>}
             </div>
+
             <div>
               <label className="block text-gray-700 mb-1">Phone</label>
               <input
                 type="tel"
-                value={editedUser.phone || ''}
-                onChange={(e) => setEditedUser({...editedUser, phone: e.target.value})}
-                className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
+                {...register('phone')}
+                placeholder="(XXX) XXX-XXXX"
+                className={`w-full p-2 border ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded`}
               />
+              {errors.phone && <p className="mt-1 text-red-500 text-sm">{errors.phone.message}</p>}
             </div>
+
             <div>
               <label className="block text-gray-700 mb-1">Address</label>
               <textarea
-                value={editedUser.address || ''}
-                onChange={(e) => setEditedUser({...editedUser, address: e.target.value})}
-                className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
-                rows={3}
-              />
+                {...register('address')}
+                className={`w-full p-2 border ${errors.address ? 'border-red-500' : 'border-gray-300'} rounded`}
+                rows="3"
+              ></textarea>
+              {errors.address && <p className="mt-1 text-red-500 text-sm">{errors.address.message}</p>}
             </div>
+
             <div>
-              <h3 className="text-gray-700 mb-2">Communication Preferences</h3>
+              <h3 className="font-medium mb-2">Marketing Preferences</h3>
               <div className="space-y-2">
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    id="editEmailOffers"
-                    checked={editedUser.marketingPreferences?.emailOffers || false}
-                    onChange={(e) => handleMarketingPreferenceChange('emailOffers', e.target.checked)}
+                    id="emailOffers"
+                    {...register('marketingPreferences.emailOffers')}
                     className="mr-2"
                   />
-                  <label htmlFor="editEmailOffers">Email Offers</label>
+                  <label htmlFor="emailOffers">Email offers and promotions</label>
                 </div>
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    id="editTextOffers"
-                    checked={editedUser.marketingPreferences?.textOffers || false}
-                    onChange={(e) => handleMarketingPreferenceChange('textOffers', e.target.checked)}
+                    id="textOffers"
+                    {...register('marketingPreferences.textOffers')}
                     className="mr-2"
                   />
-                  <label htmlFor="editTextOffers">Text Offers</label>
+                  <label htmlFor="textOffers">Text message offers</label>
                 </div>
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    id="editOrderUpdates"
-                    checked={editedUser.marketingPreferences?.orderUpdates || false}
-                    onChange={(e) => handleMarketingPreferenceChange('orderUpdates', e.target.checked)}
+                    id="orderUpdates"
+                    {...register('marketingPreferences.orderUpdates')}
                     className="mr-2"
                   />
-                  <label htmlFor="editOrderUpdates">Order Updates</label>
+                  <label htmlFor="orderUpdates">Order updates and tracking</label>
                 </div>
               </div>
             </div>
-          </div>
+
+            <div className="flex justify-end pt-4">
+              <button
+                type="button"
+                onClick={() => setIsEditProfileOpen(false)}
+                className="px-4 py-2 border border-gray-300 rounded mr-2 hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className={`bg-${colorPalette.primary.base} text-white px-4 py-2 rounded hover:bg-${colorPalette.primary.dark}`}
+              >
+                Save Changes
+              </button>
+            </div>
+          </form>
         </Modal>
 
         {/* Add Testimonial Modal */}
-        <Modal
-          isOpen={isAddTestimonialOpen}
-          onClose={() => setIsAddTestimonialOpen(false)}
-          title="Add Testimonial"
-          primaryAction={{
-            text: 'Submit',
-            handler: handleAddTestimonial
-          }}
-          secondaryAction={{
-            text: 'Cancel',
-            handler: () => setIsAddTestimonialOpen(false)
-          }}
-        >
-          <div className="space-y-4">
+        <Modal isOpen={isAddTestimonialOpen} onClose={() => setIsAddTestimonialOpen(false)} title="Add Testimonial">
+          <form onSubmit={handleTestimonialSubmit(handleAddTestimonial)} className="space-y-4">
             <div>
-              <label className="block text-gray-700 mb-1">Rating</label>
-              <div className="flex space-x-1">
+              <label className={`block text-${colorPalette.text.secondary} mb-2`}>Rating</label>
+              <div className="flex items-center space-x-1">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    onClick={() => setNewTestimonial({...newTestimonial, rating: star})}
-                    className={`text-2xl ${star <= newTestimonial.rating ? 'text-yellow-400' : 'text-gray-300'}`}
-                  >
-                    ★
-                  </button>
+                  <label key={star} className="cursor-pointer">
+                    <input
+                      type="radio"
+                      value={star}
+                      {...registerTestimonial('rating')}
+                      className="sr-only"
+                    />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className={`w-8 h-8 ${
+                        star <= parseInt(watch('rating') || 5)
+                          ? `text-${colorPalette.secondary.base}`
+                          : 'text-gray-300'
+                      }`}
+                    >
+                      <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
+                    </svg>
+                  </label>
                 ))}
               </div>
+              {testimonialErrors.rating && <p className="mt-1 text-red-500 text-sm">{testimonialErrors.rating.message}</p>}
             </div>
+
             <div>
-              <label className="block text-gray-700 mb-1">Your Testimonial</label>
+              <label className={`block text-${colorPalette.text.secondary} mb-2`}>Your Feedback</label>
               <textarea
-                value={newTestimonial.content}
-                onChange={(e) => setNewTestimonial({...newTestimonial, content: e.target.value})}
-                className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
-                rows={5}
-                placeholder="Share your experience with our products or services..."
-              />
+                rows="4"
+                {...registerTestimonial('content')}
+                className={`w-full px-4 py-2 border ${testimonialErrors.content ? 'border-red-500' : `border-${colorPalette.ui.border}`} rounded focus:outline-none focus:ring-2 focus:ring-${colorPalette.primary.base}`}
+                placeholder="Share your experience with our products..."
+              ></textarea>
+              {testimonialErrors.content && <p className="mt-1 text-red-500 text-sm">{testimonialErrors.content.message}</p>}
             </div>
-          </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="publicTestimonial"
+                {...registerTestimonial('isVisible')}
+                className="mr-2"
+              />
+              <label htmlFor="publicTestimonial" className={`text-${colorPalette.text.secondary}`}>
+                Make my testimonial public
+              </label>
+            </div>
+
+            <div className="flex justify-end space-x-3 pt-4">
+              <button
+                type="button"
+                onClick={() => setIsAddTestimonialOpen(false)}
+                className={`px-4 py-2 border border-${colorPalette.ui.border} rounded text-${colorPalette.text.secondary} hover:bg-gray-100`}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className={`px-4 py-2 bg-${colorPalette.primary.base} text-white rounded hover:bg-${colorPalette.primary.dark}`}
+              >
+                Submit Testimonial
+              </button>
+            </div>
+          </form>
         </Modal>
       </div>
     </div>

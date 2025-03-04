@@ -2,12 +2,12 @@
 export const users = [
   {
     id: 1,
-    name: 'John Doe',
-    email: 'john@example.com',
-    phone: '(555) 123-4567',
+    name: 'Morgan Ludemann',
+    email: 'morgan@littledesertleatherworks.com',
+    phone: '(512) 555-1234',
     address: '123 Main St, Austin, TX 78701',
-    profileImage: 'https://placehold.co/200x200/amber700/ffffff?text=JD',
-    role: 'User',
+    profileImage: 'https://res.cloudinary.com/notsupreme/image/upload/v1741109031/egk8wjdmjhgctiysphv6.png',
+    role: 'Admin',
     lastLogin: '2023-03-15',
     marketingPreferences: {
       emailOffers: true,

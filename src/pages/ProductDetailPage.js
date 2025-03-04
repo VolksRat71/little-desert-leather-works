@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useWebsite, colorPalette, useDocumentTitle } from '../context/WebsiteContext';
+import { useWebsite, useDocumentTitle } from '../context/WebsiteContext';
 import ProductCard from '../components/ProductCard';
 import ImageCarousel from '../components/ImageCarousel';
 
 const ProductDetailPage = () => {
-  const { navigate, products, addToCart } = useWebsite();
+  const { navigate, products, addToCart, colorPalette } = useWebsite();
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const { productId } = useParams();

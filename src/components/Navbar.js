@@ -1,22 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { useWebsite, colorPalette } from '../context/WebsiteContext';
+import { useWebsite } from '../context/WebsiteContext';
 import { Logo } from '../App';
 
 // NavLink component with transition effects
 const CustomNavLink = ({ to, children, mobile }) => {
-  const { navigate, currentRoute } = useWebsite();
+  const { navigate, colorPalette } = useWebsite();
+
+  // Default classes if colorPalette isn't loaded yet
+  const primaryBaseClass = colorPalette?.primary?.base ? `text-${colorPalette.primary.base}` : 'text-amber-600';
+  const textLightClass = colorPalette?.text?.light ? `text-${colorPalette.text.light}` : 'text-white';
+  const primaryLightestClass = colorPalette?.primary?.lightest ? `hover:text-${colorPalette.primary.lightest}` : 'hover:text-amber-200';
+  const primaryBaseAccentClass = colorPalette?.primary?.base ? `after:bg-${colorPalette.primary.base}` : 'after:bg-amber-600';
 
   return (
     <NavLink
       to={to}
       className={({ isActive }) => `
         ${mobile ? 'block py-2 text-sm' : 'text-sm lg:text-base'}
-        ${isActive ? `text-${colorPalette.primary.base}` : `text-${colorPalette.text.light}`}
-        hover:text-${colorPalette.primary.lightest}
+        ${isActive ? primaryBaseClass : textLightClass}
+        ${primaryLightestClass}
         transition-colors duration-300 relative whitespace-nowrap
         after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5
-        after:bg-${colorPalette.primary.base} after:transform
+        ${primaryBaseAccentClass} after:transform
         ${isActive ? 'after:scale-x-100' : 'after:scale-x-0'}
         after:transition-transform after:duration-300 after:origin-left
         hover:after:scale-x-100
@@ -32,7 +38,16 @@ const CustomNavLink = ({ to, children, mobile }) => {
 };
 
 const Navbar = () => {
-  const { isMenuOpen, setIsMenuOpen, isNavbarVisible, navigate, getCartItemCount, users } = useWebsite();
+  const {
+    isMenuOpen,
+    setIsMenuOpen,
+    isNavbarVisible,
+    navigate,
+    getCartItemCount,
+    users,
+    colorPalette
+  } = useWebsite();
+
   const cartItemCount = getCartItemCount();
 
   // For demo purposes, assuming the first user is currently logged in
@@ -40,18 +55,26 @@ const Navbar = () => {
   const isLoggedIn = !!currentUser;
   const isAdmin = currentUser?.role === 'Admin';
 
+  // Default classes if colorPalette isn't loaded yet
+  const bgDarkClass = colorPalette?.ui?.darkBackground ? `bg-${colorPalette.ui.darkBackground}` : 'bg-gray-900';
+  const textLightClass = colorPalette?.text?.light ? `text-${colorPalette.text.light}` : 'text-white';
+  const primaryLightestClass = colorPalette?.primary?.lightest ? `hover:text-${colorPalette.primary.lightest}` : 'hover:text-amber-200';
+  const primaryBaseClass = colorPalette?.primary?.base ? `bg-${colorPalette.primary.base}` : 'bg-amber-600';
+  const darkBorderClass = colorPalette?.ui?.darkBorder ? `border-${colorPalette.ui.darkBorder}` : 'border-gray-800';
+  const primaryBaseTextClass = colorPalette?.primary?.base ? `text-${colorPalette.primary.base}` : 'text-amber-600';
+
   return (
-    <nav className={`fixed w-full bg-${colorPalette.ui.darkBackground} text-${colorPalette.text.light} z-50 transition-transform duration-300 ${isNavbarVisible ? 'transform-none' : '-translate-y-full'}`}>
+    <nav className={`fixed w-full ${bgDarkClass} ${textLightClass} z-50 transition-transform duration-300 ${isNavbarVisible ? 'transform-none' : '-translate-y-full'}`}>
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex justify-between items-center py-3">
           <div className="flex items-center">
             <div onClick={() => navigate('/')} className="cursor-pointer">
               {/* Use logo with text on smaller screens, and regular logo on larger screens */}
               <div className="block lg:hidden">
-                <Logo size="sm" withText={true} light={true} className={`hover:text-${colorPalette.primary.lightest} transition-colors duration-300 text-shadow`} />
+                <Logo size="sm" withText={true} light={true} className={`${primaryLightestClass} transition-colors duration-300 text-shadow`} />
               </div>
               <div className="hidden lg:block">
-                <Logo size="md" className={`hover:text-${colorPalette.primary.lightest} transition-colors duration-300 text-shadow`} />
+                <Logo size="md" className={`${primaryLightestClass} transition-colors duration-300 text-shadow`} />
               </div>
             </div>
           </div>
@@ -61,13 +84,13 @@ const Navbar = () => {
             {/* Cart Icon for Mobile */}
             <button
               onClick={() => navigate('/cart')}
-              className={`mr-4 relative text-${colorPalette.text.light} hover:text-${colorPalette.primary.lightest} transition-colors duration-300`}
+              className={`mr-4 relative ${textLightClass} ${primaryLightestClass} transition-colors duration-300`}
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
               {cartItemCount > 0 && (
-                <span className={`absolute -top-2 -right-2 bg-${colorPalette.primary.base} text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center`}>
+                <span className={`absolute -top-2 -right-2 ${primaryBaseClass} text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center`}>
                   {cartItemCount}
                 </span>
               )}
@@ -77,7 +100,7 @@ const Navbar = () => {
             {isLoggedIn && (
               <button
                 onClick={() => navigate('/account')}
-                className={`mr-4 relative text-${colorPalette.text.light} hover:text-${colorPalette.primary.lightest} transition-colors duration-300`}
+                className={`mr-4 relative ${textLightClass} ${primaryLightestClass} transition-colors duration-300`}
               >
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -87,7 +110,7 @@ const Navbar = () => {
 
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={`text-${colorPalette.text.light} hover:text-${colorPalette.primary.lightest} transition-colors duration-300`}
+              className={`${textLightClass} ${primaryLightestClass} transition-colors duration-300`}
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {isMenuOpen ? (
@@ -112,7 +135,7 @@ const Navbar = () => {
               <div className="relative group">
                 <button
                   onClick={() => navigate('/account')}
-                  className={`flex items-center text-${colorPalette.text.light} hover:text-${colorPalette.primary.lightest} transition-colors duration-300`}
+                  className={`flex items-center ${textLightClass} ${primaryLightestClass} transition-colors duration-300`}
                 >
                   <svg className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -125,13 +148,13 @@ const Navbar = () => {
             {/* Cart Icon */}
             <button
               onClick={() => navigate('/cart')}
-              className={`relative text-${colorPalette.text.light} hover:text-${colorPalette.primary.lightest} transition-colors duration-300`}
+              className={`relative ${textLightClass} ${primaryLightestClass} transition-colors duration-300`}
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
               {cartItemCount > 0 && (
-                <span className={`absolute -top-2 -right-2 bg-${colorPalette.primary.base} text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center`}>
+                <span className={`absolute -top-2 -right-2 ${primaryBaseClass} text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center`}>
                   {cartItemCount}
                 </span>
               )}
@@ -143,7 +166,7 @@ const Navbar = () => {
       {/* Mobile menu panel */}
       <div className="lg:hidden">
         <div
-          className={`mobile-menu bg-${colorPalette.ui.darkBackground} px-6 space-y-3 border-${colorPalette.ui.darkBorder}
+          className={`mobile-menu ${bgDarkClass} px-6 space-y-3 border-${darkBorderClass}
           ${isMenuOpen ? 'mobile-menu-open' : 'mobile-menu-closed'}`}
         >
           <CustomNavLink to="/" mobile>Home</CustomNavLink>

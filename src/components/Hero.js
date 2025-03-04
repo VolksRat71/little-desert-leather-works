@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useWebsite, colorPalette } from '../context/WebsiteContext';
+import { useWebsite } from '../context/WebsiteContext';
 import { Logo } from '../App';
 
 const Hero = () => {
-  const { navigate } = useWebsite();
+  const { colorPalette } = useWebsite();
   const [animationApplied, setAnimationApplied] = useState(false);
 
   useEffect(() => {

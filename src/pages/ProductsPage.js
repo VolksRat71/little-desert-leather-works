@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useWebsite, colorPalette, useDocumentTitle } from '../context/WebsiteContext';
+import { useWebsite, useDocumentTitle } from '../context/WebsiteContext';
 import ProductCard from '../components/ProductCard';
 
 const ProductsPage = () => {
-  const { products } = useWebsite();
+  const { products, colorPalette } = useWebsite();
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [filters, setFilters] = useState({
     searchTerm: '',

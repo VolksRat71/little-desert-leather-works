@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import ImageMagnifier from '../components/ImageMagnifier';
-import { colorPalette } from '../context/WebsiteContext';
+import { useWebsite } from '../context/WebsiteContext';
 
 const ImageCarousel = ({ product }) => {
   const { images } = product;
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { colorPalette } = useWebsite();
 
   // Reset current index when product changes
   useEffect(() => {
@@ -15,6 +16,9 @@ const ImageCarousel = ({ product }) => {
     if (index === currentIndex) return;
     setCurrentIndex(index);
   };
+
+  // Default border color if colorPalette isn't loaded yet
+  const borderActiveClass = colorPalette ? `border-${colorPalette.primary.base}` : 'border-amber-600';
 
   return (
     <div className="relative">
@@ -46,7 +50,7 @@ const ImageCarousel = ({ product }) => {
         {images.map((image, index) => (
           <div
             key={index}
-            className={`cursor-pointer rounded overflow-hidden border-2 transition-all duration-400 ${currentIndex === index ? `border-${colorPalette.primary.base}` : 'border-transparent'}`}
+            className={`cursor-pointer rounded overflow-hidden border-2 transition-all duration-400 ${currentIndex === index ? borderActiveClass : 'border-transparent'}`}
             onClick={() => handleSelectImage(index)}
           >
             <img src={image} alt={`Thumbnail ${index + 1}`} className="w-16 h-16 object-cover" />

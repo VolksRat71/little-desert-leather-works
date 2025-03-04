@@ -1,8 +1,8 @@
 import React from 'react';
-import { useWebsite, colorPalette, artisan, useDocumentTitle } from '../context/WebsiteContext';
+import { useWebsite, useDocumentTitle } from '../context/WebsiteContext';
 
 const AboutPage = () => {
-  const { artisan } = useWebsite();
+  const { artisan, colorPalette } = useWebsite();
 
   // Set document title
   useDocumentTitle('About Us');
@@ -20,6 +20,12 @@ const AboutPage = () => {
     transformOrigin: 'center center',
     display: 'inline-block'
   };
+
+  // Default classes if colorPalette isn't loaded yet
+  const bgClass = colorPalette ? `bg-${colorPalette.primary?.background || 'stone-50'}` : 'bg-stone-50';
+  const textClass = colorPalette ? `text-${colorPalette.text?.primary || 'gray-900'}` : 'text-gray-900';
+  const accentClass = colorPalette ? `bg-${colorPalette.primary?.base || 'amber-600'}` : 'bg-amber-600';
+  const lightTextClass = colorPalette ? `text-${colorPalette.text?.light || 'white'}` : 'text-white';
 
   return (
     <div className="pt-24 pb-16 px-4">

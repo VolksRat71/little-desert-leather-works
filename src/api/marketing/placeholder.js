@@ -4,36 +4,24 @@ export const testimonials = [
     id: 1,
     name: "Michael R.",
     location: "Dallas, TX",
-    content: "I've had my travel duffle for 5 years now and it's only getting better with age. The craftsmanship is unmatched.",
-    rating: 5,
-    date: "2022-11-15",
+    testimonial: "The craftsmanship on my wallet is incredible. After two years of daily use, it's developing a beautiful patina and holding up perfectly. It's rare to find goods made with this level of care these days.",
+    image: "https://placehold.co/64x64/8b5a2b/ffffff?text=MR",
     isVisible: true
   },
   {
     id: 2,
-    name: "Sarah T.",
-    location: "Chicago, IL",
-    content: "Beautiful leather goods that are both functional and luxurious. The messenger bag is my daily companion for work.",
-    rating: 5,
-    date: "2023-01-22",
+    name: "Sarah J.",
+    location: "Austin, TX",
+    testimonial: "I commissioned a custom bag as a gift for my husband. The attention to detail and the personal touches make it truly one of a kind. The entire experience working with Little Desert Leather Works was exceptional.",
+    image: "https://placehold.co/64x64/704820/ffffff?text=SJ",
     isVisible: true
   },
   {
     id: 3,
-    name: "James L.",
-    location: "Austin, TX",
-    content: "Exceptional quality and surprisingly practical. I use the backpack for both business travel and weekend adventures.",
-    rating: 4,
-    date: "2023-02-18",
-    isVisible: true
-  },
-  {
-    id: 4,
-    name: "Emily W.",
-    location: "San Francisco, CA",
-    content: "These leather goods are investment pieces that will last a lifetime. Worth every penny.",
-    rating: 5,
-    date: "2023-03-05",
+    name: "David M.",
+    location: "Houston, TX",
+    testimonial: "The belt I purchased has become my everyday favorite. The quality of the leather is unmatched by anything I've found elsewhere. I've already ordered two more in different colors.",
+    image: "https://placehold.co/64x64/5c4c35/ffffff?text=DM",
     isVisible: true
   }
 ];

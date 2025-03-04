@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useWebsite, colorPalette, useDocumentTitle } from '../context/WebsiteContext';
+import { useWebsite, useDocumentTitle } from '../context/WebsiteContext';
 
 const CartPage = () => {
   const {
@@ -8,7 +8,8 @@ const CartPage = () => {
     updateCartQuantity,
     clearCart,
     getCartTotal,
-    navigate
+    navigate,
+    colorPalette
   } = useWebsite();
 
   // Set document title

@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { colorPalette, useDocumentTitle, useWebsite } from '../context/WebsiteContext';
+import { useDocumentTitle, useWebsite } from '../context/WebsiteContext';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
 const ContactPage = () => {
   // Custom style with larger font
@@ -17,10 +20,29 @@ const ContactPage = () => {
   };
 
   // Get contact information from context
-  const { contactInfo } = useWebsite();
+  const { contactInfo, colorPalette } = useWebsite();
 
   // Set document title
   useDocumentTitle('Contact Us');
+
+  // Define contact form validation schema
+  const contactSchema = yup.object({
+    name: yup.string().required('Name is required').min(2, 'Name must be at least 2 characters'),
+    email: yup.string().email('Must be a valid email').required('Email is required'),
+    message: yup.string().required('Message is required').min(10, 'Message must be at least 10 characters')
+  });
+
+  // Set up react-hook-form with yup resolver
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: yupResolver(contactSchema)
+  });
+
+  // Handle form submission
+  const onSubmit = (data) => {
+    console.log('Form submitted:', data);
+    // Add your form submission logic here
+    alert('Message sent! We will contact you soon.');
+  };
 
   return (
     <div className="pt-24 pb-16 px-4">
@@ -38,30 +60,36 @@ const ContactPage = () => {
               <h2 className={`text-xl font-bold mb-4 text-${colorPalette.text.primary}`}>
                 <span className="desert-road-font" style={desertFontStyle}>Get In Touch</span>
               </h2>
-              <form>
+              <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-4">
                   <label className={`block text-${colorPalette.text.secondary} mb-2`} htmlFor="name">Name</label>
                   <input
                     type="text"
                     id="name"
-                    className={`w-full px-4 py-2 border border-${colorPalette.ui.border} rounded focus:outline-none focus:ring-2 focus:ring-${colorPalette.primary.base} transition-all duration-300`}
+                    {...register('name')}
+                    className={`w-full px-4 py-2 border ${errors.name ? `border-red-500` : `border-${colorPalette.ui.border}`} rounded focus:outline-none focus:ring-2 focus:ring-${colorPalette.primary.base} transition-all duration-300`}
                   />
+                  {errors.name && <p className="mt-1 text-red-500 text-sm">{errors.name.message}</p>}
                 </div>
                 <div className="mb-4">
                   <label className={`block text-${colorPalette.text.secondary} mb-2`} htmlFor="email">Email</label>
                   <input
                     type="email"
                     id="email"
-                    className={`w-full px-4 py-2 border border-${colorPalette.ui.border} rounded focus:outline-none focus:ring-2 focus:ring-${colorPalette.primary.base} transition-all duration-300`}
+                    {...register('email')}
+                    className={`w-full px-4 py-2 border ${errors.email ? `border-red-500` : `border-${colorPalette.ui.border}`} rounded focus:outline-none focus:ring-2 focus:ring-${colorPalette.primary.base} transition-all duration-300`}
                   />
+                  {errors.email && <p className="mt-1 text-red-500 text-sm">{errors.email.message}</p>}
                 </div>
                 <div className="mb-4">
                   <label className={`block text-${colorPalette.text.secondary} mb-2`} htmlFor="message">Message</label>
                   <textarea
                     id="message"
                     rows="5"
-                    className={`w-full px-4 py-2 border border-${colorPalette.ui.border} rounded focus:outline-none focus:ring-2 focus:ring-${colorPalette.primary.base} transition-all duration-300`}
+                    {...register('message')}
+                    className={`w-full px-4 py-2 border ${errors.message ? `border-red-500` : `border-${colorPalette.ui.border}`} rounded focus:outline-none focus:ring-2 focus:ring-${colorPalette.primary.base} transition-all duration-300`}
                   ></textarea>
+                  {errors.message && <p className="mt-1 text-red-500 text-sm">{errors.message.message}</p>}
                 </div>
                 <button
                   type="submit"

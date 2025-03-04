@@ -2,13 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useWebsite } from '../../context/WebsiteContext';
 import Modal from '../Modal';
 import EllipsisMenu from '../EllipsisMenu';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { productSchema } from '../../validators/schema';
 
 const ProductsSection = () => {
   const {
     products,
     updateProduct,
     addProduct,
-    deleteProduct
+    deleteProduct,
+    isLoading,
+    errors
   } = useWebsite();
 
   const [productsList, setProductsList] = useState(products);
@@ -17,35 +22,14 @@ const ProductsSection = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
-  const [newProduct, setNewProduct] = useState({
-    name: '',
-    shortDescription: '',
-    description: '',
-    price: '',
-    image: '',
-    images: [''],
-    features: [''],
-    careInstructions: '',
-    isVisible: true
-  });
+  const [productImages, setProductImages] = useState({ main: null, additional: [] });
+  const [localLoading, setLocalLoading] = useState(false);
+  const [localError, setLocalError] = useState(null);
 
-  // Update local state when context products change
-  useEffect(() => {
-    setProductsList(products);
-  }, [products]);
-
-  const handleEditClick = (product) => {
-    setEditingProduct({...product, isVisible: product.isVisible !== false});
-    setIsEditModalOpen(true);
-  };
-
-  const handleDeleteClick = (product) => {
-    setProductToDelete(product);
-    setIsDeleteModalOpen(true);
-  };
-
-  const handleAddClick = () => {
-    setNewProduct({
+  // Setup react-hook-form for adding products
+  const { register: registerAdd, handleSubmit: handleAddSubmit, formState: { errors: addErrors }, control: addControl, reset: resetAddForm } = useForm({
+    resolver: yupResolver(productSchema),
+    defaultValues: {
       name: '',
       shortDescription: '',
       description: '',
@@ -55,149 +39,154 @@ const ProductsSection = () => {
       features: [''],
       careInstructions: '',
       isVisible: true
+    }
+  });
+
+  // Setup field arrays for adding products
+  const { fields: addFeatureFields, append: appendAddFeature, remove: removeAddFeature } = useFieldArray({
+    control: addControl,
+    name: 'features'
+  });
+
+  const { fields: addImageFields, append: appendAddImage, remove: removeAddImage } = useFieldArray({
+    control: addControl,
+    name: 'images'
+  });
+
+  // Setup react-hook-form for editing products
+  const { register: registerEdit, handleSubmit: handleEditSubmit, formState: { errors: editErrors }, control: editControl, reset: resetEditForm } = useForm({
+    resolver: yupResolver(productSchema)
+  });
+
+  // Setup field arrays for editing products
+  const { fields: editFeatureFields, append: appendEditFeature, remove: removeEditFeature } = useFieldArray({
+    control: editControl,
+    name: 'features'
+  });
+
+  const { fields: editImageFields, append: appendEditImage, remove: removeEditImage } = useFieldArray({
+    control: editControl,
+    name: 'images'
+  });
+
+  // Update local state when context products change
+  useEffect(() => {
+    setProductsList(products);
+  }, [products]);
+
+  const handleEditClick = (product) => {
+    setEditingProduct(product);
+    setIsEditModalOpen(true);
+    // Set form default values for editing
+    resetEditForm({
+      ...product
     });
+  };
+
+  const handleDeleteClick = (product) => {
+    setProductToDelete(product);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleAddClick = () => {
     setIsAddModalOpen(true);
+    resetAddForm();
   };
 
   const handleMainImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setEditingProduct({
-        ...editingProduct,
-        image: imageUrl,
-        imageFile: file
-      });
-    }
-  };
-
-  const handleNewMainImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setNewProduct({
-        ...newProduct,
-        image: imageUrl,
-        imageFile: file
-      });
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProductImages({ ...productImages, main: e.target.result });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const handleAdditionalImageUpload = (index, e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      const updatedImages = [...editingProduct.images];
-      updatedImages[index] = imageUrl;
-      setEditingProduct({...editingProduct, images: updatedImages});
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const newImages = [...productImages.additional];
+        newImages[index] = e.target.result;
+        setProductImages({ ...productImages, additional: newImages });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  const handleNewAdditionalImageUpload = (index, e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      const updatedImages = [...newProduct.images];
-      updatedImages[index] = imageUrl;
-      setNewProduct({...newProduct, images: updatedImages});
+  const onAddProduct = async (data) => {
+    try {
+      setLocalLoading(true);
+      setLocalError(null);
+
+      // Add image data from upload if available
+      if (productImages.main) {
+        data.image = productImages.main;
+      }
+      if (productImages.additional.length > 0) {
+        data.images = productImages.additional.filter(img => img);
+      }
+
+      await addProduct(data);
+      setIsAddModalOpen(false);
+      resetAddForm();
+      setProductImages({ main: null, additional: [] });
+    } catch (error) {
+      setLocalError('Failed to add product. Please try again.');
+      console.error('Error adding product:', error);
+    } finally {
+      setLocalLoading(false);
     }
   };
 
-  const handleSaveEdit = () => {
-    updateProduct(editingProduct.id, editingProduct);
-    setIsEditModalOpen(false);
+  const onEditProduct = async (data) => {
+    try {
+      setLocalLoading(true);
+      setLocalError(null);
+
+      // Add image data from upload if available
+      if (productImages.main) {
+        data.image = productImages.main;
+      }
+      if (productImages.additional.length > 0 && productImages.additional.some(img => img)) {
+        data.images = productImages.additional.filter(img => img);
+      }
+
+      const updatedProduct = {
+        ...editingProduct,
+        ...data,
+        id: editingProduct.id
+      };
+
+      await updateProduct(updatedProduct);
+      setIsEditModalOpen(false);
+      setEditingProduct(null);
+      setProductImages({ main: null, additional: [] });
+    } catch (error) {
+      setLocalError('Failed to update product. Please try again.');
+      console.error('Error updating product:', error);
+    } finally {
+      setLocalLoading(false);
+    }
   };
 
-  const handleConfirmDelete = () => {
-    deleteProduct(productToDelete.id);
-    setIsDeleteModalOpen(false);
-  };
+  const handleConfirmDelete = async () => {
+    try {
+      setLocalLoading(true);
+      setLocalError(null);
 
-  const handleAddProduct = () => {
-    const cleanedProduct = {
-      ...newProduct,
-      features: newProduct.features.filter(feature => feature.trim() !== ''),
-      images: newProduct.images.filter(image => image.trim() !== '')
-    };
-
-    addProduct(cleanedProduct);
-    setIsAddModalOpen(false);
-  };
-
-  const handleFeatureChange = (index, value) => {
-    const updatedFeatures = [...editingProduct.features];
-    updatedFeatures[index] = value;
-    setEditingProduct({...editingProduct, features: updatedFeatures});
-  };
-
-  const addFeature = () => {
-    setEditingProduct({
-      ...editingProduct,
-      features: [...editingProduct.features, '']
-    });
-  };
-
-  const removeFeature = (index) => {
-    const updatedFeatures = [...editingProduct.features];
-    updatedFeatures.splice(index, 1);
-    setEditingProduct({...editingProduct, features: updatedFeatures});
-  };
-
-  const handleNewFeatureChange = (index, value) => {
-    const updatedFeatures = [...newProduct.features];
-    updatedFeatures[index] = value;
-    setNewProduct({...newProduct, features: updatedFeatures});
-  };
-
-  const addNewFeature = () => {
-    setNewProduct({
-      ...newProduct,
-      features: [...newProduct.features, '']
-    });
-  };
-
-  const removeNewFeature = (index) => {
-    const updatedFeatures = [...newProduct.features];
-    updatedFeatures.splice(index, 1);
-    setNewProduct({...newProduct, features: updatedFeatures});
-  };
-
-  const handleImageChange = (index, value) => {
-    const updatedImages = [...editingProduct.images];
-    updatedImages[index] = value;
-    setEditingProduct({...editingProduct, images: updatedImages});
-  };
-
-  const addImage = () => {
-    setEditingProduct({
-      ...editingProduct,
-      images: [...editingProduct.images, '']
-    });
-  };
-
-  const removeImage = (index) => {
-    const updatedImages = [...editingProduct.images];
-    updatedImages.splice(index, 1);
-    setEditingProduct({...editingProduct, images: updatedImages});
-  };
-
-  const handleNewImageChange = (index, value) => {
-    const updatedImages = [...newProduct.images];
-    updatedImages[index] = value;
-    setNewProduct({...newProduct, images: updatedImages});
-  };
-
-  const addNewImage = () => {
-    setNewProduct({
-      ...newProduct,
-      images: [...newProduct.images, '']
-    });
-  };
-
-  const removeNewImage = (index) => {
-    const updatedImages = [...newProduct.images];
-    updatedImages.splice(index, 1);
-    setNewProduct({...newProduct, images: updatedImages});
+      await deleteProduct(productToDelete.id);
+      setIsDeleteModalOpen(false);
+      setProductToDelete(null);
+    } catch (error) {
+      setLocalError('Failed to delete product. Please try again.');
+      console.error('Error deleting product:', error);
+    } finally {
+      setLocalLoading(false);
+    }
   };
 
   return (
@@ -271,408 +260,382 @@ const ProductsSection = () => {
         </table>
       </div>
 
-      {/* Edit Product Modal */}
-      <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} title="Edit Product">
-        <div className="space-y-4">
-          <div>
-            <label className="block mb-1 font-medium">Name</label>
-            <input
-              type="text"
-              value={editingProduct?.name || ''}
-              onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
-              className="w-full p-2 border rounded"
-            />
-          </div>
-          <div>
-            <label className="block mb-1 font-medium">Short Description</label>
-            <input
-              type="text"
-              value={editingProduct?.shortDescription || ''}
-              onChange={(e) => setEditingProduct({ ...editingProduct, shortDescription: e.target.value })}
-              className="w-full p-2 border rounded"
-            />
-          </div>
-          <div>
-            <label className="block mb-1 font-medium">Full Description</label>
-            <textarea
-              value={editingProduct?.description || ''}
-              onChange={(e) => setEditingProduct({ ...editingProduct, description: e.target.value })}
-              className="w-full p-2 border rounded h-32"
-            />
-          </div>
-          <div>
-            <label className="block mb-1 font-medium">Price</label>
-            <input
-              type="text"
-              value={editingProduct?.price || ''}
-              onChange={(e) => setEditingProduct({ ...editingProduct, price: e.target.value })}
-              className="w-full p-2 border rounded"
-            />
-          </div>
-
-          <div>
-            <label className="flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={editingProduct?.isVisible !== false}
-                onChange={(e) => setEditingProduct({ ...editingProduct, isVisible: e.target.checked })}
-                className="form-checkbox h-5 w-5 text-blue-600"
-              />
-              <span className="ml-2 text-gray-700">
-                {editingProduct?.isVisible !== false ? 'Product is visible' : 'Product is hidden'}
-              </span>
-            </label>
-          </div>
-
-          <div>
-            <label className="block mb-1 font-medium">Main Image</label>
-            <div className="flex items-center space-x-4">
-              <input
-                type="file"
-                accept="image/*"
-                id="main-image-upload"
-                className="hidden"
-                onChange={handleMainImageUpload}
-              />
-              <label
-                htmlFor="main-image-upload"
-                className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded cursor-pointer"
-              >
-                Choose Image
-              </label>
-              <input
-                type="text"
-                value={editingProduct?.image || ''}
-                onChange={(e) => setEditingProduct({ ...editingProduct, image: e.target.value })}
-                placeholder="Or enter image URL"
-                className="flex-grow p-2 border rounded"
-              />
-            </div>
-            {editingProduct?.image && (
-              <div className="mt-2 relative inline-block">
-                <img
-                  src={editingProduct.image}
-                  alt="Main product"
-                  className="h-20 w-20 object-cover rounded border"
-                />
-                <button
-                  type="button"
-                  onClick={() => setEditingProduct({ ...editingProduct, image: '' })}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center shadow"
-                >
-                  ×
-                </button>
-              </div>
-            )}
-          </div>
-
-          <div>
-            <label className="block mb-1 font-medium">Features</label>
-            {editingProduct?.features.map((feature, index) => (
-              <div key={index} className="flex mb-2">
-                <input
-                  type="text"
-                  value={feature}
-                  onChange={(e) => handleFeatureChange(index, e.target.value)}
-                  className="flex-grow p-2 border rounded"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeFeature(index)}
-                  className="ml-2 bg-red-500 text-white px-3 rounded"
-                >
-                  -
-                </button>
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={addFeature}
-              className="bg-blue-500 text-white px-3 py-1 rounded"
-            >
-              Add Feature
-            </button>
-          </div>
-
-          <div>
-            <label className="block mb-1 font-medium">Image URLs</label>
-            {editingProduct?.images.map((image, index) => (
-              <div key={index} className="flex items-center mb-3">
-                <div className="flex-grow flex items-center space-x-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    id={`image-upload-${index}`}
-                    className="hidden"
-                    onChange={(e) => handleAdditionalImageUpload(index, e)}
-                  />
-                  <label
-                    htmlFor={`image-upload-${index}`}
-                    className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded text-sm cursor-pointer"
-                  >
-                    Upload
-                  </label>
-                  <input
-                    type="text"
-                    value={image}
-                    onChange={(e) => handleImageChange(index, e.target.value)}
-                    className="flex-grow p-2 border rounded"
-                    placeholder="Image URL"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => removeImage(index)}
-                  className="ml-2 bg-red-500 text-white px-3 rounded"
-                >
-                  -
-                </button>
-                {image && (
-                  <div className="ml-2 relative">
-                    <img
-                      src={image}
-                      alt={`Product ${index}`}
-                      className="h-10 w-10 object-cover rounded border"
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={addImage}
-              className="bg-blue-500 text-white px-3 py-1 rounded"
-            >
-              Add Image
-            </button>
-          </div>
-
-          <div>
-            <label className="block mb-1 font-medium">Care Instructions</label>
-            <textarea
-              value={editingProduct?.careInstructions || ''}
-              onChange={(e) => setEditingProduct({ ...editingProduct, careInstructions: e.target.value })}
-              className="w-full p-2 border rounded h-20"
-            />
-          </div>
-
-          <div className="flex justify-end space-x-3 pt-4">
-            <button
-              onClick={() => setIsEditModalOpen(false)}
-              className="px-4 py-2 border rounded text-gray-600 hover:bg-gray-100"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSaveEdit}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Save Changes
-            </button>
-          </div>
-        </div>
-      </Modal>
-
       {/* Add Product Modal */}
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Add New Product">
-        <div className="space-y-4">
+        <form onSubmit={handleAddSubmit(onAddProduct)} className="space-y-4">
           <div>
             <label className="block mb-1 font-medium">Name</label>
             <input
               type="text"
-              value={newProduct.name}
-              onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-              className="w-full p-2 border rounded"
+              {...registerAdd('name')}
+              className={`w-full p-2 border ${addErrors.name ? 'border-red-500' : 'border-gray-300'} rounded`}
             />
+            {addErrors.name && <p className="mt-1 text-red-500 text-sm">{addErrors.name.message}</p>}
           </div>
+
           <div>
             <label className="block mb-1 font-medium">Short Description</label>
             <input
               type="text"
-              value={newProduct.shortDescription}
-              onChange={(e) => setNewProduct({ ...newProduct, shortDescription: e.target.value })}
-              className="w-full p-2 border rounded"
+              {...registerAdd('shortDescription')}
+              className={`w-full p-2 border ${addErrors.shortDescription ? 'border-red-500' : 'border-gray-300'} rounded`}
             />
+            {addErrors.shortDescription && <p className="mt-1 text-red-500 text-sm">{addErrors.shortDescription.message}</p>}
           </div>
+
           <div>
             <label className="block mb-1 font-medium">Full Description</label>
             <textarea
-              value={newProduct.description}
-              onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-              className="w-full p-2 border rounded h-32"
-            />
+              {...registerAdd('description')}
+              className={`w-full p-2 border ${addErrors.description ? 'border-red-500' : 'border-gray-300'} rounded h-32`}
+            ></textarea>
+            {addErrors.description && <p className="mt-1 text-red-500 text-sm">{addErrors.description.message}</p>}
           </div>
+
           <div>
             <label className="block mb-1 font-medium">Price</label>
             <input
               type="text"
-              value={newProduct.price}
-              onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
-              className="w-full p-2 border rounded"
+              placeholder="$XX.XX"
+              {...registerAdd('price')}
+              className={`w-full p-2 border ${addErrors.price ? 'border-red-500' : 'border-gray-300'} rounded`}
             />
-          </div>
-
-          <div>
-            <label className="flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={newProduct.isVisible !== false}
-                onChange={(e) => setNewProduct({ ...newProduct, isVisible: e.target.checked })}
-                className="form-checkbox h-5 w-5 text-blue-600"
-              />
-              <span className="ml-2 text-gray-700">
-                {newProduct.isVisible !== false ? 'Product is visible' : 'Product is hidden'}
-              </span>
-            </label>
+            {addErrors.price && <p className="mt-1 text-red-500 text-sm">{addErrors.price.message}</p>}
           </div>
 
           <div>
             <label className="block mb-1 font-medium">Main Image</label>
-            <div className="flex items-center space-x-4">
-              <input
-                type="file"
-                accept="image/*"
-                id="new-main-image-upload"
-                className="hidden"
-                onChange={handleNewMainImageUpload}
-              />
-              <label
-                htmlFor="new-main-image-upload"
-                className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded cursor-pointer"
-              >
-                Choose Image
-              </label>
+            <div className="flex items-center gap-4">
               <input
                 type="text"
-                value={newProduct.image}
-                onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
-                placeholder="Or enter image URL"
-                className="flex-grow p-2 border rounded"
+                placeholder="Image URL or upload"
+                {...registerAdd('image')}
+                className={`flex-grow p-2 border ${addErrors.image ? 'border-red-500' : 'border-gray-300'} rounded`}
               />
+              <input
+                type="file"
+                id="mainImage"
+                accept="image/*"
+                onChange={handleMainImageUpload}
+                className="hidden"
+              />
+              <label
+                htmlFor="mainImage"
+                className="px-3 py-2 bg-gray-200 text-gray-700 rounded cursor-pointer hover:bg-gray-300 transition-colors"
+              >
+                Upload
+              </label>
             </div>
-            {newProduct.image && (
-              <div className="mt-2 relative inline-block">
-                <img
-                  src={newProduct.image}
-                  alt="Main product"
-                  className="h-20 w-20 object-cover rounded border"
-                />
-                <button
-                  type="button"
-                  onClick={() => setNewProduct({ ...newProduct, image: '' })}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center shadow"
-                >
-                  ×
-                </button>
+            {addErrors.image && <p className="mt-1 text-red-500 text-sm">{addErrors.image.message}</p>}
+            {productImages.main && (
+              <div className="mt-2">
+                <img src={productImages.main} alt="Preview" className="h-16 w-16 object-cover rounded" />
               </div>
             )}
           </div>
 
           <div>
-            <label className="block mb-1 font-medium">Features</label>
-            {newProduct.features.map((feature, index) => (
-              <div key={index} className="flex mb-2">
+            <div className="flex justify-between items-center mb-2">
+              <label className="block font-medium">Additional Images</label>
+              <button
+                type="button"
+                onClick={() => appendAddImage('')}
+                className="text-blue-600 hover:text-blue-800 text-sm"
+              >
+                + Add Image
+              </button>
+            </div>
+
+            {addImageFields.map((field, index) => (
+              <div key={field.id} className="flex items-center gap-2 mb-2">
                 <input
                   type="text"
-                  value={feature}
-                  onChange={(e) => handleNewFeatureChange(index, e.target.value)}
-                  className="flex-grow p-2 border rounded"
+                  placeholder="Image URL"
+                  {...registerAdd(`images.${index}`)}
+                  className="flex-grow p-2 border border-gray-300 rounded"
                 />
+                <input
+                  type="file"
+                  id={`additionalImage${index}`}
+                  accept="image/*"
+                  onChange={(e) => handleAdditionalImageUpload(index, e)}
+                  className="hidden"
+                />
+                <label
+                  htmlFor={`additionalImage${index}`}
+                  className="px-3 py-2 bg-gray-200 text-gray-700 rounded cursor-pointer hover:bg-gray-300 transition-colors flex-shrink-0"
+                >
+                  Upload
+                </label>
                 <button
                   type="button"
-                  onClick={() => removeNewFeature(index)}
-                  className="ml-2 bg-red-500 text-white px-3 rounded"
+                  onClick={() => removeAddImage(index)}
+                  className="text-red-600 hover:text-red-800"
                 >
-                  -
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               </div>
             ))}
-            <button
-              type="button"
-              onClick={addNewFeature}
-              className="bg-blue-500 text-white px-3 py-1 rounded"
-            >
-              Add Feature
-            </button>
           </div>
 
           <div>
-            <label className="block mb-1 font-medium">Image URLs</label>
-            {newProduct.images.map((image, index) => (
-              <div key={index} className="flex items-center mb-3">
-                <div className="flex-grow flex items-center space-x-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    id={`new-image-upload-${index}`}
-                    className="hidden"
-                    onChange={(e) => handleNewAdditionalImageUpload(index, e)}
-                  />
-                  <label
-                    htmlFor={`new-image-upload-${index}`}
-                    className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded text-sm cursor-pointer"
-                  >
-                    Upload
-                  </label>
-                  <input
-                    type="text"
-                    value={image}
-                    onChange={(e) => handleNewImageChange(index, e.target.value)}
-                    className="flex-grow p-2 border rounded"
-                    placeholder="Image URL"
-                  />
-                </div>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block font-medium">Features</label>
+              <button
+                type="button"
+                onClick={() => appendAddFeature('')}
+                className="text-blue-600 hover:text-blue-800 text-sm"
+              >
+                + Add Feature
+              </button>
+            </div>
+
+            {addFeatureFields.map((field, index) => (
+              <div key={field.id} className="flex items-center gap-2 mb-2">
+                <input
+                  type="text"
+                  placeholder="Product feature"
+                  {...registerAdd(`features.${index}`)}
+                  className="flex-grow p-2 border border-gray-300 rounded"
+                />
                 <button
                   type="button"
-                  onClick={() => removeNewImage(index)}
-                  className="ml-2 bg-red-500 text-white px-3 rounded"
+                  onClick={() => removeAddFeature(index)}
+                  className="text-red-600 hover:text-red-800"
                 >
-                  -
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
-                {image && (
-                  <div className="ml-2 relative">
-                    <img
-                      src={image}
-                      alt={`Product ${index}`}
-                      className="h-10 w-10 object-cover rounded border"
-                    />
-                  </div>
-                )}
               </div>
             ))}
-            <button
-              type="button"
-              onClick={addNewImage}
-              className="bg-blue-500 text-white px-3 py-1 rounded"
-            >
-              Add Image
-            </button>
           </div>
 
           <div>
             <label className="block mb-1 font-medium">Care Instructions</label>
             <textarea
-              value={newProduct.careInstructions}
-              onChange={(e) => setNewProduct({ ...newProduct, careInstructions: e.target.value })}
-              className="w-full p-2 border rounded h-20"
-            />
+              {...registerAdd('careInstructions')}
+              className="w-full p-2 border border-gray-300 rounded h-24"
+              placeholder="Care and cleaning instructions"
+            ></textarea>
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="isVisible"
+              {...registerAdd('isVisible')}
+            />
+            <label htmlFor="isVisible">Visible on site</label>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-4">
             <button
+              type="button"
               onClick={() => setIsAddModalOpen(false)}
-              className="px-4 py-2 border rounded text-gray-600 hover:bg-gray-100"
+              className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
             >
               Cancel
             </button>
             <button
-              onClick={handleAddProduct}
+              type="submit"
               className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
             >
               Add Product
             </button>
           </div>
-        </div>
+        </form>
+      </Modal>
+
+      {/* Edit Product Modal - similar structure with registerEdit, editErrors, etc. */}
+      <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} title="Edit Product">
+        <form onSubmit={handleEditSubmit(onEditProduct)} className="space-y-4">
+          <div>
+            <label className="block mb-1 font-medium">Name</label>
+            <input
+              type="text"
+              {...registerEdit('name')}
+              className={`w-full p-2 border ${editErrors.name ? 'border-red-500' : 'border-gray-300'} rounded`}
+            />
+            {editErrors.name && <p className="mt-1 text-red-500 text-sm">{editErrors.name.message}</p>}
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Short Description</label>
+            <input
+              type="text"
+              {...registerEdit('shortDescription')}
+              className={`w-full p-2 border ${editErrors.shortDescription ? 'border-red-500' : 'border-gray-300'} rounded`}
+            />
+            {editErrors.shortDescription && <p className="mt-1 text-red-500 text-sm">{editErrors.shortDescription.message}</p>}
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Full Description</label>
+            <textarea
+              {...registerEdit('description')}
+              className={`w-full p-2 border ${editErrors.description ? 'border-red-500' : 'border-gray-300'} rounded h-32`}
+            ></textarea>
+            {editErrors.description && <p className="mt-1 text-red-500 text-sm">{editErrors.description.message}</p>}
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Price</label>
+            <input
+              type="text"
+              placeholder="$XX.XX"
+              {...registerEdit('price')}
+              className={`w-full p-2 border ${editErrors.price ? 'border-red-500' : 'border-gray-300'} rounded`}
+            />
+            {editErrors.price && <p className="mt-1 text-red-500 text-sm">{editErrors.price.message}</p>}
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Main Image</label>
+            <div className="flex items-center gap-4">
+              <input
+                type="text"
+                placeholder="Image URL or upload"
+                {...registerEdit('image')}
+                className={`flex-grow p-2 border ${editErrors.image ? 'border-red-500' : 'border-gray-300'} rounded`}
+              />
+              <input
+                type="file"
+                id="editMainImage"
+                accept="image/*"
+                onChange={handleMainImageUpload}
+                className="hidden"
+              />
+              <label
+                htmlFor="editMainImage"
+                className="px-3 py-2 bg-gray-200 text-gray-700 rounded cursor-pointer hover:bg-gray-300 transition-colors"
+              >
+                Upload
+              </label>
+            </div>
+            {editErrors.image && <p className="mt-1 text-red-500 text-sm">{editErrors.image.message}</p>}
+            {productImages.main && (
+              <div className="mt-2">
+                <img src={productImages.main} alt="Preview" className="h-16 w-16 object-cover rounded" />
+              </div>
+            )}
+          </div>
+
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block font-medium">Additional Images</label>
+              <button
+                type="button"
+                onClick={() => appendEditImage('')}
+                className="text-blue-600 hover:text-blue-800 text-sm"
+              >
+                + Add Image
+              </button>
+            </div>
+
+            {editImageFields.map((field, index) => (
+              <div key={field.id} className="flex items-center gap-2 mb-2">
+                <input
+                  type="text"
+                  placeholder="Image URL"
+                  {...registerEdit(`images.${index}`)}
+                  className="flex-grow p-2 border border-gray-300 rounded"
+                />
+                <input
+                  type="file"
+                  id={`editAdditionalImage${index}`}
+                  accept="image/*"
+                  onChange={(e) => handleAdditionalImageUpload(index, e)}
+                  className="hidden"
+                />
+                <label
+                  htmlFor={`editAdditionalImage${index}`}
+                  className="px-3 py-2 bg-gray-200 text-gray-700 rounded cursor-pointer hover:bg-gray-300 transition-colors flex-shrink-0"
+                >
+                  Upload
+                </label>
+                <button
+                  type="button"
+                  onClick={() => removeEditImage(index)}
+                  className="text-red-600 hover:text-red-800"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block font-medium">Features</label>
+              <button
+                type="button"
+                onClick={() => appendEditFeature('')}
+                className="text-blue-600 hover:text-blue-800 text-sm"
+              >
+                + Add Feature
+              </button>
+            </div>
+
+            {editFeatureFields.map((field, index) => (
+              <div key={field.id} className="flex items-center gap-2 mb-2">
+                <input
+                  type="text"
+                  placeholder="Product feature"
+                  {...registerEdit(`features.${index}`)}
+                  className="flex-grow p-2 border border-gray-300 rounded"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeEditFeature(index)}
+                  className="text-red-600 hover:text-red-800"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Care Instructions</label>
+            <textarea
+              {...registerEdit('careInstructions')}
+              className="w-full p-2 border border-gray-300 rounded h-24"
+              placeholder="Care and cleaning instructions"
+            ></textarea>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="editIsVisible"
+              {...registerEdit('isVisible')}
+            />
+            <label htmlFor="editIsVisible">Visible on site</label>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-4">
+            <button
+              type="button"
+              onClick={() => setIsEditModalOpen(false)}
+              className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
       </Modal>
 
       {/* Delete Product Confirmation Modal */}
