@@ -225,39 +225,40 @@ export const WebsiteProvider = ({ children }) => {
         // Call the API to fetch color palette
         const apiPalette = await api.marketing.getColorPalette();
 
-        // Define default palette
+        // Define default palette - Updated to use the desert theme colors
         const defaultPalette = {
           primary: {
-            background: "stone-50",
-            base: "amber-600",
-            light: "amber-500",
-            dark: "amber-700",
-            lightest: "amber-100",
-            hover: "amber-700"
+            base: "desert-orange",
+            light: "desert-terracotta",
+            dark: "desert-rust",
+            hover: "desert-rust",
+            lightest: "desert-tan",
+            background: "white"
           },
           secondary: {
-            base: "amber-700",
-            light: "amber-600",
-            dark: "amber-800",
-            lightest: "amber-200",
-            hover: "amber-800"
+            base: "desert-olive",
+            light: "desert-green",
+            dark: "desert-black",
+            background: "white",
+            lightest: "white"
           },
           text: {
-            primary: "gray-900",
-            secondary: "gray-600",
-            tertiary: "gray-500",
+            primary: "desert-black",
+            secondary: "gray-700",
             light: "white",
-            lightest: "gray-100",
-            accent: "amber-600"
+            accent: "desert-rust",
+            medium: "desert-black",
+            dark: "desert-black",
+            lightest: "white"
           },
           ui: {
+            border: "desert-terracotta",
+            shadow: "desert-rust",
             background: "white",
-            lightBackground: "gray-50",
-            darkBackground: "gray-900",
-            border: "gray-200",
-            darkBorder: "gray-800",
-            hover: "gray-100",
-            overlay: "gray-800/75"
+            darkBackground: "desert-black",
+            lightBackground: "white",
+            accent: "desert-orange",
+            earthGreen: "desert-olive"
           }
         };
 
