@@ -40,7 +40,7 @@ const Hero = () => {
               variant="primary"
               size="large"
               onClick={scrollToProducts}
-              className="transform hover:-translate-y-1"
+              className="transform transition-transform duration-300 hover:-translate-y-1"
             >
               Explore Collection
             </Button>
