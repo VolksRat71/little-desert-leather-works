@@ -15,7 +15,6 @@ const ImageMagnifier = ({ src, alt, width = '100%', height = 'auto', magnifierSi
 
   // Memoize event handlers to ensure they have access to current state
   const handleTouchStart = useCallback((e) => {
-    e.preventDefault();
     setTouchActive(true); // Mark touch as active
     setShowMagnifier(true);
 
@@ -32,8 +31,6 @@ const ImageMagnifier = ({ src, alt, width = '100%', height = 'auto', magnifierSi
   }, []);
 
   const handleTouchMove = useCallback((e) => {
-    e.preventDefault();
-
     if (e.touches.length > 0) {
       const touch = e.touches[0];
       const imgRect = imgRef.current.getBoundingClientRect();
@@ -57,7 +54,6 @@ const ImageMagnifier = ({ src, alt, width = '100%', height = 'auto', magnifierSi
   }, [showMagnifier]);
 
   const handleTouchEnd = useCallback((e) => {
-    e.preventDefault();
     setShowMagnifier(false);
     setTouchActive(false); // Mark touch as inactive
   }, []);
