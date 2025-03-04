@@ -82,9 +82,9 @@ const AboutPage = () => {
             <span className="desert-road-font" style={desertFontStyle}>The Workshop</span>
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <img src="https://placehold.co/400x300/8b5a2b/ffffff?text=Workshop+View" alt="Workshop view" className="w-full h-64 object-cover rounded shadow transition-transform duration-300 hover:scale-105" />
-            <img src="https://placehold.co/400x300/704820/ffffff?text=Leather+Tools" alt="Tools" className="w-full h-64 object-cover rounded shadow transition-transform duration-300 hover:scale-105" />
-            <img src="https://placehold.co/400x300/5c4c35/ffffff?text=Leather+Selection" alt="Leather selection" className="w-full h-64 object-cover rounded shadow transition-transform duration-300 hover:scale-105" />
+            <img src="https://as1.ftcdn.net/v2/jpg/10/79/03/12/1000_F_1079031263_zmc59BEKHKAOw43PuVxtV5xuT0ZoZ3Aj.jpg" alt="Workshop view" className="w-full h-64 object-cover rounded shadow transition-transform duration-300 hover:scale-105" />
+            <img src="https://as2.ftcdn.net/v2/jpg/11/98/94/91/1000_F_1198949124_X2Gy9RLeJt9p8UX7jsP0Y3fKdJwv6b99.jpg" alt="Tools" className="w-full h-64 object-cover rounded shadow transition-transform duration-300 hover:scale-105" />
+            <img src="https://as1.ftcdn.net/v2/jpg/11/07/08/90/1000_F_1107089036_m6VswBucV0J4aFqK52E3spKS9rFlxrK5.jpg" alt="Leather selection" className="w-full h-64 object-cover rounded shadow transition-transform duration-300 hover:scale-105" />
           </div>
         </div>
       </div>

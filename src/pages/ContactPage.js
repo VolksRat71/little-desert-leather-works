@@ -121,7 +121,14 @@ const ContactPage = () => {
           {/* Map Placeholder */}
           {contactInfo.showMap && (
             <div className={`bg-${colorPalette.primary.dark} h-64 rounded shadow flex items-center justify-center`}>
-              <p className={`text-${colorPalette.text.light}`}>Map Placeholder</p>
+              <iframe
+                width="100%"
+                height="100%"
+                frameBorder="0"
+                style={{ border: 0 }}
+                src={`https://www.google.com/maps?q=${encodeURIComponent(contactInfo.address)}&output=embed`}
+                allowFullScreen
+              ></iframe>
             </div>
           )}
         </div>

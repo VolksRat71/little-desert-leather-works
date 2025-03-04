@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ImageMagnifier from '../components/ImageMagnifier';
+import { colorPalette } from '../context/WebsiteContext';
 
 const ImageCarousel = ({ product }) => {
   const { images } = product;
@@ -27,7 +28,7 @@ const ImageCarousel = ({ product }) => {
               opacity: currentIndex === index ? 1 : 0,
               visibility: currentIndex === index ? 'visible' : 'hidden',
               zIndex: currentIndex === index ? 2 : 1,
-              transition: 'opacity 0.3s ease'
+              transition: 'opacity 0.4s ease'
             }}
           >
             <ImageMagnifier
@@ -45,7 +46,7 @@ const ImageCarousel = ({ product }) => {
         {images.map((image, index) => (
           <div
             key={index}
-            className={`cursor-pointer rounded overflow-hidden border-2 transition-all duration-300 ${currentIndex === index ? 'border-blue-500' : 'border-transparent'}`}
+            className={`cursor-pointer rounded overflow-hidden border-2 transition-all duration-400 ${currentIndex === index ? `border-${colorPalette.primary.base}` : 'border-transparent'}`}
             onClick={() => handleSelectImage(index)}
           >
             <img src={image} alt={`Thumbnail ${index + 1}`} className="w-16 h-16 object-cover" />
