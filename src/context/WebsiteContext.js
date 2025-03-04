@@ -222,7 +222,10 @@ export const WebsiteProvider = ({ children }) => {
     const fetchColorPalette = async () => {
       setLoadingState('colorPalette', true);
       try {
-        // This would be an API call in the future
+        // Call the API to fetch color palette
+        const apiPalette = await api.marketing.getColorPalette();
+
+        // Define default palette
         const defaultPalette = {
           primary: {
             base: "desert-orange",      // Bright terracotta/orange from the logo
@@ -241,7 +244,7 @@ export const WebsiteProvider = ({ children }) => {
           },
           text: {
             primary: "desert-black",    // Black text for primary (dark for contrast)
-            secondary: "gray-600",   // Gray color for secondary text
+            secondary: "gray-600",      // Gray color for secondary text
             light: "stone-50",          // White text for dark backgrounds (better contrast)
             accent: "desert-rust",      // Darker terracotta for accent text (better contrast)
             medium: "desert-black",     // Black for medium text (better contrast)
@@ -258,7 +261,9 @@ export const WebsiteProvider = ({ children }) => {
             earthGreen: "desert-olive" // Olive green accent
           }
         };
-        setColors(defaultPalette);
+
+        // Use API palette if available, otherwise use default
+        setColors(apiPalette || defaultPalette);
         setErrorState('colorPalette', null);
       } catch (error) {
         console.error('Error fetching color palette:', error);
@@ -476,9 +481,25 @@ export const WebsiteProvider = ({ children }) => {
     }
   };
 
-  const updateColorPalette = (updatedColors) => {
-    setColors(updatedColors);
-    setTemporaryColorPalette(null); // Clear temporary colors after saving
+  const updateColorPalette = async (updatedColors) => {
+    setLoadingState('colorPalette', true);
+    try {
+      // Call API to save colors
+      const result = await api.marketing.updateColorPalette(updatedColors);
+
+      // Update local state with the result
+      setColors(result);
+      setTemporaryColorPalette(null); // Clear temporary colors after saving
+
+      setErrorState('colorPalette', null);
+      return result;
+    } catch (error) {
+      console.error('Error updating color palette:', error);
+      setErrorState('colorPalette', 'Failed to update color palette');
+      throw error;
+    } finally {
+      setLoadingState('colorPalette', false);
+    }
   };
 
   // Fetch users data on initial load
@@ -798,6 +819,52 @@ export const WebsiteProvider = ({ children }) => {
     });
   };
 
+  // Get theme presets
+  const [themePresets, setThemePresets] = useState([]);
+
+  // Fetch theme presets
+  useEffect(() => {
+    const fetchThemePresets = async () => {
+      try {
+        const presets = await api.marketing.getThemePresets();
+        setThemePresets(presets);
+      } catch (error) {
+        console.error('Error fetching theme presets:', error);
+      }
+    };
+
+    fetchThemePresets();
+  }, []);
+
+  // Apply a theme preset
+  const applyThemePreset = async (presetId) => {
+    setLoadingState('colorPalette', true);
+    try {
+      // Find the preset with the matching ID
+      const preset = themePresets.find(p => p.id === presetId);
+
+      if (!preset) {
+        throw new Error(`Theme preset with ID ${presetId} not found`);
+      }
+
+      // Apply the preset palette
+      const result = await api.marketing.updateColorPalette(preset.palette);
+
+      // Update local state
+      setColors(result);
+      setTemporaryColorPalette(null);
+
+      setErrorState('colorPalette', null);
+      return result;
+    } catch (error) {
+      console.error('Error applying theme preset:', error);
+      setErrorState('colorPalette', 'Failed to apply theme preset');
+      throw error;
+    } finally {
+      setLoadingState('colorPalette', false);
+    }
+  };
+
   return (
     <WebsiteContext.Provider
       value={{
@@ -862,7 +929,9 @@ export const WebsiteProvider = ({ children }) => {
         getApplicableCampaignsForUser,
         // Add loading and error states to the context
         isLoading,
-        errors
+        errors,
+        themePresets,
+        applyThemePreset
       }}
     >
       {children}

@@ -3,7 +3,15 @@ import { useWebsite } from '../../context/WebsiteContext';
 import TailwindColorPicker from '../TailwindColorPicker';
 
 const ColorsSection = () => {
-  const { colorPalette, updateColorPalette, temporaryColorPalette, setTemporaryColorPalette } = useWebsite();
+  const {
+    colorPalette,
+    updateColorPalette,
+    temporaryColorPalette,
+    setTemporaryColorPalette,
+    themePresets,
+    applyThemePreset,
+    isLoading
+  } = useWebsite();
 
   // Initialize editedColors from temporaryColorPalette if it exists (returning to component)
   // or from the main colorPalette if starting fresh
@@ -11,6 +19,15 @@ const ColorsSection = () => {
 
   // Keep track of original colors for reset functionality
   const [originalColors, setOriginalColors] = useState({ ...colorPalette });
+
+  // Track if a save is in progress
+  const [saving, setSaving] = useState(false);
+
+  // Track any error during save
+  const [saveError, setSaveError] = useState(null);
+
+  // Track current theme preset
+  const [currentPreset, setCurrentPreset] = useState(null);
 
   // When either colorPalette or temporaryColorPalette changes, update our state
   useEffect(() => {
@@ -34,9 +51,18 @@ const ColorsSection = () => {
   const hasUnsavedChanges = JSON.stringify(temporaryColorPalette) !== JSON.stringify(colorPalette);
 
   // Save the edited colors to the persistent storage/context
-  const handleSaveColors = () => {
-    updateColorPalette(editedColors);
-    setOriginalColors({ ...editedColors }); // Update original colors after save
+  const handleSaveColors = async () => {
+    setSaving(true);
+    setSaveError(null);
+    try {
+      await updateColorPalette(editedColors);
+      setOriginalColors({ ...editedColors }); // Update original colors after save
+    } catch (error) {
+      console.error('Error saving colors:', error);
+      setSaveError('Failed to save color changes. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   // Reset all colors to their original values (before editing)
@@ -83,6 +109,21 @@ const ColorsSection = () => {
     );
   };
 
+  // Apply a theme preset
+  const handleApplyPreset = async (presetId) => {
+    setSaving(true);
+    setSaveError(null);
+    try {
+      await applyThemePreset(presetId);
+      setCurrentPreset(presetId);
+    } catch (error) {
+      console.error('Error applying theme preset:', error);
+      setSaveError('Failed to apply theme preset. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="animate-fadeIn">
       <h2 className="text-xl font-semibold mb-4">Theme Colors</h2>
@@ -92,18 +133,88 @@ const ColorsSection = () => {
         {" "}Click "Save Changes" to make them permanent.
       </p>
 
+      {/* Theme Presets Section */}
+      <div className="mb-8 bg-white p-6 rounded shadow-sm">
+        <h3 className="text-lg font-medium mb-4">Theme Presets</h3>
+        <p className="text-gray-600 mb-4">
+          Select a predefined theme to instantly change your website's look and feel.
+          You can further customize it after applying.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {themePresets.map(preset => (
+            <div
+              key={preset.id}
+              className={`
+                border rounded-lg p-4 cursor-pointer transition-all
+                ${currentPreset === preset.id ? 'border-blue-500 ring-2 ring-blue-300' : 'border-gray-200 hover:border-gray-300'}
+              `}
+              onClick={() => handleApplyPreset(preset.id)}
+            >
+              <h4 className="font-medium text-gray-900">{preset.name}</h4>
+              <p className="text-gray-500 text-sm mb-3">{preset.description}</p>
+
+              {/* Color swatches preview */}
+              <div className="flex space-x-2 mb-2">
+                {preset.palette.primary && (
+                  <div
+                    className={`w-8 h-8 rounded-full bg-${preset.palette.primary.base} border border-gray-200`}
+                    title="Primary color"
+                  ></div>
+                )}
+                {preset.palette.secondary && (
+                  <div
+                    className={`w-8 h-8 rounded-full bg-${preset.palette.secondary.base} border border-gray-200`}
+                    title="Secondary color"
+                  ></div>
+                )}
+                {preset.palette.text && (
+                  <div
+                    className={`w-8 h-8 rounded-full bg-${preset.palette.text.primary} border border-gray-200`}
+                    title="Text color"
+                  ></div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Error Message */}
+      {saveError && (
+        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+          {saveError}
+        </div>
+      )}
+
       <div className="mb-6 flex justify-end">
         <button
           onClick={handleResetAll}
           className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 mr-2"
+          disabled={saving}
         >
           Reset All Colors
         </button>
         <button
           onClick={handleSaveColors}
-          className={`${hasUnsavedChanges ? 'bg-blue-600 animate-pulse' : 'bg-blue-600'} text-white px-6 py-2 rounded hover:bg-blue-700`}
+          className={`${
+            hasUnsavedChanges
+              ? 'bg-blue-600 animate-pulse'
+              : 'bg-blue-600'
+          } text-white px-6 py-2 rounded hover:bg-blue-700 relative`}
+          disabled={saving || isLoading.colorPalette}
         >
-          Save Color Changes
+          {saving || isLoading.colorPalette ? (
+            <>
+              <span className="invisible">Save Color Changes</span>
+              <svg className="absolute inset-0 m-auto w-5 h-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </>
+          ) : (
+            "Save Color Changes"
+          )}
         </button>
       </div>
 
@@ -245,14 +356,20 @@ const ColorsSection = () => {
         <button
           onClick={handleResetAll}
           className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 mr-2"
+          disabled={saving}
         >
           Reset All Colors
         </button>
         <button
           onClick={handleSaveColors}
-          className={`${hasUnsavedChanges ? 'bg-blue-600 animate-pulse' : 'bg-blue-600'} text-white px-6 py-2 rounded hover:bg-blue-700`}
+          className={`${
+            hasUnsavedChanges
+              ? 'bg-blue-600 animate-pulse'
+              : 'bg-blue-600'
+          } text-white px-6 py-2 rounded hover:bg-blue-700`}
+          disabled={saving || isLoading.colorPalette}
         >
-          Save Color Changes
+          {saving || isLoading.colorPalette ? "Saving..." : "Save Color Changes"}
         </button>
       </div>
     </div>

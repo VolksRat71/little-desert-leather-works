@@ -245,3 +245,173 @@ export const updateArtisanInfo = async (artisanData) => {
     throw error;
   }
 };
+
+// Get color palette
+export const getColorPalette = async () => {
+  try {
+    // Comment out the real API call
+    // const response = await apiClient.get('/color-palette');
+    // return response.data;
+
+    // Return placeholder data (defaults will be in WebsiteContext)
+    // This would come from a database in a real implementation
+    return Promise.resolve(null); // Return null to use defaults
+  } catch (error) {
+    console.error('Error fetching color palette:', error);
+    throw error;
+  }
+};
+
+// Update color palette
+export const updateColorPalette = async (colorData) => {
+  try {
+    // Comment out the real API call
+    // const response = await apiClient.put('/color-palette', colorData);
+    // return response.data;
+
+    // Simply return the data we would save
+    // In a real implementation, this would save to a database
+    return Promise.resolve(colorData);
+  } catch (error) {
+    console.error('Error updating color palette:', error);
+    throw error;
+  }
+};
+
+// Get theme presets
+export const getThemePresets = async () => {
+  try {
+    // Comment out the real API call
+    // const response = await apiClient.get('/theme-presets');
+    // return response.data;
+
+    // Return placeholder theme presets
+    const presets = [
+      {
+        id: 'desert',
+        name: 'Desert Theme',
+        description: 'The default theme with warm desert tones',
+        palette: {
+          primary: {
+            base: "desert-orange",
+            light: "desert-terracotta",
+            dark: "desert-rust",
+            hover: "desert-rust",
+            lightest: "desert-tan",
+            background: "stone-50"
+          },
+          secondary: {
+            base: "desert-olive",
+            light: "desert-green",
+            dark: "desert-black",
+            background: "stone-50",
+            lightest: "stone-50"
+          },
+          text: {
+            primary: "desert-black",
+            secondary: "gray-600",
+            light: "stone-50",
+            accent: "desert-rust",
+            medium: "desert-black",
+            dark: "desert-black",
+            lightest: "stone-50"
+          },
+          ui: {
+            border: "desert-terracotta",
+            shadow: "desert-rust",
+            background: "stone-50",
+            darkBackground: "desert-black",
+            lightBackground: "stone-50",
+            accent: "desert-orange",
+            earthGreen: "desert-olive"
+          }
+        }
+      },
+      {
+        id: 'ocean',
+        name: 'Ocean Theme',
+        description: 'Cool blue tones inspired by the ocean',
+        palette: {
+          primary: {
+            base: "blue-600",
+            light: "blue-500",
+            dark: "blue-700",
+            hover: "blue-700",
+            lightest: "blue-100",
+            background: "slate-50"
+          },
+          secondary: {
+            base: "teal-600",
+            light: "teal-500",
+            dark: "slate-900",
+            background: "slate-50",
+            lightest: "slate-50"
+          },
+          text: {
+            primary: "slate-900",
+            secondary: "slate-600",
+            light: "slate-50",
+            accent: "blue-700",
+            medium: "slate-900",
+            dark: "slate-900",
+            lightest: "slate-50"
+          },
+          ui: {
+            border: "blue-500",
+            shadow: "blue-700",
+            background: "slate-50",
+            darkBackground: "slate-900",
+            lightBackground: "slate-50",
+            accent: "blue-600",
+            earthGreen: "teal-600"
+          }
+        }
+      },
+      {
+        id: 'forest',
+        name: 'Forest Theme',
+        description: 'Natural green tones inspired by forests',
+        palette: {
+          primary: {
+            base: "green-600",
+            light: "green-500",
+            dark: "green-700",
+            hover: "green-700",
+            lightest: "green-100",
+            background: "stone-50"
+          },
+          secondary: {
+            base: "emerald-700",
+            light: "emerald-600",
+            dark: "gray-900",
+            background: "stone-50",
+            lightest: "stone-50"
+          },
+          text: {
+            primary: "gray-900",
+            secondary: "gray-600",
+            light: "stone-50",
+            accent: "emerald-700",
+            medium: "gray-900",
+            dark: "gray-900",
+            lightest: "stone-50"
+          },
+          ui: {
+            border: "green-500",
+            shadow: "green-700",
+            background: "stone-50",
+            darkBackground: "gray-900",
+            lightBackground: "stone-50",
+            accent: "green-600",
+            earthGreen: "emerald-700"
+          }
+        }
+      }
+    ];
+
+    return Promise.resolve(presets);
+  } catch (error) {
+    console.error('Error fetching theme presets:', error);
+    throw error;
+  }
+};
