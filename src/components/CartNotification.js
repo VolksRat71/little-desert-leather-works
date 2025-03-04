@@ -2,7 +2,7 @@ import React from 'react';
 import { useWebsite } from '../context/WebsiteContext';
 
 const CartNotification = () => {
-  const { showCartNotification, notificationMessage, navigate, colorPalette } = useWebsite();
+  const { showCartNotification, notificationMessage, navigate, colorPalette, isNavbarVisible } = useWebsite();
 
   if (!showCartNotification) return null;
 
@@ -11,8 +11,15 @@ const CartNotification = () => {
   const textClass = colorPalette ? `text-${colorPalette.primary.base}` : 'text-amber-600';
   const hoverClass = colorPalette ? `hover:bg-${colorPalette.primary.lightest}` : 'hover:bg-amber-100';
 
+  // Calculate position based on navbar visibility
+  // When navbar is hidden, keep notification at top=0 instead of off-screen
+  const positionClass = isNavbarVisible
+    ? "fixed top-16 md:top-20"
+    : "fixed top-6 md:top-8";
+
   return (
-    <div className="fixed top-24 md:top-20 right-4 md:right-8 z-50 animate-fadeIn">
+    <div className={`${positionClass} right-4 md:right-8 z-50 animate-fadeIn transition-all duration-300`}
+         style={{ transitionProperty: 'transform, opacity, top' }}>
       <div className={`${bgClass} text-white p-5 rounded-lg shadow-xl w-72 md:w-80`}>
         <div className="flex items-start">
           <div className="flex-shrink-0 mt-1">

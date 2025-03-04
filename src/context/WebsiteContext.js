@@ -241,7 +241,7 @@ export const WebsiteProvider = ({ children }) => {
           },
           text: {
             primary: "desert-black",    // Black text for primary (dark for contrast)
-            secondary: "desert-rust",   // Rust brown for secondary text
+            secondary: "gray-600",   // Gray color for secondary text
             light: "stone-50",          // White text for dark backgrounds (better contrast)
             accent: "desert-rust",      // Darker terracotta for accent text (better contrast)
             medium: "desert-black",     // Black for medium text (better contrast)

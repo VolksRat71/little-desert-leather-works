@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useWebsite, colorPalette, useDocumentTitle } from '../context/WebsiteContext';
+import { useAuth } from '../context/AuthContext';
 import Modal from '../components/Modal';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -8,7 +9,6 @@ import { userSchema, testimonialSchema } from '../validators/schema';
 const UserPage = () => {
   const {
     colorPalette,
-    users,
     updateUser,
     orders,
     campaigns,
@@ -16,8 +16,10 @@ const UserPage = () => {
     cart
   } = useWebsite();
 
-  // For demo purposes, we're assuming the first user is logged in
-  const [currentUser, setCurrentUser] = useState(users?.[0] || {
+  const { currentUser: authUser, updateProfile } = useAuth();
+
+  // Use the authenticated user from AuthContext instead of the first user from WebsiteContext
+  const [currentUser, setCurrentUser] = useState(authUser || {
     id: 1,
     name: 'John Doe',
     email: 'john@example.com',
@@ -69,13 +71,13 @@ const UserPage = () => {
     }
   });
 
-  // Update user state when context changes
+  // Update user state when auth context changes
   useEffect(() => {
-    if (users?.length > 0) {
-      setCurrentUser(users[0]);
-      setEditedUser(users[0]);
+    if (authUser) {
+      setCurrentUser(authUser);
+      setEditedUser(authUser);
     }
-  }, [users]);
+  }, [authUser]);
 
   // Update form values when user changes
   useEffect(() => {
@@ -205,17 +207,15 @@ const UserPage = () => {
         }
       ];
 
+  // Update profile function that uses AuthContext
   const handleProfileUpdate = (formData) => {
-    // Keep the id and other fields not in the form
-    const updatedUser = {
-      ...currentUser,
-      ...formData,
-      profileImage: editedUser.profileImage // Use the profileImage from state
-    };
-
-    updateUser(currentUser.id, updatedUser);
-    setCurrentUser(updatedUser);
-    setIsEditProfileOpen(false);
+    try {
+      // Use the updateProfile function from AuthContext instead of updateUser from WebsiteContext
+      updateProfile(formData);
+      setIsEditProfileOpen(false);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    }
   };
 
   const handleProfileImageChange = (e) => {
@@ -224,7 +224,16 @@ const UserPage = () => {
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      setEditedUser({ ...editedUser, profileImage: event.target.result });
+      const newProfileImage = event.target.result;
+      setEditedUser({ ...editedUser, profileImage: newProfileImage });
+
+      // When image is changed, update the user profile through AuthContext
+      if (currentUser) {
+        updateProfile({
+          ...currentUser,
+          profileImage: newProfileImage
+        });
+      }
     };
     reader.readAsDataURL(file);
   };
@@ -239,13 +248,23 @@ const UserPage = () => {
   };
 
   const handleMarketingPreferenceChange = (field, value) => {
+    const updatedMarketingPreferences = {
+      ...editedUser.marketingPreferences,
+      [field]: value
+    };
+
     setEditedUser({
       ...editedUser,
-      marketingPreferences: {
-        ...editedUser.marketingPreferences,
-        [field]: value
-      }
+      marketingPreferences: updatedMarketingPreferences
     });
+
+    // Update the user profile through AuthContext
+    if (currentUser) {
+      updateProfile({
+        ...currentUser,
+        marketingPreferences: updatedMarketingPreferences
+      });
+    }
   };
 
   // Function to get the status color for orders

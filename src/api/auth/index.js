@@ -44,16 +44,22 @@ export const register = async (userData) => {
     // return response.data;
 
     // Check if email already exists
-    const existingUser = users.find(u => u.email === userData.email);
+    const existingUser = users.find(user => user.email === userData.email);
     if (existingUser) {
-      throw new Error('Email already in use');
+      throw new Error('Email already registered. Please use a different email address.');
     }
 
-    // Create a new user
+    // Create a mock user with placeholder data
     const newUser = {
-      ...userData,
-      id: Math.max(...users.map(u => u.id)) + 1,
+      id: users.length + 1,
+      name: userData.name,
+      email: userData.email,
+      phone: userData.phone || '',
+      address: userData.address || '',
+      // Generate placeholder profile image with initials
+      profileImage: `https://placehold.co/200x200/amber700/ffffff?text=${userData.name.split(' ').map(n => n[0]).join('')}`,
       role: 'User',
+      lastLogin: new Date().toISOString().split('T')[0],
       marketingPreferences: userData.marketingPreferences || {
         emailOffers: false,
         textOffers: false,
@@ -61,12 +67,16 @@ export const register = async (userData) => {
       }
     };
 
+    // In a real app, this would be inserted into a database
+    // For now, we'll simulate a successful response
+    // Note: The mock user won't persist on page refresh since we're not updating the users array
+
     // Create a mock token
     const mockToken = `mock-token-${Date.now()}-${newUser.id}`;
     localStorage.setItem('auth_token', mockToken);
 
     return Promise.resolve({
-      user: { ...newUser, password: undefined }, // Never return the password
+      user: newUser,
       token: mockToken
     });
   } catch (error) {
@@ -162,5 +172,29 @@ export const verifyEmail = async (token) => {
 
 // Check if user is authenticated
 export const checkAuth = () => {
-  return !!localStorage.getItem('auth_token');
+  try {
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      return null;
+    }
+
+    // In a real app, we would verify the token with the server
+    // For the mockup, we'll parse the user ID from the token
+    const tokenParts = token.split('-');
+    if (tokenParts.length >= 3) {
+      const userId = parseInt(tokenParts[tokenParts.length - 1], 10);
+      const user = users.find(u => u.id === userId);
+      if (user) {
+        return { ...user, password: undefined };
+      }
+    }
+
+    // Token is invalid or user not found
+    localStorage.removeItem('auth_token');
+    return null;
+  } catch (error) {
+    console.error('Auth check error:', error);
+    localStorage.removeItem('auth_token');
+    return null;
+  }
 };

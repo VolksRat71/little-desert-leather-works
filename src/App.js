@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import { WebsiteProvider, useWebsite } from './context/WebsiteContext';
+import { AuthProvider } from './context/AuthContext';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -13,6 +14,7 @@ import ContactPage from './pages/ContactPage';
 import CartPage from './pages/CartPage';
 import AdminPage from './pages/AdminPage';
 import UserPage from './pages/UserPage';
+import { SignIn, SignUp } from './components/auth';
 
 // Import the logo images
 import logoImage from './assets/images/logo.png';
@@ -114,6 +116,8 @@ const AppContent = () => {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/account" element={<UserPage />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
           <Route path="*" element={<HomePage />} />
         </Routes>
       </div>
@@ -126,7 +130,9 @@ function App() {
   return (
     <BrowserRouter>
       <WebsiteProvider>
-        <AppContent />
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
       </WebsiteProvider>
     </BrowserRouter>
   );
