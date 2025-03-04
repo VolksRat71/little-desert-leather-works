@@ -1,44 +1,42 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useWebsite } from '../context/WebsiteContext';
+import { useTheme } from '../hooks/useTheme';
 
 const CartNotification = () => {
-  const { showCartNotification, notificationMessage, navigate, colorPalette, isNavbarVisible } = useWebsite();
+  const { showCartNotification, notificationMessage, navigate, isNavbarVisible } = useWebsite();
+  const [animation, setAnimation] = useState('');
+  const theme = useTheme();
+
+  useEffect(() => {
+    if (showCartNotification) {
+      setAnimation('animate-slide-in');
+      const timer = setTimeout(() => {
+        setAnimation('animate-slide-out');
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showCartNotification]);
 
   if (!showCartNotification) return null;
 
-  // Default color classes in case colorPalette is not loaded yet
-  const bgClass = colorPalette ? `bg-${colorPalette.primary.base}` : 'bg-amber-600';
-  const textClass = colorPalette ? `text-${colorPalette.primary.base}` : 'text-amber-600';
-  const hoverClass = colorPalette ? `hover:bg-${colorPalette.primary.lightest}` : 'hover:bg-amber-100';
-
-  // Calculate position based on navbar visibility
-  // When navbar is hidden, keep notification at top=0 instead of off-screen
-  const positionClass = isNavbarVisible
-    ? "fixed top-16 md:top-20"
-    : "fixed top-6 md:top-8";
-
   return (
-    <div className={`${positionClass} right-4 md:right-8 z-50 animate-fadeIn transition-all duration-300`}
-         style={{ transitionProperty: 'transform, opacity, top' }}>
-      <div className={`${bgClass} text-white p-5 rounded-lg shadow-xl w-72 md:w-80`}>
-        <div className="flex items-start">
-          <div className="flex-shrink-0 mt-1">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <div className="ml-3 flex-1">
-            <p className="text-sm font-medium break-words">{notificationMessage}</p>
-            <div className="mt-3">
-              <button
-                onClick={() => navigate('/cart')}
-                className={`text-sm px-4 py-2 bg-white ${textClass} rounded ${hoverClass} transition-colors duration-300`}
-              >
-                View Cart
-              </button>
-            </div>
-          </div>
+    <div
+      className={`fixed z-50 top-2 right-2 md:top-${isNavbarVisible ? '16' : '2'} md:right-4 max-w-sm transition-all duration-300 transform ${animation}`}
+    >
+      <div className={`${theme.bg('primary.base', 'amber-600')} ${theme.text('text.light', 'white')} rounded-lg shadow-lg p-4 pr-9 flex items-center justify-between`}>
+        <div className="flex items-center">
+          <svg className="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{notificationMessage}</span>
         </div>
+
+        <button
+          onClick={() => navigate('/cart')}
+          className={`ml-4 px-2 py-1 ${theme.bg('text.light', 'white')} ${theme.text('primary.base', 'amber-600')} rounded ${theme.hoverBg('primary.lightest', 'amber-100')} transition-colors duration-200`}
+        >
+          View Cart
+        </button>
       </div>
     </div>
   );

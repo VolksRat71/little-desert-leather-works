@@ -3,27 +3,25 @@ import { NavLink } from 'react-router-dom';
 import { useWebsite } from '../context/WebsiteContext';
 import { useAuth } from '../context/AuthContext';
 import { Logo } from '../App';
+import { useTheme } from '../hooks/useTheme';
+import Button from './Button';
+import { useCommonStyles } from './common';
 
 // NavLink component with transition effects
 const CustomNavLink = ({ to, children, mobile }) => {
-  const { navigate, colorPalette } = useWebsite();
-
-  // Default classes if colorPalette isn't loaded yet
-  const primaryBaseClass = colorPalette?.primary?.base ? `text-${colorPalette.primary.base}` : 'text-amber-600';
-  const textLightClass = colorPalette?.text?.light ? `text-${colorPalette.text.light}` : 'text-white';
-  const primaryLightestClass = colorPalette?.primary?.lightest ? `hover:text-${colorPalette.primary.lightest}` : 'hover:text-amber-200';
-  const primaryBaseAccentClass = colorPalette?.primary?.base ? `after:bg-${colorPalette.primary.base}` : 'after:bg-amber-600';
+  const { navigate } = useWebsite();
+  const theme = useTheme();
 
   return (
     <NavLink
       to={to}
       className={({ isActive }) => `
         ${mobile ? 'block py-2 text-sm' : 'text-sm lg:text-base'}
-        ${isActive ? primaryBaseClass : textLightClass}
-        ${primaryLightestClass}
+        ${isActive ? theme.text('primary.base', 'amber-600') : theme.text('text.light', 'white')}
+        ${theme.hoverText('primary.lightest', 'amber-200')}
         transition-colors duration-300 relative whitespace-nowrap font-serif
         after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5
-        ${primaryBaseAccentClass} after:transform
+        after:bg-${theme.getPalette()?.primary?.base || 'amber-600'} after:transform
         ${isActive ? 'after:scale-x-100' : 'after:scale-x-0'}
         after:transition-transform after:duration-300 after:origin-left
         hover:after:scale-x-100
@@ -40,19 +38,16 @@ const CustomNavLink = ({ to, children, mobile }) => {
 
 // Auth Button component for consistent styling
 const AuthButton = ({ onClick, children }) => {
-  const { colorPalette } = useWebsite();
-
-  // Get button styling from colorPalette or use defaults
-  const bgClass = colorPalette?.primary?.base ? `bg-${colorPalette.primary.base}` : 'bg-amber-600';
-  const bgHoverClass = colorPalette?.primary?.dark ? `hover:bg-${colorPalette.primary.dark}` : 'hover:bg-amber-700';
+  const theme = useTheme();
 
   return (
-    <button
+    <Button
+      variant="primary"
+      size="sm"
       onClick={onClick}
-      className={`${bgClass} text-white px-4 py-1.5 rounded-md ${bgHoverClass} transition-all duration-300 transform hover:-translate-y-0.5 text-sm font-serif shadow-sm`}
     >
       {children}
-    </button>
+    </Button>
   );
 };
 
@@ -70,15 +65,17 @@ const Navbar = () => {
   const { currentUser, signOut } = useAuth();
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const accountMenuRef = useRef(null);
+  const theme = useTheme();
+  const styles = useCommonStyles();
 
   const cartItemCount = getCartItemCount();
 
   // Default classes if colorPalette isn't loaded yet
-  const bgDarkClass = colorPalette?.ui?.darkBackground ? `bg-${colorPalette.ui.darkBackground}` : 'bg-gray-900';
-  const textLightClass = colorPalette?.text?.light ? `text-${colorPalette.text.light}` : 'text-white';
-  const primaryLightestClass = colorPalette?.primary?.lightest ? `hover:text-${colorPalette.primary.lightest}` : 'hover:text-amber-200';
-  const primaryBaseClass = colorPalette?.primary?.base ? `bg-${colorPalette.primary.base}` : 'bg-amber-600';
-  const darkBorderClass = colorPalette?.ui?.darkBorder ? `border-${colorPalette.ui.darkBorder}` : 'border-gray-800';
+  const bgDarkClass = theme.bg('ui.darkBackground', 'gray-900');
+  const textLightClass = theme.text('text.light', 'white');
+  const primaryLightestClass = theme.hoverText('primary.lightest', 'amber-200');
+  const primaryBaseClass = theme.bg('primary.base', 'amber-600');
+  const darkBorderClass = theme.border('ui.darkBorder', 'gray-800');
 
   // Close account menu when clicking outside
   useEffect(() => {
@@ -117,197 +114,208 @@ const Navbar = () => {
   };
 
   return (
-    <nav className={`fixed w-full ${bgDarkClass} ${textLightClass} z-50 transition-transform duration-300 ${isNavbarVisible ? 'transform-none' : '-translate-y-full'}`}>
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="flex justify-between items-center py-3">
+    <nav
+      className={`${bgDarkClass} fixed top-0 left-0 right-0 z-40 transition-transform duration-300 ${
+        isNavbarVisible ? 'translate-y-0' : '-translate-y-full'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo and primary navigation */}
           <div className="flex items-center">
-            <div onClick={() => navigate('/')} className="cursor-pointer">
-              {/* Use logo with text on smaller screens, and regular logo on larger screens */}
-              <div className="block lg:hidden">
-                <Logo size="sm" withText={true} light={true} className={`${primaryLightestClass} transition-colors duration-300 text-shadow`} />
-              </div>
-              <div className="hidden lg:block">
-                <Logo size="md" className={`${primaryLightestClass} transition-colors duration-300 text-shadow`} />
+            <div className="flex-shrink-0 cursor-pointer" onClick={() => navigate('/')}>
+              <Logo size="sm" light />
+            </div>
+
+            {/* Main navigation - desktop */}
+            <div className="hidden md:block ml-10">
+              <div className="flex items-center space-x-6">
+                <CustomNavLink to="/">Home</CustomNavLink>
+                <CustomNavLink to="/products">Products</CustomNavLink>
+                <CustomNavLink to="/about">About</CustomNavLink>
+                <CustomNavLink to="/contact">Contact</CustomNavLink>
               </div>
             </div>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="lg:hidden flex items-center">
-            {/* Cart Icon for Mobile */}
+          {/* Right side actions */}
+          <div className="flex items-center">
+            {/* Cart button with item count */}
             <button
+              className={`relative px-3 py-2 rounded ${theme.text('text.light', 'white')} ${theme.hoverText('primary.lightest', 'amber-200')} transition-colors duration-300`}
               onClick={() => navigate('/cart')}
-              className={`mr-4 relative ${textLightClass} ${primaryLightestClass} transition-colors duration-300`}
+              aria-label="Shopping cart"
             >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
               </svg>
+
+              {/* Cart item count indicator */}
               {cartItemCount > 0 && (
-                <div className="absolute" style={{ top: '-8px', right: '-8px' }}>
-                  <span
-                    key={cartItemCount} // Force re-render on count change to restart animation
-                    className={`${primaryBaseClass} text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center
-                    ${cartItemCount === 1 ? 'animate-expand-in' : 'animate-count-bounce'}`}
-                  >
-                    {cartItemCount}
-                  </span>
-                </div>
+                <span className={`absolute top-0 right-0 ${theme.bg('primary.base', 'amber-600')} ${theme.text('text.light', 'white')} text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center`}>
+                  {cartItemCount}
+                </span>
               )}
             </button>
 
-            {/* User Icon for Mobile */}
-            {currentUser && (
-              <button
-                onClick={() => navigate('/account')}
-                className={`mr-4 relative ${textLightClass} ${primaryLightestClass} transition-colors duration-300`}
-              >
-                <img
-                  src={getProfileImage()}
-                  alt={currentUser.name || 'User'}
-                  className="h-8 w-8 rounded-full object-cover border-2 border-amber-600"
-                />
-              </button>
-            )}
-
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={`${textLightClass} ${primaryLightestClass} transition-colors duration-300`}
-            >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                {isMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
-          </div>
-
-          {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center space-x-5 whitespace-nowrap font-serif">
-            <CustomNavLink to="/">Home</CustomNavLink>
-            <CustomNavLink to="/products">Products</CustomNavLink>
-            <CustomNavLink to="/about">About</CustomNavLink>
-            <CustomNavLink to="/contact">Contact</CustomNavLink>
-
-            {/* Authentication Links - Desktop */}
-            {currentUser ? (
-              <>
-                {currentUser.role === 'Admin' && <CustomNavLink to="/admin">Admin</CustomNavLink>}
-
-                {/* User Account with Popover */}
-                <div className="relative group" ref={accountMenuRef}>
+            {/* Auth links */}
+            <div className="hidden md:ml-4 md:flex md:items-center">
+              {currentUser ? (
+                <div className="relative" ref={accountMenuRef}>
                   <button
                     onClick={() => setIsAccountMenuOpen(!isAccountMenuOpen)}
-                    className={`flex items-center ${textLightClass} ${primaryLightestClass} transition-colors duration-300 text-sm lg:text-base relative`}
+                    className="flex items-center space-x-1 focus:outline-none"
+                    aria-expanded={isAccountMenuOpen}
+                    aria-haspopup="true"
                   >
-                    <img
-                      src={getProfileImage()}
-                      alt={currentUser.name || 'User'}
-                      className="h-8 w-8 rounded-full object-cover border-2 border-amber-600 mr-2"
-                    />
-                    <svg className={`ml-1 h-4 w-4 transform transition-transform duration-200 ${isAccountMenuOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <div className={`w-8 h-8 rounded-full overflow-hidden border ${theme.border('ui.darkBorder', 'gray-800')}`}>
+                      <img
+                        src={getProfileImage()}
+                        alt={currentUser.name || 'User'}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <svg className={`w-4 h-4 ${theme.text('text.light', 'white')} transition-transform duration-200 ${isAccountMenuOpen ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                   </button>
 
-                  {/* Account Dropdown Menu */}
-                  <div
-                    className={`absolute right-0 mt-2 w-48 ${bgDarkClass} border border-${darkBorderClass} rounded-md shadow-lg overflow-hidden transform origin-top-right transition-all duration-200 ease-in-out z-50
-                    ${isAccountMenuOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}
-                  >
-                    <div className="py-1">
+                  {/* Profile dropdown */}
+                  {isAccountMenuOpen && (
+                    <div className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 ${theme.bg('ui.background', 'white')} ring-1 ring-black ring-opacity-5 focus:outline-none`}>
+                      <div
+                        className={`block px-4 py-2 text-sm ${theme.text('text.primary', 'gray-900')} border-b ${theme.border('ui.border', 'gray-200')}`}
+                      >
+                        <div className="font-medium">{currentUser.name || 'User'}</div>
+                        <div className={`text-xs ${theme.text('text.secondary', 'gray-500')} truncate`}>{currentUser.email}</div>
+                      </div>
+
+                      {currentUser.role === 'Admin' && (
+                        <button
+                          onClick={() => {
+                            setIsAccountMenuOpen(false);
+                            navigate('/admin');
+                          }}
+                          className={`block w-full text-left px-4 py-2 text-sm ${theme.text('text.primary', 'gray-900')} ${theme.hoverBg('ui.hover', 'gray-100')}`}
+                        >
+                          Admin Dashboard
+                        </button>
+                      )}
+
                       <button
                         onClick={() => {
                           setIsAccountMenuOpen(false);
-                          navigate('/account');
+                          navigate('/user');
                         }}
-                        className={`w-full text-left block px-4 py-2 text-sm ${textLightClass} ${primaryLightestClass} transition-colors duration-300`}
+                        className={`block w-full text-left px-4 py-2 text-sm ${theme.text('text.primary', 'gray-900')} ${theme.hoverBg('ui.hover', 'gray-100')}`}
                       >
                         My Account
                       </button>
-                      <div className={`border-t border-${darkBorderClass} my-1`}></div>
+
                       <button
                         onClick={handleSignOut}
-                        className={`w-full text-left block px-4 py-2 text-sm ${textLightClass} ${primaryLightestClass} transition-colors duration-300`}
+                        className={`block w-full text-left px-4 py-2 text-sm ${theme.text('text.primary', 'gray-900')} ${theme.hoverBg('ui.hover', 'gray-100')}`}
                       >
-                        Sign Out
+                        Sign out
                       </button>
                     </div>
-                  </div>
+                  )}
                 </div>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => navigate('/signin')}
-                  className={`${textLightClass} ${primaryLightestClass} transition-colors duration-300 text-sm lg:text-base font-serif`}
-                >
-                  Sign In
-                </button>
-                <button
-                  onClick={() => navigate('/signup')}
-                  className={`${textLightClass} ${primaryLightestClass} transition-colors duration-300 text-sm lg:text-base font-serif`}
-                >
-                  Sign Up
-                </button>
-              </>
-            )}
-
-            {/* Cart Icon */}
-            <button
-              onClick={() => navigate('/cart')}
-              className={`relative ${textLightClass} ${primaryLightestClass} transition-colors duration-300`}
-            >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-              {cartItemCount > 0 && (
-                <div className="absolute" style={{ top: '-8px', right: '-8px' }}>
-                  <span
-                    key={cartItemCount} // Force re-render on count change to restart animation
-                    className={`${primaryBaseClass} text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center
-                    ${cartItemCount === 1 ? 'animate-expand-in' : 'animate-count-bounce'}`}
-                  >
-                    {cartItemCount}
-                  </span>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <AuthButton onClick={() => navigate('/signin')}>
+                    Sign In
+                  </AuthButton>
                 </div>
               )}
-            </button>
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden ml-3">
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className={`inline-flex items-center justify-center p-2 rounded-md ${theme.text('text.light', 'white')} ${theme.hoverBg('primary.base', 'amber-600')} focus:outline-none`}
+                aria-expanded={isMenuOpen}
+              >
+                <span className="sr-only">{isMenuOpen ? 'Close main menu' : 'Open main menu'}</span>
+                {isMenuOpen ? (
+                  <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Mobile menu panel */}
-      <div className="lg:hidden">
-        <div
-          className={`mobile-menu ${bgDarkClass} px-6 space-y-3 border-${darkBorderClass}
-          ${isMenuOpen ? 'mobile-menu-open' : 'mobile-menu-closed'}`}
-        >
+      {/* Mobile menu */}
+      <div
+        className={`${isMenuOpen ? 'block' : 'hidden'} md:hidden ${bgDarkClass} border-t ${theme.border('ui.darkBorder', 'gray-800')}`}
+      >
+        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
           <CustomNavLink to="/" mobile>Home</CustomNavLink>
           <CustomNavLink to="/products" mobile>Products</CustomNavLink>
           <CustomNavLink to="/about" mobile>About</CustomNavLink>
           <CustomNavLink to="/contact" mobile>Contact</CustomNavLink>
+        </div>
 
-          {/* Auth Links - Mobile */}
+        {/* Mobile auth menu */}
+        <div className={`border-t ${theme.border('ui.darkBorder', 'gray-800')} pt-4 pb-3`}>
           {currentUser ? (
-            <>
-              <CustomNavLink to="/account" mobile>My Account</CustomNavLink>
-              {currentUser.role === 'Admin' &&
-                <CustomNavLink to="/admin" mobile>Admin</CustomNavLink>
-              }
-              <button
-                onClick={handleSignOut}
-                className={`block py-2 text-sm ${textLightClass} ${primaryLightestClass} text-left w-full transition-colors duration-300 font-serif`}
-              >
-                Sign Out
-              </button>
-            </>
+            <div>
+              <div className="flex items-center px-5">
+                <div className="flex-shrink-0">
+                  <img
+                    className="h-10 w-10 rounded-full"
+                    src={getProfileImage()}
+                    alt={currentUser.name || 'User'}
+                  />
+                </div>
+                <div className="ml-3">
+                  <div className={`text-base font-medium ${theme.text('text.light', 'white')}`}>{currentUser.name || 'User'}</div>
+                  <div className={`text-sm ${theme.text('text.lightest', 'gray-300')}`}>{currentUser.email}</div>
+                </div>
+              </div>
+              <div className="mt-3 px-2 space-y-1">
+                {currentUser.role === 'Admin' && (
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      navigate('/admin');
+                    }}
+                    className={`block w-full text-left px-3 py-2 rounded-md text-base ${theme.text('text.light', 'white')} ${theme.hoverBg('primary.base', 'amber-600')}`}
+                  >
+                    Admin Dashboard
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    navigate('/user');
+                  }}
+                  className={`block w-full text-left px-3 py-2 rounded-md text-base ${theme.text('text.light', 'white')} ${theme.hoverBg('primary.base', 'amber-600')}`}
+                >
+                  My Account
+                </button>
+                <button
+                  onClick={handleSignOut}
+                  className={`block w-full text-left px-3 py-2 rounded-md text-base ${theme.text('text.light', 'white')} ${theme.hoverBg('primary.base', 'amber-600')}`}
+                >
+                  Sign out
+                </button>
+              </div>
+            </div>
           ) : (
-            <>
-              <CustomNavLink to="/signin" mobile>Sign In</CustomNavLink>
-              <CustomNavLink to="/signup" mobile>Sign Up</CustomNavLink>
-            </>
+            <div className="flex flex-col px-5 space-y-2">
+              <AuthButton onClick={() => navigate('/signin')}>
+                Sign In
+              </AuthButton>
+            </div>
           )}
         </div>
       </div>

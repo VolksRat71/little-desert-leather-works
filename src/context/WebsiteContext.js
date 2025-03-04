@@ -228,37 +228,36 @@ export const WebsiteProvider = ({ children }) => {
         // Define default palette
         const defaultPalette = {
           primary: {
-            base: "desert-orange",      // Bright terracotta/orange from the logo
-            light: "desert-terracotta", // Lighter terracotta shade
-            dark: "desert-rust",        // Darker terracotta/rust color
-            hover: "desert-rust",       // Hover state
-            lightest: "desert-tan",     // Tan background from the logo
-            background: "stone-50"      // White background for better contrast
+            background: "stone-50",
+            base: "amber-600",
+            light: "amber-500",
+            dark: "amber-700",
+            lightest: "amber-100",
+            hover: "amber-700"
           },
           secondary: {
-            base: "desert-olive",       // Olive green from the logo
-            light: "desert-green",      // Lighter olive green
-            dark: "desert-black",       // Very dark color for emphasis
-            background: "stone-50",     // White background for better contrast
-            lightest: "stone-50"        // Lightest cream color
+            base: "amber-700",
+            light: "amber-600",
+            dark: "amber-800",
+            lightest: "amber-200",
+            hover: "amber-800"
           },
           text: {
-            primary: "desert-black",    // Black text for primary (dark for contrast)
-            secondary: "gray-600",      // Gray color for secondary text
-            light: "stone-50",          // White text for dark backgrounds (better contrast)
-            accent: "desert-rust",      // Darker terracotta for accent text (better contrast)
-            medium: "desert-black",     // Black for medium text (better contrast)
-            dark: "desert-black",       // Black for strong emphasis
-            lightest: "stone-50"        // White text color
+            primary: "gray-900",
+            secondary: "gray-600",
+            tertiary: "gray-500",
+            light: "white",
+            lightest: "gray-100",
+            accent: "amber-600"
           },
           ui: {
-            border: "desert-terracotta", // Terracotta border
-            shadow: "desert-rust",     // Rust shadow color
-            background: "stone-50",    // White background for better contrast
-            darkBackground: "desert-black", // Black background for better contrast
-            lightBackground: "stone-50", // White background for better contrast
-            accent: "desert-orange",   // Bright orange accent
-            earthGreen: "desert-olive" // Olive green accent
+            background: "white",
+            lightBackground: "gray-50",
+            darkBackground: "gray-900",
+            border: "gray-200",
+            darkBorder: "gray-800",
+            hover: "gray-100",
+            overlay: "gray-800/75"
           }
         };
 
@@ -878,9 +877,38 @@ export const WebsiteProvider = ({ children }) => {
         testimonials: testimonialsData,
         artisan: artisanInfo,
         colorPalette: temporaryColorPalette || colors || {
-          primary: { background: "stone-50", base: "desert-orange" },
-          text: { primary: "desert-black", light: "stone-50" },
-          ui: { background: "stone-50" }
+          primary: {
+            background: "stone-50",
+            base: "amber-600",
+            light: "amber-500",
+            dark: "amber-700",
+            lightest: "amber-100",
+            hover: "amber-700"
+          },
+          secondary: {
+            base: "amber-700",
+            light: "amber-600",
+            dark: "amber-800",
+            lightest: "amber-200",
+            hover: "amber-800"
+          },
+          text: {
+            primary: "gray-900",
+            secondary: "gray-600",
+            tertiary: "gray-500",
+            light: "white",
+            lightest: "gray-100",
+            accent: "amber-600"
+          },
+          ui: {
+            background: "white",
+            lightBackground: "gray-50",
+            darkBackground: "gray-900",
+            border: "gray-200",
+            darkBorder: "gray-800",
+            hover: "gray-100",
+            overlay: "gray-800/75"
+          }
         },
         temporaryColorPalette,
         contactInfo,

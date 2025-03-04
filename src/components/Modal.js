@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback, memo } from 'react';
 import ReactDOM from 'react-dom';
+import { useCommonStyles } from './common';
 
 // Function to calculate scrollbar width
 const getScrollbarWidth = () => {
@@ -24,18 +25,20 @@ const getScrollbarWidth = () => {
 
 // Memoized modal content to prevent rerenders
 const ModalContent = memo(({ title, children, onClose, modalRef, isAnimating }) => {
+  const styles = useCommonStyles();
+
   return (
     <div
       ref={modalRef}
-      className={`modal-content bg-white shadow-xl ${isAnimating ? 'modal-active' : 'modal-inactive'}`}
+      className={`modal-content ${styles.modal.container} ${isAnimating ? 'modal-active' : 'modal-inactive'}`}
       onClick={(e) => e.stopPropagation()}
       tabIndex="-1" // Make div focusable but not in tab order
     >
-      <div className="flex items-center justify-between border-b p-4">
-        <h3 id="modal-title" className="text-xl font-semibold">{title}</h3>
+      <div className={styles.modal.header}>
+        <h3 id="modal-title" className={styles.modal.title}>{title}</h3>
         <button
           onClick={onClose}
-          className="text-gray-500 hover:text-gray-700 transition-colors duration-200 p-1 rounded hover:bg-gray-100"
+          className={styles.modal.closeButton}
           aria-label="Close"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -43,7 +46,7 @@ const ModalContent = memo(({ title, children, onClose, modalRef, isAnimating }) 
           </svg>
         </button>
       </div>
-      <div className="p-6 modal-content-scrollable">
+      <div className={`${styles.modal.body} modal-content-scrollable`}>
         {children}
       </div>
     </div>
@@ -59,6 +62,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
   const previousFocusRef = useRef(null);
   const scrollPositionRef = useRef(0);
   const hasScrollbarRef = useRef(false);
+  const styles = useCommonStyles();
 
   // Stable event handler reference
   const preventWheelScroll = useCallback((e) => {
@@ -148,93 +152,72 @@ const Modal = ({ isOpen, onClose, title, children }) => {
         document.body.style.top = `-${scrollPositionRef.current}px`;
         document.body.style.position = 'fixed';
         document.body.style.width = '100%';
-        document.body.style.overflowY = 'scroll'; // Always show scrollbar to prevent layout shift
 
-        // Add modal-open class for additional styling
-        document.body.classList.add('modal-open');
-        document.documentElement.classList.add('modal-open');
+        // Compensate for the missing scrollbar to avoid layout shift
+        if (hasScrollbarRef.current) {
+          document.body.style.paddingRight = `${scrollbarWidth}px`;
+        }
 
-        // And after a slight delay, start the animation
-        setTimeout(() => setIsAnimating(true), 10);
+        // Trigger animation after a brief delay
+        setTimeout(() => {
+          setIsAnimating(true);
+        }, 10);
       });
-
-      // Add wheel event listeners to prevent background scrolling
-      window.addEventListener('wheel', preventWheelScroll, { passive: false });
-      window.addEventListener('touchmove', preventWheelScroll, { passive: false });
-
-      // Add ESC key handler
-      const handleEscKey = (e) => {
-        if (e.key === 'Escape') onClose();
-      };
-      window.addEventListener('keydown', handleEscKey);
-
-      return () => {
-        cancelAnimationFrame(scrollLockTimer);
-        window.removeEventListener('keydown', handleEscKey);
-        window.removeEventListener('wheel', preventWheelScroll);
-        window.removeEventListener('touchmove', preventWheelScroll);
-      };
     } else if (!isOpen && isVisible) {
-      // When closing, first stop the animation
+      // Start closing animation
       setIsAnimating(false);
 
-      // Wait for animation to finish before removing from DOM
-      const timer = setTimeout(() => {
-        // First clean up the scroll lock to avoid jank when modal is closing
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        document.body.style.overflowY = '';
+      // After animation is complete, remove modal from DOM
+      setTimeout(() => {
+        setIsVisible(false);
 
-        // Remove wheel event listeners
-        window.removeEventListener('wheel', preventWheelScroll);
-        window.removeEventListener('touchmove', preventWheelScroll);
+        // Restore body scroll
+        document.body.style.position = '';
+        document.body.style.width = '';
+        document.body.style.top = '';
+        document.body.style.paddingRight = '';
 
         // Restore scroll position
         window.scrollTo(0, scrollPositionRef.current);
-
-        // Remove modal-open classes
-        document.body.classList.remove('modal-open');
-        document.documentElement.classList.remove('modal-open');
-        document.documentElement.style.removeProperty('--scrollbar-width');
-
-        // Finally, remove the modal from the DOM
-        setIsVisible(false);
       }, 300);
-
-      return () => clearTimeout(timer);
     }
-  }, [isOpen, onClose, preventWheelScroll, isVisible]);
 
-  // Ensure body class is removed when component unmounts
-  useEffect(() => {
     return () => {
-      window.removeEventListener('wheel', preventWheelScroll);
-      window.removeEventListener('touchmove', preventWheelScroll);
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflowY = '';
-      document.body.classList.remove('modal-open');
-      document.documentElement.classList.remove('modal-open');
-      document.documentElement.style.removeProperty('--scrollbar-width');
-
-      // Restore scroll position on unmount if needed
-      if (document.body.style.position === 'fixed') {
-        window.scrollTo(0, scrollPositionRef.current);
+      if (scrollLockTimer) {
+        cancelAnimationFrame(scrollLockTimer);
       }
     };
-  }, [preventWheelScroll]);
+  }, [isOpen, isVisible]);
 
+  // Handle escape key
+  useEffect(() => {
+    const handleEscapeKey = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      window.addEventListener('keydown', handleEscapeKey);
+      // Prevent scroll on wheel events to avoid scrolling content behind the modal
+      window.addEventListener('wheel', preventWheelScroll, { passive: false });
+    }
+
+    return () => {
+      window.removeEventListener('keydown', handleEscapeKey);
+      window.removeEventListener('wheel', preventWheelScroll);
+    };
+  }, [isOpen, onClose, preventWheelScroll]);
+
+  // Only render the modal if it should be visible
   if (!isVisible) return null;
 
-  // Create the modal content
-  const modalContent = (
+  return ReactDOM.createPortal(
     <div
-      className={`modal-overlay ${isAnimating ? 'modal-overlay-active' : 'modal-overlay-inactive'}`}
+      className={styles.modal.overlay}
       onClick={onClose}
-      role="dialog"
       aria-modal="true"
+      role="dialog"
       aria-labelledby="modal-title"
     >
       <ModalContent
@@ -245,12 +228,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
       >
         {children}
       </ModalContent>
-    </div>
-  );
-
-  // Use ReactDOM.createPortal to render the modal at the root of the document
-  return ReactDOM.createPortal(
-    modalContent,
+    </div>,
     document.body
   );
 };

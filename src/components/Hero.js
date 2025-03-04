@@ -1,17 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { useWebsite } from '../context/WebsiteContext';
 import { Logo } from '../App';
+import { useTheme } from '../hooks/useTheme';
+import Button from './Button';
 
 const Hero = () => {
-  const { colorPalette } = useWebsite();
+  const theme = useTheme();
   const [animationApplied, setAnimationApplied] = useState(false);
 
   useEffect(() => {
     setAnimationApplied(true);
   }, []);
 
+  const scrollToProducts = () => {
+    const productsSection = document.getElementById('products');
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      const featuredSection = document.querySelector('section');
+      if (featuredSection) {
+        featuredSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   return (
-    <div className={`bg-${colorPalette.primary.lightest} py-16 md:py-24 px-4`}>
+    <div className={`${theme.bg('primary.lightest')} py-16 md:py-24 px-4`}>
       <div className="max-w-5xl mx-auto">
         <div className="text-center flex flex-col items-center justify-center">
           <div className={`flex justify-center mb-8 ${animationApplied ? 'animate-fadeIn' : ''}`}>
@@ -19,25 +32,19 @@ const Hero = () => {
               <Logo withText size="xl" className="mx-auto max-w-full" />
             </div>
           </div>
-          <p className={`text-xl md:text-2xl text-${colorPalette.text.secondary} mb-8 max-w-2xl mx-auto ${animationApplied ? 'animate-fadeIn animation-delay-300' : ''}`}>
+          <p className={`text-xl md:text-2xl ${theme.text('text.secondary')} mb-8 max-w-2xl mx-auto ${animationApplied ? 'animate-fadeIn animation-delay-300' : ''}`}>
             Artisanal pieces made to last a lifetime, from our workshop to your hands
           </p>
-          <button
-            className={`bg-${colorPalette.primary.base} text-white px-6 py-3 rounded-md hover:bg-${colorPalette.primary.dark} transition-all duration-300 transform hover:-translate-y-1 ${animationApplied ? 'animate-fadeIn animation-delay-500' : ''}`}
-            onClick={() => {
-              const productsSection = document.getElementById('products');
-              if (productsSection) {
-                productsSection.scrollIntoView({ behavior: 'smooth' });
-              } else {
-                const featuredSection = document.querySelector('section');
-                if (featuredSection) {
-                  featuredSection.scrollIntoView({ behavior: 'smooth' });
-                }
-              }
-            }}
-          >
-            Explore Collection
-          </button>
+          <div className={`${animationApplied ? 'animate-fadeIn animation-delay-500' : ''}`}>
+            <Button
+              variant="primary"
+              size="large"
+              onClick={scrollToProducts}
+              className="transform hover:-translate-y-1"
+            >
+              Explore Collection
+            </Button>
+          </div>
         </div>
       </div>
     </div>

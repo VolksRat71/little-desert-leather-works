@@ -3,116 +3,52 @@ import { Link } from 'react-router-dom';
 import { useWebsite } from '../context/WebsiteContext';
 import { FaInstagram, FaTwitter, FaFacebook } from 'react-icons/fa';
 import { Logo } from '../App';
+import { useTheme } from '../hooks/useTheme';
 
 const Footer = () => {
-  const { navigate, contactInfo, colorPalette } = useWebsite();
+  const { navigate, contactInfo } = useWebsite();
+  const theme = useTheme();
   const currentYear = new Date().getFullYear();
 
-  // Default classes if colorPalette isn't loaded yet
-  const bgDarkClass = colorPalette?.ui?.darkBackground ? `bg-${colorPalette.ui.darkBackground}` : 'bg-gray-900';
-  const textLightestClass = colorPalette?.text?.lightest ? `text-${colorPalette.text.lightest}` : 'text-gray-100';
-  const primaryBaseClass = colorPalette?.primary?.base ? `text-${colorPalette.primary.base}` : 'text-amber-600';
-  const textLightClass = colorPalette?.text?.light ? `text-${colorPalette.text.light}` : 'text-white';
-  const primaryLightestHoverClass = colorPalette?.primary?.lightest ? `hover:text-${colorPalette.primary.lightest}` : 'hover:text-amber-200';
-
   return (
-    <footer className={`${bgDarkClass} ${textLightestClass} py-12 text-sm`}>
+    <footer className={`${theme.bg('ui.darkBackground', 'gray-900')} ${theme.text('text.lightest', 'gray-100')} py-12 text-sm`}>
       <div className="max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand and description */}
           <div className="md:col-span-2">
             <div className="mb-4">
-              <Logo size="md" className={primaryBaseClass} />
+              <Logo size="md" className={theme.text('primary.base', 'amber-600')} />
             </div>
             <p className="mb-4">
               Handcrafted leather goods made with care and attention to detail. Every piece tells a story of craftsmanship and dedication.
             </p>
             <div className="flex space-x-4">
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`${textLightClass} ${primaryLightestHoverClass} transition-colors duration-300`}
-              >
+              <SocialLink href="https://instagram.com" theme={theme}>
                 <FaInstagram size={24} />
-              </a>
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`${textLightClass} ${primaryLightestHoverClass} transition-colors duration-300`}
-              >
+              </SocialLink>
+              <SocialLink href="https://twitter.com" theme={theme}>
                 <FaTwitter size={24} />
-              </a>
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`${textLightClass} ${primaryLightestHoverClass} transition-colors duration-300`}
-              >
+              </SocialLink>
+              <SocialLink href="https://facebook.com" theme={theme}>
                 <FaFacebook size={24} />
-              </a>
+              </SocialLink>
             </div>
           </div>
 
           {/* Quick links */}
           <div className="md:col-span-1">
-            <h3 className={`font-bold text-lg mb-4 ${primaryBaseClass}`}>Quick Links</h3>
+            <h3 className={`font-bold text-lg mb-4 ${theme.text('primary.base', 'amber-600')}`}>Quick Links</h3>
             <ul className="space-y-2">
-              <li>
-                <Link
-                  to="/"
-                  className={`${textLightClass} ${primaryLightestHoverClass} transition-colors duration-300`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate('/');
-                  }}
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/products"
-                  className={`${textLightClass} ${primaryLightestHoverClass} transition-colors duration-300`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate('/products');
-                  }}
-                >
-                  Products
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/about"
-                  className={`${textLightClass} ${primaryLightestHoverClass} transition-colors duration-300`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate('/about');
-                  }}
-                >
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/contact"
-                  className={`${textLightClass} ${primaryLightestHoverClass} transition-colors duration-300`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate('/contact');
-                  }}
-                >
-                  Contact
-                </Link>
-              </li>
+              <NavLink to="/" navigate={navigate} theme={theme}>Home</NavLink>
+              <NavLink to="/products" navigate={navigate} theme={theme}>Products</NavLink>
+              <NavLink to="/about" navigate={navigate} theme={theme}>About</NavLink>
+              <NavLink to="/contact" navigate={navigate} theme={theme}>Contact</NavLink>
             </ul>
           </div>
 
           {/* Contact info */}
           <div className="md:col-span-1">
-            <h3 className={`font-bold text-lg mb-4 ${primaryBaseClass}`}>Contact Us</h3>
+            <h3 className={`font-bold text-lg mb-4 ${theme.text('primary.base', 'amber-600')}`}>Contact Us</h3>
             <address className="not-italic">
               {contactInfo?.showAddress && contactInfo?.address?.split('\n').map((line, index) => (
                 <p className="mb-2" key={index}>{line}</p>
@@ -121,7 +57,7 @@ const Footer = () => {
                 <p className="mb-2">
                   <a
                     href={`mailto:${contactInfo.email}`}
-                    className={`${textLightClass} ${primaryLightestHoverClass} transition-colors duration-300`}
+                    className={`${theme.text('text.light', 'white')} ${theme.hoverText('primary.lightest', 'amber-200')} transition-colors duration-300`}
                   >
                     {contactInfo.email}
                   </a>
@@ -131,7 +67,7 @@ const Footer = () => {
                 <p>
                   <a
                     href={`tel:${contactInfo.phone.replace(/[^\d+]/g, '')}`}
-                    className={`${textLightClass} ${primaryLightestHoverClass} transition-colors duration-300`}
+                    className={`${theme.text('text.light', 'white')} ${theme.hoverText('primary.lightest', 'amber-200')} transition-colors duration-300`}
                   >
                     {contactInfo.phone}
                   </a>
@@ -148,5 +84,32 @@ const Footer = () => {
     </footer>
   );
 };
+
+// Helper components to reduce repetition
+const SocialLink = ({ href, theme, children }) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    className={`${theme.text('text.light', 'white')} ${theme.hoverText('primary.lightest', 'amber-200')} transition-colors duration-300`}
+  >
+    {children}
+  </a>
+);
+
+const NavLink = ({ to, navigate, theme, children }) => (
+  <li>
+    <Link
+      to={to}
+      className={`${theme.text('text.light', 'white')} ${theme.hoverText('primary.lightest', 'amber-200')} transition-colors duration-300`}
+      onClick={(e) => {
+        e.preventDefault();
+        navigate(to);
+      }}
+    >
+      {children}
+    </Link>
+  </li>
+);
 
 export default Footer;
