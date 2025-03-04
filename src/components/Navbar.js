@@ -201,7 +201,7 @@ const Navbar = () => {
                       <button
                         onClick={() => {
                           setIsAccountMenuOpen(false);
-                          navigate('/user');
+                          navigate('/account');
                         }}
                         className={`block w-full text-left px-4 py-2 text-sm ${theme.text('text.primary', 'gray-900')} ${theme.hoverBg('ui.hover', 'gray-100')}`}
                       >
@@ -292,7 +292,7 @@ const Navbar = () => {
                 <button
                   onClick={() => {
                     setIsMenuOpen(false);
-                    navigate('/user');
+                    navigate('/account');
                   }}
                   className={`block w-full text-left px-3 py-2 rounded-md text-base ${theme.text('text.light', 'white')} ${theme.hoverBg('primary.base', 'amber-600')}`}
                 >

@@ -336,104 +336,198 @@ const ColorsSection = () => {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {themePresets.map(preset => (
-                <div
-                  key={preset.id}
-                  className={`
-                    border rounded-lg p-4 transition-all relative
-                    ${currentPreset === preset.id ? 'border-blue-500 ring-2 ring-blue-300' : 'border-gray-200'}
-                    ${previewTheme === preset.id ? 'border-amber-500 ring-2 ring-amber-300 bg-amber-50' : ''}
-                  `}
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-medium text-gray-900">{preset.name}</h4>
-                      <p className="text-gray-500 text-sm mb-3">{preset.description}</p>
-                    </div>
-                    <div className="relative">
-                      <button
-                        onClick={() => toggleActionMenu(preset.id)}
-                        className="p-1 rounded-full hover:bg-gray-100"
-                        aria-label="Theme actions"
-                      >
-                        <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                        </svg>
-                      </button>
+              {themePresets
+                .filter(preset => !preset.category)
+                .map(preset => (
+                  <div
+                    key={preset.id}
+                    className={`
+                      border rounded-lg p-4 transition-all relative
+                      ${currentPreset === preset.id ? 'border-blue-500 ring-2 ring-blue-300' : 'border-gray-200'}
+                      ${previewTheme === preset.id ? 'border-amber-500 ring-2 ring-amber-300 bg-amber-50' : ''}
+                    `}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-medium text-gray-900">{preset.name}</h4>
+                        <p className="text-gray-500 text-sm mb-3">{preset.description}</p>
+                      </div>
+                      <div className="relative">
+                        <button
+                          onClick={() => toggleActionMenu(preset.id)}
+                          className="p-1 rounded-full hover:bg-gray-100"
+                          aria-label="Theme actions"
+                        >
+                          <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                          </svg>
+                        </button>
 
-                      {/* Dropdown Menu */}
-                      {openActionMenu === preset.id && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 py-1 border border-gray-200">
-                          <button
-                            onClick={() => {
-                              handleApplyPreset(preset.id);
-                              setOpenActionMenu(null);
-                            }}
-                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            Apply Theme
-                          </button>
-                          <button
-                            onClick={() => {
-                              handleCopyTheme(preset.id);
-                              setOpenActionMenu(null);
-                            }}
-                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            Copy & Customize
-                          </button>
-                        </div>
+                        {/* Dropdown Menu */}
+                        {openActionMenu === preset.id && (
+                          <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 py-1 border border-gray-200">
+                            <button
+                              onClick={() => {
+                                handleApplyPreset(preset.id);
+                                setOpenActionMenu(null);
+                              }}
+                              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              Apply Theme
+                            </button>
+                            <button
+                              onClick={() => {
+                                handleCopyTheme(preset.id);
+                                setOpenActionMenu(null);
+                              }}
+                              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              Copy & Customize
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Color swatches preview */}
+                    <div className="flex space-x-2 mb-4">
+                      {preset.palette.primary && (
+                        <div
+                          className={`w-8 h-8 rounded-full bg-${preset.palette.primary.base} border border-gray-200`}
+                          title="Primary color"
+                        ></div>
+                      )}
+                      {preset.palette.secondary && (
+                        <div
+                          className={`w-8 h-8 rounded-full bg-${preset.palette.secondary.base} border border-gray-200`}
+                          title="Secondary color"
+                        ></div>
+                      )}
+                      {preset.palette.text && (
+                        <div
+                          className={`w-8 h-8 rounded-full bg-${preset.palette.text.primary} border border-gray-200`}
+                          title="Text color"
+                        ></div>
                       )}
                     </div>
-                  </div>
 
-                  {/* Color swatches preview */}
-                  <div className="flex space-x-2 mb-4">
-                    {preset.palette.primary && (
-                      <div
-                        className={`w-8 h-8 rounded-full bg-${preset.palette.primary.base} border border-gray-200`}
-                        title="Primary color"
-                      ></div>
-                    )}
-                    {preset.palette.secondary && (
-                      <div
-                        className={`w-8 h-8 rounded-full bg-${preset.palette.secondary.base} border border-gray-200`}
-                        title="Secondary color"
-                      ></div>
-                    )}
-                    {preset.palette.text && (
-                      <div
-                        className={`w-8 h-8 rounded-full bg-${preset.palette.text.primary} border border-gray-200`}
-                        title="Text color"
-                      ></div>
-                    )}
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handlePreviewTheme(preset.id)}
+                        className={`w-full px-3 py-1.5 text-sm rounded transition-colors duration-200
+                          ${previewTheme === preset.id
+                            ? 'bg-amber-500 text-white font-medium border border-amber-600'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
+                          }`}
+                      >
+                        {previewTheme === preset.id ? 'Exit Preview' : 'Preview'}
+                      </button>
+                    </div>
                   </div>
-
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handlePreviewTheme(preset.id)}
-                      className={`w-full px-3 py-1.5 text-sm rounded transition-colors duration-200
-                        ${previewTheme === preset.id
-                          ? 'bg-amber-500 text-white font-medium border border-amber-600'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
-                        }`}
-                    >
-                      {previewTheme === preset.id ? 'Exit Preview' : 'Preview'}
-                    </button>
-                  </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         )}
 
-        {/* Holiday Themes (placeholder) */}
+        {/* Holiday Themes Tab */}
         {activeTab === 'holidays' && (
           <div className="animate-fadeIn">
             <h3 className="text-lg font-medium mb-4">Holiday Themes</h3>
-            <p className="text-gray-600">
-              Coming soon! Seasonal and holiday-themed color palettes will be available here.
+            <p className="text-gray-600 mb-4">
+              Seasonal and holiday-themed color palettes to give your site a festive feel for special occasions.
             </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {themePresets
+                .filter(preset => preset.category === 'holiday')
+                .map(preset => (
+                  <div
+                    key={preset.id}
+                    className={`
+                      border rounded-lg p-4 transition-all relative
+                      ${currentPreset === preset.id ? 'border-blue-500 ring-2 ring-blue-300' : 'border-gray-200'}
+                      ${previewTheme === preset.id ? 'border-amber-500 ring-2 ring-amber-300 bg-amber-50' : ''}
+                    `}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-medium text-gray-900">{preset.name}</h4>
+                        <p className="text-gray-500 text-sm mb-3">{preset.description}</p>
+                      </div>
+                      <div className="relative">
+                        <button
+                          onClick={() => toggleActionMenu(preset.id)}
+                          className="p-1 rounded-full hover:bg-gray-100"
+                          aria-label="Theme actions"
+                        >
+                          <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                          </svg>
+                        </button>
+
+                        {/* Dropdown Menu */}
+                        {openActionMenu === preset.id && (
+                          <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 py-1 border border-gray-200">
+                            <button
+                              onClick={() => {
+                                handleApplyPreset(preset.id);
+                                setOpenActionMenu(null);
+                              }}
+                              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              Apply Theme
+                            </button>
+                            <button
+                              onClick={() => {
+                                handleCopyTheme(preset.id);
+                                setOpenActionMenu(null);
+                              }}
+                              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              Copy & Customize
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Color swatches preview */}
+                    <div className="flex space-x-2 mb-4">
+                      {preset.palette.primary && (
+                        <div
+                          className={`w-8 h-8 rounded-full bg-${preset.palette.primary.base} border border-gray-200`}
+                          title="Primary color"
+                        ></div>
+                      )}
+                      {preset.palette.secondary && (
+                        <div
+                          className={`w-8 h-8 rounded-full bg-${preset.palette.secondary.base} border border-gray-200`}
+                          title="Secondary color"
+                        ></div>
+                      )}
+                      {preset.palette.text && (
+                        <div
+                          className={`w-8 h-8 rounded-full bg-${preset.palette.text.primary} border border-gray-200`}
+                          title="Text color"
+                        ></div>
+                      )}
+                    </div>
+
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handlePreviewTheme(preset.id)}
+                        className={`w-full px-3 py-1.5 text-sm rounded transition-colors duration-200
+                          ${previewTheme === preset.id
+                            ? 'bg-amber-500 text-white font-medium border border-amber-600'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
+                          }`}
+                      >
+                        {previewTheme === preset.id ? 'Exit Preview' : 'Preview'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+            </div>
           </div>
         )}
 

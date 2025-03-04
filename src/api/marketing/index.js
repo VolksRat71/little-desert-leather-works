@@ -298,30 +298,30 @@ export const getThemePresets = async () => {
             dark: "desert-rust",
             hover: "desert-rust",
             lightest: "desert-tan",
-            background: "stone-50"
+            background: "white"
           },
           secondary: {
             base: "desert-olive",
             light: "desert-green",
             dark: "desert-black",
-            background: "stone-50",
-            lightest: "stone-50"
+            background: "white",
+            lightest: "white"
           },
           text: {
             primary: "desert-black",
-            secondary: "gray-600",
-            light: "stone-50",
+            secondary: "gray-700",
+            light: "white",
             accent: "desert-rust",
             medium: "desert-black",
             dark: "desert-black",
-            lightest: "stone-50"
+            lightest: "white"
           },
           ui: {
             border: "desert-terracotta",
             shadow: "desert-rust",
-            background: "stone-50",
+            background: "white",
             darkBackground: "desert-black",
-            lightBackground: "stone-50",
+            lightBackground: "white",
             accent: "desert-orange",
             earthGreen: "desert-olive"
           }
@@ -338,30 +338,30 @@ export const getThemePresets = async () => {
             dark: "blue-700",
             hover: "blue-700",
             lightest: "blue-100",
-            background: "slate-50"
+            background: "white"
           },
           secondary: {
             base: "teal-600",
             light: "teal-500",
-            dark: "slate-900",
-            background: "slate-50",
-            lightest: "slate-50"
+            dark: "teal-700",
+            background: "white",
+            lightest: "white"
           },
           text: {
-            primary: "slate-900",
-            secondary: "slate-600",
-            light: "slate-50",
+            primary: "gray-900",
+            secondary: "slate-700",
+            light: "white",
             accent: "blue-700",
-            medium: "slate-900",
+            medium: "slate-800",
             dark: "slate-900",
-            lightest: "slate-50"
+            lightest: "white"
           },
           ui: {
             border: "blue-500",
             shadow: "blue-700",
-            background: "slate-50",
+            background: "white",
             darkBackground: "slate-900",
-            lightBackground: "slate-50",
+            lightBackground: "white",
             accent: "blue-600",
             earthGreen: "teal-600"
           }
@@ -378,32 +378,279 @@ export const getThemePresets = async () => {
             dark: "green-700",
             hover: "green-700",
             lightest: "green-100",
-            background: "stone-50"
+            background: "white"
           },
           secondary: {
             base: "emerald-700",
             light: "emerald-600",
-            dark: "gray-900",
-            background: "stone-50",
-            lightest: "stone-50"
+            dark: "emerald-800",
+            background: "white",
+            lightest: "white"
           },
           text: {
             primary: "gray-900",
-            secondary: "gray-600",
-            light: "stone-50",
+            secondary: "gray-700",
+            light: "white",
             accent: "emerald-700",
-            medium: "gray-900",
+            medium: "gray-800",
             dark: "gray-900",
-            lightest: "stone-50"
+            lightest: "white"
           },
           ui: {
             border: "green-500",
             shadow: "green-700",
-            background: "stone-50",
+            background: "white",
             darkBackground: "gray-900",
-            lightBackground: "stone-50",
+            lightBackground: "white",
             accent: "green-600",
             earthGreen: "emerald-700"
+          }
+        }
+      },
+      // Holiday Themes
+      {
+        id: 'july4th',
+        name: '4th of July',
+        description: 'Patriotic red, white, and blue theme for Independence Day',
+        category: 'holiday',
+        palette: {
+          primary: {
+            base: "blue-600",
+            light: "blue-500",
+            dark: "blue-700",
+            hover: "blue-700",
+            lightest: "blue-100",
+            background: "white"
+          },
+          secondary: {
+            base: "red-600",
+            light: "red-500",
+            dark: "red-700",
+            background: "white",
+            lightest: "white"
+          },
+          text: {
+            primary: "gray-900",
+            secondary: "gray-700",
+            light: "white",
+            accent: "red-600",
+            medium: "blue-800",
+            dark: "gray-900",
+            lightest: "white"
+          },
+          ui: {
+            border: "blue-600",
+            shadow: "blue-800",
+            background: "white",
+            darkBackground: "blue-900",
+            lightBackground: "white",
+            accent: "red-600",
+            earthGreen: "green-700"
+          }
+        }
+      },
+      {
+        id: 'mothersday',
+        name: "Mother's Day",
+        description: 'Soft pinks and floral tones for celebrating moms',
+        category: 'holiday',
+        palette: {
+          primary: {
+            base: "pink-500",
+            light: "pink-400",
+            dark: "pink-600",
+            hover: "pink-600",
+            lightest: "pink-100",
+            background: "white"
+          },
+          secondary: {
+            base: "purple-600",
+            light: "purple-500",
+            dark: "purple-700",
+            background: "white",
+            lightest: "white"
+          },
+          text: {
+            primary: "gray-900",
+            secondary: "purple-800",
+            light: "white",
+            accent: "pink-600",
+            medium: "purple-700",
+            dark: "gray-900",
+            lightest: "white"
+          },
+          ui: {
+            border: "pink-400",
+            shadow: "pink-600",
+            background: "white",
+            darkBackground: "purple-900",
+            lightBackground: "white",
+            accent: "pink-500",
+            earthGreen: "green-600"
+          }
+        }
+      },
+      {
+        id: 'blackfriday',
+        name: 'Black Friday',
+        description: 'Bold black and vibrant accents for sales and promotions',
+        category: 'holiday',
+        palette: {
+          primary: {
+            base: "gray-900",
+            light: "gray-800",
+            dark: "black",
+            hover: "black",
+            lightest: "gray-200",
+            background: "white"
+          },
+          secondary: {
+            base: "red-600",
+            light: "red-500",
+            dark: "red-700",
+            background: "white",
+            lightest: "white"
+          },
+          text: {
+            primary: "gray-900",
+            secondary: "gray-700",
+            light: "white",
+            accent: "red-600",
+            medium: "gray-800",
+            dark: "black",
+            lightest: "white"
+          },
+          ui: {
+            border: "gray-400",
+            shadow: "gray-800",
+            background: "white",
+            darkBackground: "black",
+            lightBackground: "white",
+            accent: "red-600",
+            earthGreen: "green-600"
+          }
+        }
+      },
+      {
+        id: 'christmas',
+        name: 'Christmas',
+        description: 'Festive red and green with snow white accents',
+        category: 'holiday',
+        palette: {
+          primary: {
+            base: "red-600",
+            light: "red-500",
+            dark: "red-700",
+            hover: "red-700",
+            lightest: "red-100",
+            background: "white"
+          },
+          secondary: {
+            base: "green-700",
+            light: "green-600",
+            dark: "green-800",
+            background: "white",
+            lightest: "white"
+          },
+          text: {
+            primary: "gray-900",
+            secondary: "green-800",
+            light: "white",
+            accent: "red-600",
+            medium: "green-800",
+            dark: "gray-900",
+            lightest: "white"
+          },
+          ui: {
+            border: "red-500",
+            shadow: "green-700",
+            background: "white",
+            darkBackground: "green-900",
+            lightBackground: "white",
+            accent: "red-600",
+            earthGreen: "green-700"
+          }
+        }
+      },
+      {
+        id: 'halloween',
+        name: 'Halloween',
+        description: 'Spooky orange and black tones for Halloween',
+        category: 'holiday',
+        palette: {
+          primary: {
+            base: "orange-600",
+            light: "orange-500",
+            dark: "orange-700",
+            hover: "orange-700",
+            lightest: "orange-100",
+            background: "white"
+          },
+          secondary: {
+            base: "gray-900",
+            light: "gray-800",
+            dark: "black",
+            background: "white",
+            lightest: "white"
+          },
+          text: {
+            primary: "gray-900",
+            secondary: "gray-800",
+            light: "white",
+            accent: "orange-600",
+            medium: "gray-800",
+            dark: "black",
+            lightest: "white"
+          },
+          ui: {
+            border: "orange-500",
+            shadow: "gray-900",
+            background: "white",
+            darkBackground: "black",
+            lightBackground: "white",
+            accent: "orange-600",
+            earthGreen: "green-600"
+          }
+        }
+      },
+      {
+        id: 'thanksgiving',
+        name: 'Thanksgiving',
+        description: 'Warm autumn colors for Thanksgiving celebrations',
+        category: 'holiday',
+        palette: {
+          primary: {
+            base: "amber-600",
+            light: "amber-500",
+            dark: "amber-700",
+            hover: "amber-700",
+            lightest: "amber-100",
+            background: "white"
+          },
+          secondary: {
+            base: "yellow-800",
+            light: "yellow-700",
+            dark: "yellow-900",
+            background: "white",
+            lightest: "white"
+          },
+          text: {
+            primary: "gray-900",
+            secondary: "yellow-900",
+            light: "white",
+            accent: "amber-700",
+            medium: "brown-700",
+            dark: "gray-900",
+            lightest: "white"
+          },
+          ui: {
+            border: "amber-500",
+            shadow: "yellow-800",
+            background: "white",
+            darkBackground: "yellow-900",
+            lightBackground: "white",
+            accent: "amber-600",
+            earthGreen: "green-700"
           }
         }
       }
