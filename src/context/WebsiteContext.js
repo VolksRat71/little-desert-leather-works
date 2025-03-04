@@ -45,7 +45,7 @@ export const products = [
     name: "Signature Travel Duffle",
     description: "Handcrafted full-grain leather duffle bag with reinforced stitching and spacious interior. Each bag is meticulously crafted for durability and style.",
     shortDescription: "Handcrafted full-grain leather duffle bag with reinforced stitching and spacious interior.",
-    price: "$95",
+    price: "$695",
     image: "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/l/e/leather-duffle-bag-tumbled-chestnut-leather-3.5_1.jpg",
     images: [
       "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/l/e/leather-duffle-bag-tumbled-chestnut-leather-3.5_1.jpg",
@@ -65,24 +65,24 @@ export const products = [
   },
   {
     id: 2,
-    name: "Artisan Belt",
-    description: "Custom-cut belt with solid brass buckle, handmade in Austin. Made from a single piece of 8-10oz leather for durability and longevity.",
-    shortDescription: "Custom-cut belt with brass buckle, handmade in Austin.",
-    price: "$120",
-    image: "https://placehold.co/600x400/704820/ffffff?text=Leather+Belt",
+    name: "The Classic Wallet",
+    description: "The Classic Wallet is a timeless design that features a single pocket and a leather strap for easy carrying. It's perfect for everyday use and makes a great gift.",
+    shortDescription: "The Classic Wallet is a timeless design that features a single pocket and a leather strap for easy carrying.",
+    price: "$95",
+    image: "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_bifold_wallet__frank_clegg_made_in-usa_2.jpg",
     images: [
-      "https://placehold.co/600x400/704820/ffffff?text=Leather+Belt",
-      "https://placehold.co/600x400/8b5a2b/ffffff?text=Belt+Buckle",
-      "https://placehold.co/600x400/5c4c35/ffffff?text=Belt+Detail"
+      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_bifold_wallet__frank_clegg_made_in-usa_2.jpg",
+      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/color_ways_bifold_wallets__frank_clegg_made_in-usa_1_5.jpg",
+      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_bifold_wallet__frank_clegg_made_in-usa_1_1.jpg"
     ],
     features: [
       "8-10oz full-grain leather",
-      "Solid brass or nickel buckle",
+      "Saddle-stitched with waxed thread",
       "Hand-beveled and burnished edges",
       "Width options: 1.25\" or 1.5\"",
-      "Custom sizing available"
+      "Custom engraving available"
     ],
-    careInstructions: "Clean with damp cloth and mild soap. Condition every 6 months.",
+    careInstructions: "Condition with leather balm every 3-6 months. Avoid excessive moisture.",
     isVisible: true
   },
   {
@@ -90,12 +90,12 @@ export const products = [
     name: "Desert Messenger Bag",
     description: "Rugged messenger bag with adjustable strap and antique hardware. Featuring a spacious main compartment and multiple organization pockets.",
     shortDescription: "Rugged messenger bag with adjustable strap and antique hardware.",
-    price: "$275",
-    image: "https://placehold.co/600x400/8b5a2b/ffffff?text=Messenger+Bag",
+    price: "$375",
+    image: "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/h/chestnut_leather__bound_edge_messenger_bag_frank_clegg_made_in-usa_1_1.jpg",
     images: [
-      "https://placehold.co/600x400/8b5a2b/ffffff?text=Messenger+Bag",
-      "https://placehold.co/600x400/704820/ffffff?text=Bag+Interior",
-      "https://placehold.co/600x400/5c4c35/ffffff?text=Bag+Hardware"
+      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/h/chestnut_leather__bound_edge_messenger_bag_frank_clegg_made_in-usa_1_1.jpg",
+      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/h/chestnut_leather_bound_edge_messenger_bag_frank_clegg_made_in-usa_8.jpg",
+      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/h/chestnut_leather_bound_edge_messenger_bag_frank_clegg_made_in-usa_6.jpg"
     ],
     features: [
       "5-6oz full-grain oil-tanned leather",
@@ -110,24 +110,24 @@ export const products = [
   },
   {
     id: 4,
-    name: "Leather Journal Cover",
-    description: "Hand-tooled journal cover that will age beautifully with time. Designed to fit standard A5 notebooks with an easy replacement system.",
-    shortDescription: "Hand-tooled journal cover that will age beautifully with time.",
-    price: "$85",
-    image: "https://placehold.co/600x400/704820/ffffff?text=Journal+Cover",
+    name: "English Backpack",
+    description: "Handcrafted English-style backpack with a leather strap and brass hardware. Features a spacious main compartment and multiple pockets for organization.",
+    shortDescription: "Handcrafted English-style backpack with a leather strap and brass hardware.",
+    price: "$525",
+    image: "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_buckle_backpack_frank_clegg_made_in-usa_1.jpg",
     images: [
-      "https://placehold.co/600x400/704820/ffffff?text=Journal+Cover",
-      "https://placehold.co/600x400/8b5a2b/ffffff?text=Journal+Open",
-      "https://placehold.co/600x400/5c4c35/ffffff?text=Journal+Detail"
+      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_buckle_backpack_frank_clegg_made_in-usa_1.jpg",
+      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_buckle_backpack_frank_clegg_made_in-usa_6.jpg",
+      "https://frankcleggleatherworks.com/media/catalog/product/cache/64dbedf2644cd99faf0087c6dc776338/c/o/cognac_leather_buckle_backpack_frank_clegg_made_in-usa_5.jpg"
     ],
     features: [
       "4-5oz full-grain leather",
-      "Fits standard A5 notebooks (5.8\" x 8.3\")",
-      "Elastic band closure",
-      "Bookmark ribbon",
+      "Fits standard 20\" laptop",
+      "Buckle closure",
+      "Sturdy leather straps",
       "Optional personalization available"
     ],
-    careInstructions: "Keep dry. Apply leather conditioner when leather feels dry.",
+    careInstructions: "Condition with leather balm every 3-6 months. Avoid excessive moisture.",
     isVisible: true
   }
 ];
@@ -163,10 +163,10 @@ export const testimonials = [
 // Artisan information
 export const artisan = {
   name: "Morgan E Ludemann",
-  title: "Master Leather Craftsman",
-  image: "https://placehold.co/600x800/8b5a2b/ffffff?text=Morgan+Ludemann",
-  bio: "With over 15 years of experience working with leather, I bring traditional techniques and modern design to every piece I create. My journey began in my grandfather's workshop, where I learned that quality craftsmanship requires patience, precision, and passion. Today, I handcraft each item in my Austin studio, selecting only the finest full-grain leathers.\n\nI was drawn to leatherworking after a trip through the American Southwest, where I was captivated by the rugged beauty of the desert and the generations of artisans who worked with natural materials. The textures, colors, and resilience of the desert landscape continue to inspire my work.\n\nEvery stitch, every cut, and every burnished edge represents my commitment to creating heirloom-quality goods that will age beautifully and tell a story with time. I believe in creating pieces that become more beautiful with age and use – developing a rich patina that reflects their journey with you.",
-  philosophy: "I believe in slow craft – taking the time needed to do things right. No shortcuts, no mass production. Just honest materials, traditional techniques, and meticulous attention to detail.",
+  title: "Leather Craftsman",
+  image: "https://cdn-prod-ccv.adobe.com/UDwPnVGbImo/image/UDwPnVGbImo_poster.jpg?hdnts=st%3D1741101919%7Eexp%3D1741361119%7Eacl%3D%2Fshared_assets%2Fimage%2F*%21%2Fz%2FUDwPnVGbImo%2Frend%2F*%21%2Fi%2FUDwPnVGbImo%2Frend%2F*%21%2FUDwPnVGbImo%2Frend%2F*%21%2FUDwPnVGbImo%2Fimage%2F*%21%2FUDwPnVGbImo%2Fcaptions%2F*%7Ehmac%3Dfd9b885accf8efc187b87b5bab7d5d8a1276916fccf076bae09982b2fedfb9b1",
+  bio: "As a leather artisan, I am dedicated to merging contemporary aesthetics with traditional craftsmanship. My journey began in a vibrant my personal Austin workshop, where I immersed myself in the art of leather crafting. This experience ignited a passion for creating unique, high-quality pieces that reflect both innovation and heritage.\n\nDrawing inspiration from the dynamic energy of urban life and the rich history of leather artisans, I aim to craft items that are both functional and stylish. The diverse textures and colors of cityscapes inspire my designs, encouraging me to push boundaries and explore new creative avenues.\n\nEach piece I create is a reflection of my commitment to excellence and my belief in the beauty of well-crafted goods. I strive to produce items that not only serve a purpose but also tell a story, evolving with you over time and gaining character with every use.",
+  philosophy: "I am committed to the art of thoughtful craftsmanship, where creativity meets precision. By focusing on intentional design and meticulous attention to detail, I ensure that each piece is crafted with integrity and a modern touch.",
   skills: ["Hand-stitching", "Tooling & Carving", "Dyeing & Finishing", "Pattern Making", "Custom Design"],
   isVisible: true
 };

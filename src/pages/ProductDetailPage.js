@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useWebsite, colorPalette, useDocumentTitle } from '../context/WebsiteContext';
 import ProductCard from '../components/ProductCard';
-import ImageMagnifier from '../components/ImageMagnifier';
+import ImageCarousel from '../components/ImageCarousel';
 
 const ProductDetailPage = () => {
   const { navigate, products, addToCart } = useWebsite();
-  const [activeImage, setActiveImage] = useState('');
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const { productId } = useParams();
@@ -16,10 +15,6 @@ const ProductDetailPage = () => {
     if (productId) {
       const foundProduct = products.find(p => p.id === parseInt(productId));
       setProduct(foundProduct);
-
-      if (foundProduct) {
-        setActiveImage(foundProduct.image);
-      }
     }
   }, [productId, products]);
 
@@ -57,28 +52,8 @@ const ProductDetailPage = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          {/* Product Images */}
-          <div className="space-y-4">
-            <div className={`bg-${colorPalette.ui.background} rounded shadow`}>
-              <ImageMagnifier
-                src={activeImage}
-                alt={product.name}
-                magnifierSize={180}
-                zoomLevel={6}
-              />
-            </div>
-            <div className="flex space-x-2">
-              {product.images.map((image, index) => (
-                <div
-                  key={index}
-                  className={`cursor-pointer w-24 h-24 rounded overflow-hidden border-2 transition-all duration-300 ${activeImage === image ? `border-${colorPalette.primary.base}` : 'border-transparent'}`}
-                  onClick={() => setActiveImage(image)}
-                >
-                  <img src={image} alt={`${product.name} view ${index + 1}`} className="w-full h-full object-cover" />
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Product Images Carousel */}
+          <ImageCarousel product={product} />
 
           {/* Product Details */}
           <div className={`bg-${colorPalette.ui.background} p-6 rounded shadow`}>

@@ -11,6 +11,20 @@ const ImageMagnifier = ({ src, alt, width = '100%', height = 'auto', magnifierSi
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
   }, []);
 
+  // Add/remove body scroll lock when magnifier is shown/hidden
+  useEffect(() => {
+    if (showMagnifier && isTouchDevice) {
+      // Save the current body style
+      const originalStyle = window.getComputedStyle(document.body).overflow;
+      document.body.style.overflow = 'hidden';
+
+      // Restore on cleanup
+      return () => {
+        document.body.style.overflow = originalStyle;
+      };
+    }
+  }, [showMagnifier, isTouchDevice]);
+
   const handleMouseEnter = () => {
     if (!isTouchDevice) {
       setShowMagnifier(true);
@@ -65,6 +79,12 @@ const ImageMagnifier = ({ src, alt, width = '100%', height = 'auto', magnifierSi
     setShowMagnifier(false);
   };
 
+  // Prevent context menu (right-click menu)
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+    return false;
+  };
+
   // Calculate magnifier position without constraining it to image boundaries
   const getMagnifierPosition = () => {
     if (!imgRef.current) return { left: 0, top: 0 };
@@ -104,7 +124,7 @@ const ImageMagnifier = ({ src, alt, width = '100%', height = 'auto', magnifierSi
 
   return (
     <div
-      className="relative overflow-visible"
+      className="relative"
       style={{ width, height }}
     >
       <img
@@ -115,7 +135,8 @@ const ImageMagnifier = ({ src, alt, width = '100%', height = 'auto', magnifierSi
         style={{
           WebkitUserSelect: 'none',
           WebkitTouchCallout: 'none',
-          userSelect: 'none'
+          userSelect: 'none',
+          pointerEvents: showMagnifier && isTouchDevice ? 'none' : 'auto'
         }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -124,21 +145,23 @@ const ImageMagnifier = ({ src, alt, width = '100%', height = 'auto', magnifierSi
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchEnd}
+        onContextMenu={handleContextMenu}
         draggable="false"
       />
 
       {showMagnifier && (
         <div
-          className="absolute border border-gray-300 rounded-full shadow-lg pointer-events-none z-50 overflow-hidden"
+          className="fixed border border-gray-300 rounded-full shadow-lg pointer-events-none"
           style={{
             width: `${magnifierSize}px`,
             height: `${magnifierSize}px`,
-            left: `${magnifierPosition.left}px`,
-            top: `${magnifierPosition.top}px`,
+            left: `${magnifierPosition.left + imgRef.current.getBoundingClientRect().left}px`,
+            top: `${magnifierPosition.top + imgRef.current.getBoundingClientRect().top}px`,
             backgroundImage: `url(${src})`,
             backgroundRepeat: 'no-repeat',
             backgroundSize: `${zoomLevel * 100}%`,
-            backgroundPosition: `${backgroundPosition.x}% ${backgroundPosition.y}%`
+            backgroundPosition: `${backgroundPosition.x}% ${backgroundPosition.y}%`,
+            zIndex: 9999
           }}
         />
       )}
