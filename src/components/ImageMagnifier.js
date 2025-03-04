@@ -38,12 +38,16 @@ const ImageMagnifier = ({ src, alt, width = '100%', height = 'auto', magnifierSi
 
   // Handle touch events for mobile devices
   const handleTouchStart = (e) => {
-    // Don't prevent default here to allow normal touch interactions
+    // Prevent default behavior to avoid scrolling and context menu
+    e.preventDefault();
     setShowMagnifier(true);
     handleTouchMove(e);
   };
 
   const handleTouchMove = (e) => {
+    // Prevent default to stop page scrolling while zooming
+    e.preventDefault();
+
     if (e.touches.length > 0) {
       const touch = e.touches[0];
       const imgRect = imgRef.current.getBoundingClientRect();
@@ -56,7 +60,8 @@ const ImageMagnifier = ({ src, alt, width = '100%', height = 'auto', magnifierSi
     }
   };
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e) => {
+    e.preventDefault();
     setShowMagnifier(false);
   };
 
@@ -106,7 +111,12 @@ const ImageMagnifier = ({ src, alt, width = '100%', height = 'auto', magnifierSi
         ref={imgRef}
         src={src}
         alt={alt}
-        className="w-full h-auto rounded"
+        className="w-full h-auto rounded select-none"
+        style={{
+          WebkitUserSelect: 'none',
+          WebkitTouchCallout: 'none',
+          userSelect: 'none'
+        }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onMouseMove={handleMouseMove}
@@ -114,6 +124,7 @@ const ImageMagnifier = ({ src, alt, width = '100%', height = 'auto', magnifierSi
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchEnd}
+        draggable="false"
       />
 
       {showMagnifier && (

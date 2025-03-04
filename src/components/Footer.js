@@ -5,7 +5,7 @@ import { FaInstagram, FaTwitter, FaFacebook } from 'react-icons/fa';
 import { Logo } from '../App';
 
 const Footer = () => {
-  const { navigate } = useWebsite();
+  const { navigate, contactInfo } = useWebsite();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -95,24 +95,27 @@ const Footer = () => {
           <div>
             <h3 className={`font-bold text-lg mb-4 text-${colorPalette.primary.base}`}>Contact Us</h3>
             <address className="not-italic">
-              <p className="mb-2">123 Desert Lane</p>
-              <p className="mb-2">Sedona, AZ 12345</p>
+              {contactInfo.showAddress && contactInfo.address.split('\n').map((line, index) => (
+                <p className="mb-2" key={index}>{line}</p>
+              ))}
               <p className="mb-2">
                 <a
-                  href="mailto:info@littledesertleather.com"
+                  href={`mailto:${contactInfo.email}`}
                   className={`text-${colorPalette.text.light} hover:text-${colorPalette.primary.lightest} transition-colors duration-300`}
                 >
-                  info@littledesertleather.com
+                  {contactInfo.email}
                 </a>
               </p>
-              <p>
-                <a
-                  href="tel:+15551234567"
-                  className={`text-${colorPalette.text.light} hover:text-${colorPalette.primary.lightest} transition-colors duration-300`}
-                >
-                  (555) 123-4567
-                </a>
-              </p>
+              {contactInfo.showPhone && (
+                <p>
+                  <a
+                    href={`tel:${contactInfo.phone.replace(/[^\d+]/g, '')}`}
+                    className={`text-${colorPalette.text.light} hover:text-${colorPalette.primary.lightest} transition-colors duration-300`}
+                  >
+                    {contactInfo.phone}
+                  </a>
+                </p>
+              )}
             </address>
           </div>
         </div>

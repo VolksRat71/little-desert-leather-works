@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { colorPalette, useDocumentTitle } from '../context/WebsiteContext';
+import { colorPalette, useDocumentTitle, useWebsite } from '../context/WebsiteContext';
 
 const ContactPage = () => {
   // Custom style with larger font
@@ -15,6 +15,9 @@ const ContactPage = () => {
     transformOrigin: 'center center',
     display: 'inline-block'
   };
+
+  // Get contact information from context
+  const { contactInfo } = useWebsite();
 
   // Set document title
   useDocumentTitle('Contact Us');
@@ -75,23 +78,32 @@ const ContactPage = () => {
               <p className={`text-${colorPalette.text.secondary} mb-4`}>
                 We're located in the heart of Austin, Texas. Feel free to stop by our workshop to see our craftsmanship in action.
               </p>
-              <div className={`p-4 bg-${colorPalette.primary.lightest} rounded mb-4`}>
-                <h3 className={`font-semibold mb-2 text-${colorPalette.text.primary}`}>
-                  <span className="desert-road-font" style={desertFontStyle}>Address</span>
-                </h3>
-                <p className={`text-${colorPalette.text.secondary}`}>
-                  2345 Leather Lane<br/>
-                  Austin, TX 78701
-                </p>
-              </div>
+              {contactInfo.showAddress && (
+                <div className={`p-4 bg-${colorPalette.primary.lightest} rounded mb-4`}>
+                  <h3 className={`font-semibold mb-2 text-${colorPalette.text.primary}`}>
+                    <span className="desert-road-font" style={desertFontStyle}>Address</span>
+                  </h3>
+                  <p className={`text-${colorPalette.text.secondary}`}>
+                    {contactInfo.address.split('\n').map((line, index) => (
+                      <React.Fragment key={index}>
+                        {line}
+                        {index < contactInfo.address.split('\n').length - 1 && <br />}
+                      </React.Fragment>
+                    ))}
+                  </p>
+                </div>
+              )}
               <div className={`p-4 bg-${colorPalette.primary.lightest} rounded mb-4`}>
                 <h3 className={`font-semibold mb-2 text-${colorPalette.text.primary}`}>
                   <span className="desert-road-font" style={desertFontStyle}>Hours</span>
                 </h3>
                 <p className={`text-${colorPalette.text.secondary}`}>
-                  Monday - Friday: 10am - 6pm<br/>
-                  Saturday: 11am - 5pm<br/>
-                  Sunday: Closed
+                  {contactInfo.hours.split('\n').map((line, index) => (
+                    <React.Fragment key={index}>
+                      {line}
+                      {index < contactInfo.hours.split('\n').length - 1 && <br />}
+                    </React.Fragment>
+                  ))}
                 </p>
               </div>
               <div className={`p-4 bg-${colorPalette.primary.lightest} rounded`}>
@@ -99,17 +111,19 @@ const ContactPage = () => {
                   <span className="desert-road-font" style={desertFontStyle}>Contact</span>
                 </h3>
                 <p className={`text-${colorPalette.text.secondary}`}>
-                  Email: hello@littledesertleather.com<br/>
-                  Phone: (512) 555-0127
+                  Email: {contactInfo.email}<br/>
+                  {contactInfo.showPhone && <>Phone: {contactInfo.phone}</>}
                 </p>
               </div>
             </div>
           </div>
 
           {/* Map Placeholder */}
-          <div className={`bg-${colorPalette.primary.dark} h-64 rounded shadow flex items-center justify-center`}>
-            <p className={`text-${colorPalette.text.light}`}>Map Placeholder</p>
-          </div>
+          {contactInfo.showMap && (
+            <div className={`bg-${colorPalette.primary.dark} h-64 rounded shadow flex items-center justify-center`}>
+              <p className={`text-${colorPalette.text.light}`}>Map Placeholder</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
