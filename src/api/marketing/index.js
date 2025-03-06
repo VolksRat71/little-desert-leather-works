@@ -219,7 +219,7 @@ export const getArtisanInfo = async () => {
     return Promise.resolve({
       name: "Morgan E Ludemann",
       title: "Leather Craftsman",
-      image: "https://res.cloudinary.com/notsupreme/image/upload/v1741109019/oocibvenzn1til5pscgd.jpg",
+      image: "https://res.cloudinary.com/notsupreme/image/upload/v1741284098/a65mh1ahlaodo6antd5l.jpg",
       bio: "As a leather artisan, I am dedicated to merging contemporary aesthetics with traditional craftsmanship. My journey began in a vibrant my personal Austin workshop, where I immersed myself in the art of leather crafting. This experience ignited a passion for creating unique, high-quality pieces that reflect both innovation and heritage.\n\nDrawing inspiration from the dynamic energy of urban life and the rich history of leather artisans, I aim to craft items that are both functional and stylish. The diverse textures and colors of cityscapes inspire my designs, encouraging me to push boundaries and explore new creative avenues.\n\nEach piece I create is a reflection of my commitment to excellence and my belief in the beauty of well-crafted goods. I strive to produce items that not only serve a purpose but also tell a story, evolving with you over time and gaining character with every use.",
       philosophy: "I am committed to the art of thoughtful craftsmanship, where creativity meets precision. By focusing on intentional design and meticulous attention to detail, I ensure that each piece is crafted with integrity and a modern touch.",
       skills: ["Hand-stitching", "Tooling & Carving", "Dyeing & Finishing", "Pattern Making", "Custom Design"],
