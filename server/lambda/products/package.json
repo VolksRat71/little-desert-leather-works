@@ -1,0 +1,17 @@
+{
+  "name": "products-microservice",
+  "version": "1.0.0",
+  "description": "Products microservice for Little Desert Leather Works",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "mysql2": "^3.6.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.48.0",
+    "jest": "^29.6.4"
+  }
+}
