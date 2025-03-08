@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ImageMagnifier from '../components/ImageMagnifier';
+import ImageMagnifier from './ImageMagnifier';
 import { useWebsite } from '../context/WebsiteContext';
 
 const ImageCarousel = ({ product }) => {

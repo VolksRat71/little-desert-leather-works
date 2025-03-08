@@ -1,36 +1,33 @@
 import React, { useState } from 'react';
 import { useWebsite } from '../../../context/WebsiteContext';
 import Modal from '../../Modal';
-import EllipsisMenu from '../../../components/EllipsisMenu';
+import EllipsisMenu from '../../EllipsisMenu';
 
-const EmailCampaigns = () => {
+const TextMessages = () => {
   const { users, colorPalette } = useWebsite();
 
-  // Sample email templates
-  const [emailTemplates, setEmailTemplates] = useState([
+  // Sample text message templates
+  const [textTemplates, setTextTemplates] = useState([
     {
       id: 1,
-      name: 'Welcome Email',
-      subject: 'Welcome to Little Desert Leather Works!',
-      body: 'Thank you for creating an account with us. We\'re excited to have you as part of our community!',
-      lastSent: '2023-02-15',
+      name: 'Flash Sale',
+      message: 'Flash Sale! 30% off all leather goods today only. Use code FLASH30 at checkout. Shop now: [link]',
+      lastSent: '2023-02-20',
       status: 'active',
-      type: 'automated'
-    },
-    {
-      id: 2,
-      name: 'New Products Announcement',
-      subject: 'Check Out Our New Handcrafted Items!',
-      body: 'We\'ve just added some amazing new leather goods to our collection. Click here to see them!',
-      lastSent: '2023-03-10',
-      status: 'draft',
       type: 'campaign'
     },
     {
+      id: 2,
+      name: 'New Arrival Notification',
+      message: 'New handcrafted items just arrived! Be the first to check them out: [link]',
+      lastSent: '2023-03-05',
+      status: 'draft',
+      type: 'automated'
+    },
+    {
       id: 3,
-      name: 'Seasonal Sale',
-      subject: '25% Off All Wallets - Limited Time!',
-      body: 'For the next week, enjoy 25% off all wallets in our collection. Use code WALLET25 at checkout.',
+      name: 'Limited Edition Release',
+      message: 'Limited edition leather journal collection now available! Only 50 pieces. Shop now: [link]',
       lastSent: 'Never',
       status: 'draft',
       type: 'campaign'
@@ -44,21 +41,19 @@ const EmailCampaigns = () => {
   const [isSendModalOpen, setIsSendModalOpen] = useState(false);
   const [newTemplate, setNewTemplate] = useState({
     name: '',
-    subject: '',
-    body: '',
+    message: '',
     type: 'campaign'
   });
 
-  // Get counts of users with email marketing enabled
-  const emailableUserCount = users ? users.filter(user =>
-    user.marketingPreferences && user.marketingPreferences.emailOffers
+  // Get counts of users with text marketing enabled
+  const textableUserCount = users ? users.filter(user =>
+    user.marketingPreferences && user.marketingPreferences.textOffers
   ).length : 0;
 
   const handleCreateClick = () => {
     setNewTemplate({
       name: '',
-      subject: '',
-      body: '',
+      message: '',
       type: 'campaign'
     });
     setIsCreateModalOpen(true);
@@ -80,7 +75,7 @@ const EmailCampaigns = () => {
   };
 
   const handleCreateTemplate = () => {
-    const newId = Math.max(...emailTemplates.map(t => t.id)) + 1;
+    const newId = Math.max(...textTemplates.map(t => t.id)) + 1;
     const templateToAdd = {
       ...newTemplate,
       id: newId,
@@ -88,12 +83,12 @@ const EmailCampaigns = () => {
       status: 'draft'
     };
 
-    setEmailTemplates([...emailTemplates, templateToAdd]);
+    setTextTemplates([...textTemplates, templateToAdd]);
     setIsCreateModalOpen(false);
   };
 
   const handleUpdateTemplate = () => {
-    setEmailTemplates(emailTemplates.map(template =>
+    setTextTemplates(textTemplates.map(template =>
       template.id === selectedTemplate.id ? selectedTemplate : template
     ));
 
@@ -101,22 +96,33 @@ const EmailCampaigns = () => {
   };
 
   const handleDeleteTemplate = () => {
-    setEmailTemplates(emailTemplates.filter(template => template.id !== selectedTemplate.id));
+    setTextTemplates(textTemplates.filter(template => template.id !== selectedTemplate.id));
     setIsDeleteModalOpen(false);
   };
 
-  const handleSendEmail = () => {
-    // In a real app, this would integrate with an email service
+  const handleSendText = () => {
+    // In a real app, this would integrate with an SMS service
     const now = new Date();
     const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
-    setEmailTemplates(emailTemplates.map(template =>
+    setTextTemplates(textTemplates.map(template =>
       template.id === selectedTemplate.id
         ? {...template, lastSent: formattedDate, status: 'active'}
         : template
     ));
 
     setIsSendModalOpen(false);
+  };
+
+  // Character count helper
+  const getCharacterCount = (message) => {
+    return message.length;
+  };
+
+  // Get estimated segment count (SMS messages are typically 160 chars)
+  const getSegmentCount = (message) => {
+    const count = getCharacterCount(message);
+    return Math.ceil(count / 160);
   };
 
   // Status badge component
@@ -173,26 +179,26 @@ const EmailCampaigns = () => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h3 className="text-lg font-medium">Email Marketing Campaigns</h3>
+          <h3 className="text-lg font-medium">Text Message Marketing</h3>
           <p className="text-gray-600 mt-1">
-            Create and send marketing emails to {emailableUserCount} subscribed users
+            Create and send SMS messages to {textableUserCount} subscribed users
           </p>
         </div>
         <button
           onClick={handleCreateClick}
           className={`bg-${colorPalette.primary.base} text-white px-4 py-2 rounded hover:bg-${colorPalette.primary.dark}`}
         >
-          Create New Email
+          Create New Text
         </button>
       </div>
 
-      {/* Email Templates Table */}
+      {/* SMS Templates Table */}
       <div className="overflow-x-auto shadow-sm rounded-lg border border-gray-200 mb-8">
         <table className="min-w-full bg-white rounded-lg">
           <thead>
             <tr className="bg-gray-100">
               <th className="py-3 px-4 text-left font-semibold text-gray-700">Template Name</th>
-              <th className="py-3 px-4 text-left font-semibold text-gray-700">Subject</th>
+              <th className="py-3 px-4 text-left font-semibold text-gray-700">Message</th>
               <th className="py-3 px-4 text-left font-semibold text-gray-700">Type</th>
               <th className="py-3 px-4 text-left font-semibold text-gray-700">Status</th>
               <th className="py-3 px-4 text-left font-semibold text-gray-700">Last Sent</th>
@@ -200,7 +206,7 @@ const EmailCampaigns = () => {
             </tr>
           </thead>
           <tbody>
-            {emailTemplates.map((template, index) => (
+            {textTemplates.map((template, index) => (
               <tr
                 key={template.id}
                 className="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150"
@@ -210,7 +216,7 @@ const EmailCampaigns = () => {
                 }}
               >
                 <td className="py-3 px-4 font-medium">{template.name}</td>
-                <td className="py-3 px-4">{template.subject}</td>
+                <td className="py-3 px-4 truncate max-w-[200px]">{template.message}</td>
                 <td className="py-3 px-4">
                   <TypeBadge type={template.type} />
                 </td>
@@ -246,11 +252,11 @@ const EmailCampaigns = () => {
         </table>
       </div>
 
-      {/* Create Email Modal */}
+      {/* Create Text Modal */}
       <Modal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        title="Create New Email Template"
+        title="Create New Text Message Template"
       >
         <div className="space-y-4">
           <div>
@@ -260,23 +266,12 @@ const EmailCampaigns = () => {
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
               value={newTemplate.name}
               onChange={(e) => setNewTemplate({...newTemplate, name: e.target.value})}
-              placeholder="e.g., Summer Sale Announcement"
+              placeholder="e.g., Flash Sale Announcement"
             />
           </div>
 
           <div>
-            <label className="block text-gray-700 mb-1">Email Subject</label>
-            <input
-              type="text"
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
-              value={newTemplate.subject}
-              onChange={(e) => setNewTemplate({...newTemplate, subject: e.target.value})}
-              placeholder="e.g., Special Offer: 20% Off All Products!"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 mb-1">Email Type</label>
+            <label className="block text-gray-700 mb-1">Message Type</label>
             <select
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
               value={newTemplate.type}
@@ -288,13 +283,28 @@ const EmailCampaigns = () => {
           </div>
 
           <div>
-            <label className="block text-gray-700 mb-1">Email Body</label>
+            <label className="block text-gray-700 mb-1">Message Content</label>
             <textarea
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 min-h-[150px]"
-              value={newTemplate.body}
-              onChange={(e) => setNewTemplate({...newTemplate, body: e.target.value})}
-              placeholder="Enter your email content here..."
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 min-h-[100px]"
+              value={newTemplate.message}
+              onChange={(e) => setNewTemplate({...newTemplate, message: e.target.value})}
+              placeholder="Enter your SMS content here... Use [link] as a placeholder for your website URL."
+              maxLength={480}
             />
+            <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <span>{getCharacterCount(newTemplate.message)} characters</span>
+              <span>{getSegmentCount(newTemplate.message)} segment(s)</span>
+            </div>
+          </div>
+
+          <div className="bg-blue-50 p-3 rounded text-sm text-blue-800 mb-2">
+            <p className="font-medium">SMS Best Practices:</p>
+            <ul className="list-disc pl-5 mt-1 space-y-1">
+              <li>Keep messages under 160 characters when possible (1 segment)</li>
+              <li>Include a clear call to action</li>
+              <li>Personalize with [name] placeholder</li>
+              <li>Always include opt-out information</li>
+            </ul>
           </div>
 
           <div className="flex justify-end space-x-3 pt-4">
@@ -314,11 +324,11 @@ const EmailCampaigns = () => {
         </div>
       </Modal>
 
-      {/* Edit Email Modal */}
+      {/* Edit Text Modal */}
       <Modal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        title="Edit Email Template"
+        title="Edit Text Message Template"
       >
         {selectedTemplate && (
           <div className="space-y-4">
@@ -333,17 +343,7 @@ const EmailCampaigns = () => {
             </div>
 
             <div>
-              <label className="block text-gray-700 mb-1">Email Subject</label>
-              <input
-                type="text"
-                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                value={selectedTemplate.subject}
-                onChange={(e) => setSelectedTemplate({...selectedTemplate, subject: e.target.value})}
-              />
-            </div>
-
-            <div>
-              <label className="block text-gray-700 mb-1">Email Type</label>
+              <label className="block text-gray-700 mb-1">Message Type</label>
               <select
                 className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
                 value={selectedTemplate.type}
@@ -355,12 +355,17 @@ const EmailCampaigns = () => {
             </div>
 
             <div>
-              <label className="block text-gray-700 mb-1">Email Body</label>
+              <label className="block text-gray-700 mb-1">Message Content</label>
               <textarea
-                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 min-h-[150px]"
-                value={selectedTemplate.body}
-                onChange={(e) => setSelectedTemplate({...selectedTemplate, body: e.target.value})}
+                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 min-h-[100px]"
+                value={selectedTemplate.message}
+                onChange={(e) => setSelectedTemplate({...selectedTemplate, message: e.target.value})}
+                maxLength={480}
               />
+              <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <span>{getCharacterCount(selectedTemplate.message)} characters</span>
+                <span>{getSegmentCount(selectedTemplate.message)} segment(s)</span>
+              </div>
             </div>
 
             <div className="flex justify-end space-x-3 pt-4">
@@ -410,18 +415,29 @@ const EmailCampaigns = () => {
         )}
       </Modal>
 
-      {/* Send Email Modal */}
+      {/* Send Text Modal */}
       <Modal
         isOpen={isSendModalOpen}
         onClose={() => setIsSendModalOpen(false)}
-        title="Send Email Campaign"
+        title="Send Text Message Campaign"
       >
         {selectedTemplate && (
           <div>
-            <p className="mb-4">You are about to send "{selectedTemplate.name}" to {emailableUserCount} users who have opted in to email marketing.</p>
+            <p className="mb-4">You are about to send "{selectedTemplate.name}" to {textableUserCount} users who have opted in to SMS marketing.</p>
             <div className="bg-gray-100 p-4 rounded mb-4">
-              <p className="font-semibold">Subject: {selectedTemplate.subject}</p>
-              <p className="mt-2 whitespace-pre-line">{selectedTemplate.body}</p>
+              <p className="whitespace-pre-line">{selectedTemplate.message}</p>
+              <div className="flex justify-between text-xs text-gray-500 mt-3">
+                <span>{getCharacterCount(selectedTemplate.message)} characters</span>
+                <span>{getSegmentCount(selectedTemplate.message)} segment(s)</span>
+              </div>
+            </div>
+
+            <div className="bg-yellow-50 p-3 rounded text-sm text-yellow-800 mb-4">
+              <p>
+                <span className="font-medium">Estimated cost: </span>
+                ${(textableUserCount * getSegmentCount(selectedTemplate.message) * 0.01).toFixed(2)}
+                ({textableUserCount} recipients × {getSegmentCount(selectedTemplate.message)} segments × $0.01)
+              </p>
             </div>
 
             <div className="flex justify-end space-x-3 pt-4">
@@ -432,10 +448,10 @@ const EmailCampaigns = () => {
                 Cancel
               </button>
               <button
-                onClick={handleSendEmail}
+                onClick={handleSendText}
                 className={`px-4 py-2 bg-${colorPalette.primary.base} text-white rounded hover:bg-${colorPalette.primary.dark}`}
               >
-                Send Now ({emailableUserCount} recipients)
+                Send Now ({textableUserCount} recipients)
               </button>
             </div>
           </div>
@@ -445,4 +461,4 @@ const EmailCampaigns = () => {
   );
 };
 
-export default EmailCampaigns;
+export default TextMessages;

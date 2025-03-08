@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useWebsite } from '../../../context/WebsiteContext';
 import Modal from '../../Modal';
-import EllipsisMenu from '../../../components/EllipsisMenu';
+import EllipsisMenu from '../../EllipsisMenu';
 
 const SalesCampaigns = () => {
   const { campaigns, addCampaign, updateCampaign, deleteCampaign, activateCampaign, deactivateCampaign, users, colorPalette } = useWebsite();
