@@ -1,0 +1,166 @@
+name: Deploy Infrastructure and Application
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          cd client
+          npm ci
+          cd ../server/lambda/users
+          npm ci
+          # Add other microservices as needed
+
+      - name: Lint client
+        run: |
+          cd client
+          npm run lint
+
+      - name: Lint server
+        run: |
+          cd server/lambda/users
+          npm run lint
+          # Add other microservices as needed
+
+      - name: Test client
+        run: |
+          cd client
+          npm test -- --passWithNoTests
+
+      - name: Test server
+        run: |
+          cd server/lambda/users
+          npm test -- --passWithNoTests
+          # Add other microservices as needed
+
+  terraform:
+    name: Terraform
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Terraform Format
+        run: |
+          cd server/terraform
+          terraform fmt -check -recursive
+
+      - name: Terraform Init
+        run: |
+          cd server/terraform
+          terraform init
+
+      - name: Terraform Validate
+        run: |
+          cd server/terraform
+          terraform validate
+
+      - name: Terraform Plan
+        run: |
+          cd server/terraform
+          terraform plan -var="db_password=${{ secrets.DB_PASSWORD }}" -out=tfplan
+
+      - name: Terraform Apply
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          cd server/terraform
+          terraform apply -auto-approve tfplan
+
+  deploy_lambda:
+    name: Deploy Lambda Functions
+    needs: terraform
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Package and deploy Users Lambda
+        run: |
+          cd server/lambda/users
+          npm ci
+          npm run build --if-present
+          zip -r function.zip .
+          aws lambda update-function-code --function-name dev-users-service --zip-file fileb://function.zip
+          # Add other microservices as needed
+
+  deploy_client:
+    name: Deploy Client
+    needs: deploy_lambda
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Build client
+        run: |
+          cd client
+          npm ci
+          npm run build
+
+      - name: Deploy to S3
+        run: |
+          aws s3 sync client/build/ s3://little-desert-leather-works-website/ --delete
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
